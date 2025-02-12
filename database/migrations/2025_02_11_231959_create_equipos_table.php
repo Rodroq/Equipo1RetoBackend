@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 45);
             $table->char('grupo', 1)->nullable();
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }

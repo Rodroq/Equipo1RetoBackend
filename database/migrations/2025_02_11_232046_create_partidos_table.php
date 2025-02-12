@@ -17,6 +17,11 @@ return new class extends Migration
             $table->time('hora')->nullable();
             $table->smallInteger('golesL')->nullable();
             $table->smallInteger('golesV')->nullable();
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
+
             $table->timestamps();
         });
     }

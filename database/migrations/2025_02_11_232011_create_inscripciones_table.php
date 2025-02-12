@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->longText('comentarios');
             $table->enum('estado',['pendiente','aprobada','rechazada'])->nullable();
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }

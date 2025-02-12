@@ -25,6 +25,10 @@ return new class extends Migration
             $table->smallInteger('tarjetas_amarillas')->nullable();
             $table->smallInteger('tarjetas_rojas')->nullable();
             $table->smallInteger('lesiones')->nullable();
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }

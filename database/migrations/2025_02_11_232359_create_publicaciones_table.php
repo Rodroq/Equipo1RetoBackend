@@ -50,6 +50,10 @@ return new class extends Migration
             $table->unsignedBigInteger('pabellon_id')->nullable();
             $table->foreign('pabellon_id')->references('id')->on('pabellones')->cascadeOnDelete();
 
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
