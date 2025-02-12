@@ -6,5 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inscripcion extends Model
 {
-    //
+    protected $table = 'inscripciones';
+
+    protected $fillable = [
+        'comentarios',
+        'estado',
+        'usuarioIdCreacion',
+        'fechaCreacion',
+        'usuarioIdActualizacion',
+        'fechaActualizacion',
+        'equipo_id'
+    ];
+
+    protected static function boot(){
+        parent::boot();
+
+        static::creating(function($model){
+            $model->usuarioIdCreacion = auth()->id();
+            $model->fechaCreacion = now();
+        });
+        
+        static::updating(function($model){
+            $model->usuarioIdActualizacion = auth()->id();
+            $model->fechaActualizacion = now();
+        });
+    }
+
+    public function equipos(){
+        return $this->belongsTo(Equipo::class);
+    }
 }

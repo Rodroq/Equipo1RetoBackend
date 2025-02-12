@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('patrocinadores', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }

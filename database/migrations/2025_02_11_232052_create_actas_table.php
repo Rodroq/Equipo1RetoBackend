@@ -16,6 +16,10 @@ return new class extends Migration
             $table->enum('incidencia', ['goles', 'asistencias', 'tarjetas', 'lesiones'])->nullable();
             $table->time('hora')->nullable();
             $table->longText('comentario')->nullable();
+            $table->unsignedBigInteger('usuarioIdCreacion');
+            $table->timestamp('fechaCreacion')->useCurrent();
+            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
+            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
