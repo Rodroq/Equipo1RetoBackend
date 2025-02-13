@@ -4,6 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ *  schema="Jugador",
+ *  type="object",
+ *  title="Jugador",
+ *  required={"id", "nombre","equipo_id"},
+ *  @OA\Property(property="id", type="integer", example="1"),
+ *  @OA\Property(property="nombre", type="string", example="Álvaro"),
+ *  @OA\Property(property="apellido1", type="string", example="Ruiz"),
+ *  @OA\Property(property="apellido2", type="string", example="Gutierrez"),
+ *  @OA\Property(property="tipo", type="string", example="jugador/capitan/entrenador"),
+ *  @OA\Property(property="dni", type="string", example="12345678A"),
+ *  @OA\Property(property="email", type="string", example="example@exa.com"),
+ *  @OA\Property(property="telefono", type="string", example="+34 666 666 666"),
+ *  @OA\Property(property="goles", type="intenger", example=1),
+ *  @OA\Property(property="asistencias", type="integer", example=1),
+ *  @OA\Property(property="tarjetas_amarillas", type="integer", example=1),
+ *  @OA\Property(property="tarjetas_rojas", type="integer", example=1),
+ *  @OA\Property(property="lesiones", type="integer", example=1),
+ *  @OA\Property(property="equipo_id", type="integer", example=1),
+ *  )
+ */
 class Jugador extends Model
 {
     protected $table = 'jugadores';

@@ -1,0 +1,184 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Equipos",
+        "description": "API de equipos del torneo solidario",
+        "contact": {
+            "email": "email@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/equipos": {
+            "get": {
+                "tags": [
+                    "equipos"
+                ],
+                "summary": "Obtener todos los equipos de la web",
+                "description": "Obtener todos los equipos en la llamada a la API",
+                "operationId": "index",
+                "responses": {
+                    "200": {
+                        "description": "Equipos encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No hay equipos"
+                    }
+                }
+            }
+        },
+        "/api/equipos/{id}": {
+            "get": {
+                "tags": [
+                    "equipos"
+                ],
+                "summary": "Obtener un equipo",
+                "description": "Obtener un equipo por su id",
+                "operationId": "show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id del equipo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Equipo encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Equipo no encontrado"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Equipo": {
+                "required": [
+                    "id",
+                    "nombre",
+                    "jugadores"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Desguace FC"
+                    },
+                    "grupo": {
+                        "type": "string",
+                        "example": "A"
+                    },
+                    "centro_id": {
+                        "type": "string",
+                        "example": "IES Zapatón"
+                    },
+                    "jugadores": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Jugador"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Jugador": {
+                "title": "Jugador",
+                "required": [
+                    "id",
+                    "nombre",
+                    "equipo_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Álvaro"
+                    },
+                    "apellido1": {
+                        "type": "string",
+                        "example": "Ruiz"
+                    },
+                    "apellido2": {
+                        "type": "string",
+                        "example": "Gutierrez"
+                    },
+                    "tipo": {
+                        "type": "string",
+                        "example": "jugador/capitan/entrenador"
+                    },
+                    "dni": {
+                        "type": "string",
+                        "example": "12345678A"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "example@exa.com"
+                    },
+                    "telefono": {
+                        "type": "string",
+                        "example": "+34 666 666 666"
+                    },
+                    "goles": {
+                        "type": "intenger",
+                        "example": 1
+                    },
+                    "asistencias": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tarjetas_amarillas": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tarjetas_rojas": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "lesiones": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "equipo_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "equipos",
+            "description": "equipos"
+        }
+    ]
+}
