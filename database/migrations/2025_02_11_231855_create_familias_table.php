@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('familias', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
-            $table->timestamps();
         });
     }
 

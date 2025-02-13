@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('retos', function (Blueprint $table) {
             $table->id();
-            $table->string('titulo', 45)->nullable();
+            $table->string('titulo', 120)->nullable();
             $table->longText('texto')->nullable();
             $table->timestamps();
         });

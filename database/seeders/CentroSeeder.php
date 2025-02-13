@@ -2,22 +2,28 @@
 
 namespace Database\Seeders;
 
+use App\Models\Centro;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CentroSeeder extends Seeder
 {
-    private $centros = [["nombre" => "IES Besaya"], ["nombre" => "IES Miguel Herrero"], ["nombre" => "IES Zapatón"]];
+    private $centros = [
+        ['id' => 1, 'nombre' => 'IES Besaya'],
+        ['id' => 2, 'nombre' => 'IES Zapatón'],
+        ['id' => 3, 'nombre' => 'IES Miguel Herrero'],
+    ];
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        foreach ($centros as $centro) {
+        foreach ($this->centros as $centro) {
             Centro::create([
-                "nombre" => $centro["nombre"]
+                'id' => $centro['id'],
+                'nombre' => $centro['nombre']
             ]);
-        }        
+        }
     }
 }
