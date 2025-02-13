@@ -18,46 +18,56 @@ class Equipo extends Model
         'centro_id'
     ];
 
-    protected static function boot(){
-        parent::boot();
+    /*
+        Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
+        protected static function boot(){
+            parent::boot();
 
-        static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
-            $model->fechaCreacion = now();
-        });
-        
-        static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
-            $model->fechaActualizacion = now();
-        });
-    }
+            static::creating(function($model){
+                $model->usuarioIdCreacion = auth()->id();
+                $model->fechaCreacion = now();
+            });
 
-    public function partidos(){
+            static::updating(function($model){
+                $model->usuarioIdActualizacion = auth()->id();
+                $model->fechaActualizacion = now();
+            });
+        }
+    */
+
+    public function partidos()
+    {
         return $this->hasMany(Partido::class, 'equipoL')
-        ->orWhere('equipoV');
+            ->orWhere('equipoV');
     }
 
-    public function inscripciones(){
-        return $this->hasOne(Inscripcion::class);    
+    public function inscripciones()
+    {
+        return $this->hasOne(Inscripcion::class);
     }
 
-    public function jugadores() {
+    public function jugadores()
+    {
         return $this->hasMany(Jugador::class);
     }
 
-    public function publicaciones() {
+    public function publicaciones()
+    {
         return $this->hasMany(Publicacion::class);
     }
 
-    public function imagenes() {
+    public function imagenes()
+    {
         return $this->hasMany(Imagen::class);
     }
 
-    public function patrocinadores(){
+    public function patrocinadores()
+    {
         return $this->belongsToMany(Patrocinador::class);
     }
 
-    public function centros(){
+    public function centros()
+    {
         return $this->belongsTo(Centro::class);
     }
 }

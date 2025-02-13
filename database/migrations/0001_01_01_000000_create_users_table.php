@@ -17,10 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedBigInteger('usuarioIdCreacion');
-            $table->timestamp('fechaCreacion')->useCurrent();
-            $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();
-            $table->timestamp('fechaActualizacion')->nullable()->useCurrentOnUpdate();
             $table->rememberToken();
             $table->timestamps();
         });

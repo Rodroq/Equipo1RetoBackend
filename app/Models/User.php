@@ -21,10 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'usuarioIdCreacion',
-        'fechaCreacion',
-        'usuarioIdActualizacion',
-        'fechaActualizacion'
     ];
 
     /**
@@ -48,19 +44,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    protected static function boot(){
-        parent::boot();
-
-        static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
-            $model->fechaCreacion = now();
-        });
-        
-        static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
-            $model->fechaActualizacion = now();
-        });
     }
 }

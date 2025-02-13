@@ -29,37 +29,45 @@ class Jugador extends Model
         'estudio_id'
     ];
 
-    protected static function boot(){
-        parent::boot();
+    /*
+        Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
+        protected static function boot(){
+            parent::boot();
 
-        static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
-            $model->fechaCreacion = now();
-        });
-        
-        static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
-            $model->fechaActualizacion = now();
-        });
-    }
+            static::creating(function($model){
+                $model->usuarioIdCreacion = auth()->id();
+                $model->fechaCreacion = now();
+            });
 
-    public function estudios() {
+            static::updating(function($model){
+                $model->usuarioIdActualizacion = auth()->id();
+                $model->fechaActualizacion = now();
+            });
+        }
+    */
+
+    public function estudios()
+    {
         return $this->belongsTo(Estudio::class);
     }
 
-    public function actas() {
+    public function actas()
+    {
         return $this->hasMany(Acta::class);
     }
 
-    public function publicaciones() {
+    public function publicaciones()
+    {
         return $this->hasMany(Publicacion::class);
     }
 
-    public function imagenes() {
+    public function imagenes()
+    {
         return $this->hasMany(Imagen::class);
     }
 
-    public function equipos() {
+    public function equipos()
+    {
         return $this->belongsTo(Equipo::class);
     }
 }

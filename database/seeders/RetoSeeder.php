@@ -87,7 +87,8 @@ class RetoSeeder extends Seeder
             ],
             [
                 'titulo' => 'Diseño y desarrollo web sede torrelavega',
-                'texto' => 'Desarrollo de una página web con información relativa a la liga solidaria FP centrada en la sede de Torrelavega.',
+                'texto' => 'Se realiza una pagina web para la liga solidaria que apadrina la **Cruz Roja** con sede en Torrelavega. En esta página se debe de dessarrollar una gestión de usuarios y diversas funcionalidades y diseños para hacerla lo más amena, cercana e informativa para todos aquellos que participen en el torneo, además de realizar la gestión de los resultados de la propia liga que se celebra entre los días **13 y 14 de marzo de 2025**.
+Por si fuese poco, también se da visibilidad a los diferentes retos realizados por otros modulos profesionales, sponsors que han participado en el torneo y a la propia benefactora del torneo, la Cruz Roja.',
                 'estudio_id' => $estudios->get(13)->id,
             ],
             [
@@ -110,9 +111,9 @@ Por un lado, se realizará la gestión contable de la sociedad deportiva encarga
 
         foreach ($retos as $reto) {
             Reto::create([
-                'titulo'=> $reto['titulo'],
-                'texto'=> $reto['texto'],
-                'estudio_id'=> $reto['estudio_id'],
+                'titulo' => $reto['titulo'],
+                'texto' => $reto['texto'],
+                'estudio_id' => $reto['estudio_id'],
             ]);
         }
     }

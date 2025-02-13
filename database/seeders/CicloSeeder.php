@@ -26,7 +26,7 @@ class CicloSeeder extends Seeder
         ['id' => 12, 'nombre' => 'CFGS Imagen y Sonido', 'familia_id' => 7], //familia profesional de Imagen y sonido
         //Fps del Miguel Herrero
         ['id' => 13, 'nombre' => 'CFGM Sistemas Microinformáticos y Redes', 'familia_id' => 8], //familia profesional de Informatica y comunicaciones
-        ['id' => 14, 'nombre' => 'CFGS Despliegue de Aplicaciones Web', 'familia_id' => 8], //familia profesional de Informatica y comunicaciones
+        ['id' => 14, 'nombre' => 'CFGS Desarrollo de Aplicaciones Web', 'familia_id' => 8], //familia profesional de Informatica y comunicaciones
         ['id' => 15, 'nombre' => 'CFGS Administración de sistemas informáticos y redes', 'familia_id' => 8], //familia profesional de Informatica y comunicaciones
         ['id' => 16, 'nombre' => 'CFGM Carrocería ', 'familia_id' => 9], //familia profesional de Transporte y mantenimiento
         ['id' => 17, 'nombre' => 'CFGM Gestión Administrativa', 'familia_id' => 10], //familia profesional de Administración y gestión
