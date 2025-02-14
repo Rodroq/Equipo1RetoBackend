@@ -25,7 +25,9 @@ class ActasSeeder extends Seeder
         ['id' => 12, 'incidencia' => 'lesiones', 'hora' => '13:00:00', 'comentario' => 'Golpe fuerte, necesita asistencia médica.', 'partido_id' => 1, 'jugador_id' => 7],
         ['id' => 13, 'incidencia' => 'goles', 'hora' => '13:05:00', 'comentario' => 'Definición exquisita en el mano a mano.', 'partido_id' => 4, 'jugador_id' => 13],
         ['id' => 14, 'incidencia' => 'asistencias', 'hora' => '13:10:00', 'comentario' => 'Pase con el exterior, asistencia magistral.', 'partido_id' => 5, 'jugador_id' => 18],
-        ['id' => 15, 'incidencia' => 'tarjetas', 'hora' => '13:15:00', 'comentario' => 'Tarjeta roja por entrada peligrosa.', 'partido_id' => 2, 'jugador_id' => 16]
+        ['id' => 15, 'incidencia' => 'tarjetas', 'hora' => '13:15:00', 'comentario' => 'Tarjeta roja por entrada peligrosa.', 'partido_id' => 2, 'jugador_id' => 16],
+        ['id' => 16, 'incidencia' => 'goles', 'hora' => '13:30:00','comentario' => 'Gol de penalti.', 'partido_id' => 1, 'jugador_id' => 78],
+        ['id' => 17, 'incidencia' => 'goles', 'hora' => '13:45:00','comentario' => 'Gol de penalti.', 'partido_id' => 1, 'jugador_id' => 70],
     ];
     
     

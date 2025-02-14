@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RetoResource;
 use Illuminate\Http\Request;
+use App\Models\Reto;
 
-/**
- * @OA\Info(title="API Equipos", version="1.0",description="API de equipos del torneo solidario",
- * @OA\Server(url="http://localhost:8000"),
- * @OA\Contact(email="email@gmail.com"))
- */
 class RetoController extends Controller
 {
     /**
@@ -19,7 +16,7 @@ class RetoController extends Controller
      * path="/api/retos",
      * summary="Obtener todos los retos de la web",
      * description="Obtener todos los retos en la llamada a la API",
-     * operationId="index",
+     * operationId="indexRetos",
      * tags={"retos"},
      * @OA\Response(
      * response=200,
@@ -35,6 +32,8 @@ class RetoController extends Controller
     public function index()
     {
         $retos = Reto::with('estudio')->get();    
+
+        return RetoResource::collection($retos);
     }
 
 
@@ -46,7 +45,7 @@ class RetoController extends Controller
      * path="/api/retos/{id}",
      * summary="Obtener un reto",
      * description="Obtener un reto por su id",
-     * operationId="show",
+     * operationId="showReto",
      * tags={"retos"},
      * @OA\Parameter(
      * name="id",

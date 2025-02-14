@@ -247,6 +247,68 @@
                     }
                 }
             }
+        },
+        "/api/retos": {
+            "get": {
+                "tags": [
+                    "retos"
+                ],
+                "summary": "Obtener todos los retos de la web",
+                "description": "Obtener todos los retos en la llamada a la API",
+                "operationId": "indexRetos",
+                "responses": {
+                    "200": {
+                        "description": "Retos encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Reto"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No hay retos"
+                    }
+                }
+            }
+        },
+        "/api/retos/{id}": {
+            "get": {
+                "tags": [
+                    "retos"
+                ],
+                "summary": "Obtener un reto",
+                "description": "Obtener un reto por su id",
+                "operationId": "showReto",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id del reto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reto encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Reto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reto no encontrado"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -390,6 +452,34 @@
                     }
                 },
                 "type": "object"
+            },
+            "Reto": {
+                "required": [
+                    "id",
+                    "titulo",
+                    "texto"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "titulo": {
+                        "type": "string",
+                        "example": "Desafío de programación"
+                    },
+                    "texto": {
+                        "type": "string",
+                        "example": "Completa los ejercicios en el menor tiempo posible"
+                    },
+                    "estudio": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Estudio"
+                        }
+                    }
+                },
+                "type": "object"
             }
         }
     },
@@ -401,6 +491,10 @@
         {
             "name": "jugadores",
             "description": "jugadores"
+        },
+        {
+            "name": "retos",
+            "description": "retos"
         }
     ]
 }

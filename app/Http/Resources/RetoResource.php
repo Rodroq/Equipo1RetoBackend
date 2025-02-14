@@ -19,7 +19,7 @@ class RetoResource extends JsonResource
             'id' => $this->id,
             'titulo' => $this->titulo,
             'texto' => $this->texto,
-            'estudio_id' => $this->estudio_id,
+            'estudio_id' => new EstudioResource($this->estudio),
         ];
     }
 }
