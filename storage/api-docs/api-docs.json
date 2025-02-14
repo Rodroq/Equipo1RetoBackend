@@ -32,6 +32,57 @@
                         "description": "No hay equipos"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "equipos"
+                ],
+                "summary": "Crear un equipo",
+                "description": "Crear un equipo",
+                "operationId": "store",
+                "requestBody": {
+                    "description": "Datos del equipo",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "jugadores"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Equipo 1"
+                                    },
+                                    "centro_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "jugadores": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Jugador"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Equipo creado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/equipos/{id}": {
@@ -69,12 +120,132 @@
                         "description": "Equipo no encontrado"
                     }
                 }
+            },
+            "put": {
+                "tags": [
+                    "equipos"
+                ],
+                "summary": "Actualizar un equipo",
+                "description": "Actualizar un equipo",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id del equipo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos del equipo",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre",
+                                    "jugadores"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Equipo 1"
+                                    },
+                                    "centro_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "jugadores": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Jugador"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Equipo actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Equipo no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "equipos"
+                ],
+                "summary": "Eliminar un equipo",
+                "description": "Eliminar un equipo por su id",
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id del equipo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Equipo eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Equipo no encontrado"
+                    }
+                }
             }
         }
     },
     "components": {
         "schemas": {
+            "Centro": {
+                "title": "Centro",
+                "required": [
+                    "id",
+                    "nombre"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "IES Ejemplo"
+                    }
+                },
+                "type": "object"
+            },
             "Equipo": {
+                "title": "Equipo",
                 "required": [
                     "id",
                     "nombre",
@@ -93,9 +264,11 @@
                         "type": "string",
                         "example": "A"
                     },
-                    "centro_id": {
-                        "type": "string",
-                        "example": "IES Zapatón"
+                    "centro": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Centro"
+                        }
                     },
                     "jugadores": {
                         "type": "array",

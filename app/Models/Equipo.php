@@ -5,21 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @OA\Schema(
- *     schema="Equipo",
- *     type="object",
- *     required={"id", "nombre", "jugadores"},
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="nombre", type="string", example="Desguace FC"),
- *     @OA\Property(property="grupo", type="string", example="A"),
- *     @OA\Property(property="centro_id", type="string", example="IES Zapatón"),
- *     @OA\Property(
- *         property="jugadores",
- *         type="array",
- *         @OA\Items(ref="#/components/schemas/Jugador")
- *     )
- * )
+ *@OA\Schema(
+ *  schema="Equipo",
+ *  type="object",
+ *  title="Equipo",
+ *  required={"id", "nombre", "jugadores"},
+ *  @OA\Property(property="id", type="integer", example=1),
+ *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
+ *  @OA\Property(property="grupo", type="string", example="A"),
+ *  @OA\Property(property="centro", type="array", @OA\Items(ref="#/components/schemas/Centro")),
+ *  @OA\Property(
+ *      property="jugadores",
+ *      type="array",
+ *      @OA\Items(ref="#/components/schemas/Jugador")
+ *  )
+ *)
  */
+
 class Equipo extends Model
 {
     protected $table = 'equipos';
@@ -82,7 +84,7 @@ class Equipo extends Model
         return $this->belongsToMany(Patrocinador::class);
     }
 
-    public function centros()
+    public function centro()
     {
         return $this->belongsTo(Centro::class);
     }

@@ -479,7 +479,7 @@ class JugadorSeeder extends Seeder
             [
                 'nombre' => 'Susana',
                 'tipo' => 'entrenador',
-                'equipo_id' => 1,
+                'equipo_id' => 5,
                 'estudio_id' =>  17
             ],
             [
