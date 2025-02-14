@@ -8,11 +8,7 @@ use App\Http\Resources\EquipoResource;
 use App\Models\Equipo;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Info(title="API Equipos", version="1.0",description="API de equipos del torneo solidario",
- * @OA\Server(url="http://localhost:8000"),
- * @OA\Contact(email="email@gmail.com"))
- */
+
 class EquipoController extends Controller
 {
     /**
@@ -23,7 +19,7 @@ class EquipoController extends Controller
      *  path="/api/equipos",
      *  summary="Obtener todos los equipos de la web",
      *  description="Obtener todos los equipos en la llamada a la API",
-     *  operationId="index",
+     *  operationId="indexEquipos",
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
@@ -51,7 +47,7 @@ class EquipoController extends Controller
      *  path="/api/equipos/{id}",
      *  summary="Obtener un equipo",
      *  description="Obtener un equipo por su id",
-     *  operationId="show",
+     *  operationId="showEquipo",
      *  tags={"equipos"},
      *  @OA\Parameter(
      *      name="id",
@@ -149,7 +145,7 @@ class EquipoController extends Controller
      *  ),
      *  @OA\Response(
      *     response=201,
-     *     description="Equipo actualizado",
+     *     description="Equipo actualizado correctamente",
      *     @OA\JsonContent(ref="#/components/schemas/Equipo"),
      *  ),
      *  @OA\Response(
@@ -159,15 +155,22 @@ class EquipoController extends Controller
      *  ),
      *)
      */
-    public function update(ActualizarEquipoRequest $request,Equipo $equipo)
+    public function update(ActualizarEquipoRequest $request, Equipo $equipo)
     {
         $request->validated();
+
+        // Verificar si el equipo existe
+        if (!$equipo) {
+            return response()->json(['message' => 'Equipo no encontrado'], 404);
+        }
 
         $equipo->update($request->only(
             'nombre',
             'grupo',
             'centro_id'
         ));
+
+        return response()->json(['message' => 'Equipo actualizado correctamente', 'equipo' => $equipo], 200);
     }
 
     /**

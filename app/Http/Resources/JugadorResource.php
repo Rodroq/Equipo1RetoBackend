@@ -29,6 +29,7 @@ class JugadorResource extends JsonResource
             'tarjetas_rojas' => $this->tarjetas_rojas,
             'lesiones' => $this->lesiones,
             'equipo_id' => $this->equipo_id,
+            'estudio' => new EstudioResource($this->estudio)
         ];
     }
 }
