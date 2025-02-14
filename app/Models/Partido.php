@@ -23,19 +23,19 @@ class Partido extends Model
 
     ];
 
-    protected static function boot(){
-        parent::boot();
+    // protected static function boot(){
+    //     parent::boot();
 
-        static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
-            $model->fechaCreacion = now();
-        });
+    //     static::creating(function($model){
+    //         $model->usuarioIdCreacion = auth()->id();
+    //         $model->fechaCreacion = now();
+    //     });
         
-        static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
-            $model->fechaActualizacion = now();
-        });
-    }
+    //     static::updating(function($model){
+    //         $model->usuarioIdActualizacion = auth()->id();
+    //         $model->fechaActualizacion = now();
+    //     });
+    // }
 
     public function actas(){
         return $this->hasMany(Acta::class);

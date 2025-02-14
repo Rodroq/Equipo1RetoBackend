@@ -19,20 +19,20 @@ class Acta extends Model
         'jugador_id',
         'fechaActualizacion'
     ];
+    //Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
+    // protected static function boot(){
+    //     parent::boot();
 
-    protected static function boot(){
-        parent::boot();
-
-        static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
-            $model->fechaCreacion = now();
-        });
+    //     static::creating(function($model){
+    //         $model->usuarioIdCreacion = auth()->id();
+    //         $model->fechaCreacion = now();
+    //     });
         
-        static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
-            $model->fechaActualizacion = now();
-        });
-    }
+    //     static::updating(function($model){
+    //         $model->usuarioIdActualizacion = auth()->id();
+    //         $model->fechaActualizacion = now();
+    //     });
+    // }
 
     public function jugadores(){
         return $this->belongsTo(Jugador::class);
