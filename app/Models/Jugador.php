@@ -24,6 +24,11 @@ use Illuminate\Database\Eloquent\Model;
  *  @OA\Property(property="tarjetas_rojas", type="integer", example=1),
  *  @OA\Property(property="lesiones", type="integer", example=1),
  *  @OA\Property(property="equipo_id", type="integer", example=1),
+ *  @OA\Property(
+ *      property="estudios",
+ *      type="array",
+ *      @OA\Items(ref="#/components/schemas/Estudio")
+ *  )
  *  )
  */
 class Jugador extends Model
@@ -68,7 +73,7 @@ class Jugador extends Model
         }
     */
 
-    public function estudios()
+    public function estudio()
     {
         return $this->belongsTo(Estudio::class);
     }

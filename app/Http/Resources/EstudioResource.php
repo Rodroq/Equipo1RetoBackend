@@ -2,12 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Centro;
-use App\Models\Jugador;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EquipoResource extends JsonResource
+class EstudioResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,10 +16,7 @@ class EquipoResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
-            'grupo' => $this->grupo,
-            'centro' => new CentroResource($this->centro),
-            'jugadores' => JugadorResource::collection($this->jugadores),
+            'curso' => $this->curso
         ];
     }
 }
