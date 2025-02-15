@@ -62,7 +62,7 @@ class CrearJugadorRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'success'   => false,
             'message'   => 'Errores en la creacion',
-            'data'      => $validator->errors()
+            'errors'      => $validator->errors()
         ]));
     }
 }

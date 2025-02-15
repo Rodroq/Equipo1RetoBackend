@@ -7,8 +7,6 @@ use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorResource;
 use App\Models\Equipo;
 use App\Models\Jugador;
-use Illuminate\Http\Request;
-
 
 class JugadorController extends Controller
 {

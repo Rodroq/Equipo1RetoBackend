@@ -6,8 +6,6 @@ use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
 use App\Models\Equipo;
-use Illuminate\Http\Request;
-
 
 class EquipoController extends Controller
 {

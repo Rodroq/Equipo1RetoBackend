@@ -57,7 +57,7 @@ class ActualizarJugadorRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'success'   => false,
             'message'   => 'Errores en la actualizacion',
-            'data'      => $validator->errors()
+            'errors'      => $validator->errors()
         ]));
     }
 }
