@@ -15,7 +15,6 @@ class JugadorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'nombre' => $this->nombre,
             'apellido1' => $this->apellido1,
             'apellido2' => $this->apellido2,
@@ -28,7 +27,7 @@ class JugadorResource extends JsonResource
             'tarjetas_amarillas' => $this->tarjetas_amarillas,
             'tarjetas_rojas' => $this->tarjetas_rojas,
             'lesiones' => $this->lesiones,
-            'equipo_id' => $this->equipo_id,
+            'equipo_nombre' => $this->equipo->nombre,
             'estudio' => new EstudioResource($this->estudio)
         ];
     }

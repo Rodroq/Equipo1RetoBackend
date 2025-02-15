@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *  schema="Centro",
  *  type="object",
  *  title="Centro",
- *  required={"id", "nombre"},
- *  @OA\Property(property="id", type="integer", example=1),
+ *  required={"nombre"},
  *  @OA\Property(property="nombre", type="string", example="IES Ejemplo"),
  *)
  */

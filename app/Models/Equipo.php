@@ -9,16 +9,11 @@ use Illuminate\Database\Eloquent\Model;
  *  schema="Equipo",
  *  type="object",
  *  title="Equipo",
- *  required={"id", "nombre", "jugadores"},
- *  @OA\Property(property="id", type="integer", example=1),
+ *  required={"nombre", "jugadores"},
  *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
  *  @OA\Property(property="grupo", type="string", example="A"),
- *  @OA\Property(property="centro", type="array", @OA\Items(ref="#/components/schemas/Centro")),
- *  @OA\Property(
- *      property="jugadores",
- *      type="array",
- *      @OA\Items(ref="#/components/schemas/Jugador")
- *  )
+ *  @OA\Property(property="centro", type="object", ref="#/components/schemas/Centro"),
+ *  @OA\Property(property="jugadores", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
  *)
  */
 

@@ -17,7 +17,6 @@ class EquipoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'nombre' => $this->nombre,
             'grupo' => $this->grupo,
             'centro' => new CentroResource($this->centro),

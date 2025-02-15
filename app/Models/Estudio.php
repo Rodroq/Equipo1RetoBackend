@@ -10,15 +10,16 @@ use Illuminate\Database\Eloquent\Model;
  *  schema="Estudio",
  *  type="object",
  *  title="Estudio",
- *  @OA\Property(property="id", type="integer", example=1),
+ *  @OA\Property(property="centro", type="string", example="IES Ejemplo"),
  *  @OA\Property(property="curso", type="integer", example=1),
+ *  @OA\Property(property="ciclos", type="object", ref="#/components/schemas/Ciclo"),
  *)
  */
 class Estudio extends Model
 {
     protected $table = 'estudios';
 
-    public function centros()
+    public function centro()
     {
         return $this->belongsTo(Centro::class);
     }
@@ -26,5 +27,9 @@ class Estudio extends Model
     public function jugadores()
     {
         return $this->hasMany(Jugador::class);
+    }
+
+    public function ciclo(){
+        return $this->belongsTo(Ciclo::class);
     }
 }

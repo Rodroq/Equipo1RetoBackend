@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *  schema="Jugador",
  *  type="object",
  *  title="Jugador",
- *  required={"id", "nombre","equipo_id"},
- *  @OA\Property(property="id", type="integer", example="1"),
+ *  required={"nombre","equipo_id"},
  *  @OA\Property(property="nombre", type="string", example="Álvaro"),
  *  @OA\Property(property="apellido1", type="string", example="Ruiz"),
  *  @OA\Property(property="apellido2", type="string", example="Gutierrez"),
@@ -23,12 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  *  @OA\Property(property="tarjetas_amarillas", type="integer", example=1),
  *  @OA\Property(property="tarjetas_rojas", type="integer", example=1),
  *  @OA\Property(property="lesiones", type="integer", example=1),
- *  @OA\Property(property="equipo_id", type="integer", example=1),
- *  @OA\Property(
- *      property="estudios",
- *      type="array",
- *      @OA\Items(ref="#/components/schemas/Estudio")
- *  )
+ *  @OA\Property(property="equipo_nombre", type="string", example="Equipo Example"),
+ *  @OA\Property(property="estudios", type="object", ref="#/components/schemas/Estudio")
  *  )
  */
 class Jugador extends Model
@@ -93,7 +88,7 @@ class Jugador extends Model
         return $this->hasMany(Imagen::class);
     }
 
-    public function equipos()
+    public function equipo()
     {
         return $this->belongsTo(Equipo::class);
     }

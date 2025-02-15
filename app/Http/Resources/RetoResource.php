@@ -16,10 +16,9 @@ class RetoResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'titulo' => $this->titulo,
             'texto' => $this->texto,
-            'estudio_id' => new EstudioResource($this->estudio),
+            'estudio' => new EstudioResource($this->estudio),
         ];
     }
 }

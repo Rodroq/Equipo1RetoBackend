@@ -316,14 +316,9 @@
             "Centro": {
                 "title": "Centro",
                 "required": [
-                    "id",
                     "nombre"
                 ],
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
                     "nombre": {
                         "type": "string",
                         "example": "IES Ejemplo"
@@ -331,18 +326,29 @@
                 },
                 "type": "object"
             },
+            "Ciclo": {
+                "title": "Ciclo",
+                "required": [
+                    "nombre"
+                ],
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "example": "FPGB Tapicería y Cortinaje"
+                    },
+                    "familia": {
+                        "$ref": "#/components/schemas/Familia"
+                    }
+                },
+                "type": "object"
+            },
             "Equipo": {
                 "title": "Equipo",
                 "required": [
-                    "id",
                     "nombre",
                     "jugadores"
                 ],
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
                     "nombre": {
                         "type": "string",
                         "example": "Desguace FC"
@@ -352,10 +358,7 @@
                         "example": "A"
                     },
                     "centro": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Centro"
-                        }
+                        "$ref": "#/components/schemas/Centro"
                     },
                     "jugadores": {
                         "type": "array",
@@ -369,13 +372,29 @@
             "Estudio": {
                 "title": "Estudio",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
+                    "centro": {
+                        "type": "string",
+                        "example": "IES Ejemplo"
                     },
                     "curso": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "ciclos": {
+                        "$ref": "#/components/schemas/Ciclo"
+                    }
+                },
+                "type": "object"
+            },
+            "Familia": {
+                "title": "Familia",
+                "required": [
+                    "nombre"
+                ],
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "example": "Textil, Confección y Piel"
                     }
                 },
                 "type": "object"
@@ -383,15 +402,10 @@
             "Jugador": {
                 "title": "Jugador",
                 "required": [
-                    "id",
                     "nombre",
                     "equipo_id"
                 ],
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": "1"
-                    },
                     "nombre": {
                         "type": "string",
                         "example": "Álvaro"
@@ -440,15 +454,12 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "equipo_id": {
-                        "type": "integer",
-                        "example": 1
+                    "equipo_nombre": {
+                        "type": "string",
+                        "example": "Equipo Example"
                     },
                     "estudios": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Estudio"
-                        }
+                        "$ref": "#/components/schemas/Estudio"
                     }
                 },
                 "type": "object"
@@ -466,17 +477,14 @@
                     },
                     "titulo": {
                         "type": "string",
-                        "example": "Desafío de programación"
+                        "example": "Merchandising de la Liga"
                     },
                     "texto": {
                         "type": "string",
-                        "example": "Completa los ejercicios en el menor tiempo posible"
+                        "example": "Desde de la familia profesional de Textil, Confección y Piel el IES Besaya a través de su ciclo Profesional Básico en Tapicería y Cortinaje ha diseñado el RETO de Merchadising. Este RETO tiene la finalidad de diseñar y confeccionan productos de merchandising como chapas, llaveros, gorras con los logos de la Liga, centros participantes y diseños exclusivos para la venta y recaudación de fondos destinados a nuestra ONG. La venta se realizará en el propio reciento del evento durante los días 12 y 13 de marzo. Para ello se instalará una expositor tienda dentro del propio recinto."
                     },
                     "estudio": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Estudio"
-                        }
+                        "$ref": "#/components/schemas/Estudio"
                     }
                 },
                 "type": "object"
