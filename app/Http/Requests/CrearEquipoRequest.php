@@ -46,12 +46,10 @@ class CrearEquipoRequest extends FormRequest
     public function messages():array
     {
         return [
-            'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.required' => 'El nombre del equipo es requerido',
+            'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
             'grupo.in' => 'Los grupos permitidos son [A,B]',
-            'centro_id.numeric' => 'El centro no es valido',
-            'centro_id.exists' => 'El centro no existe',
             'jugadores.array' => 'Formato de jugadores no permitido',
             'jugadores.min' => 'Minimo el equipo ha de estar compuesto por un jugador',
             'jugadores.*.nombre.required' => 'El nombre del jugador es requerido',
@@ -62,7 +60,7 @@ class CrearEquipoRequest extends FormRequest
             'jugadores.*.apellido2.string' => 'El apellido2 del jugador ha de ser texto',
             'jugadores.*.apellido2.max' => 'El apellido2 del jugador solo tiene máximo 45 caracteres',
             'jugadores.*.tipo.required' => 'El tipo del jugador es requerido',
-            'jugadores.*.tipo.in' => 'Los valores del tipo de jugador son [jugador,capitan,entrenador]',
+            'jugadores.*.tipo.in' => 'Los valores del tipo de jugador son [jugador | capitan | entrenador]',
             'jugadores.*.dni.string' => 'El dni del jugador ha de ser texto',
             'jugadores.*.dni.max' => 'El dni del jugador solo tiene máximo 9 caracteres',
             'jugadores.*.email.string' => 'El email del jugador ha de ser texto',
@@ -82,7 +80,7 @@ class CrearEquipoRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Validation errors',
+            'message'   => 'Errores en la creacion',
             'data'      => $validator->errors()
         ]));
     }

@@ -25,7 +25,6 @@ class ActualizarEquipoRequest extends FormRequest
         return [
             'nombre' => 'string|max:45',
             'grupo' => 'in:A,B',
-            'centro_id' => 'numeric|exists:centros,id',
         ];
     }
 
@@ -35,8 +34,6 @@ class ActualizarEquipoRequest extends FormRequest
             'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
             'grupo.in' => 'El grupo solo puede ser [A | B]',
-            'centro_id.numeric' => 'El centro no es valido',
-            'centro_id.exists' => 'El centro no existe',
         ];
     }
 
@@ -45,7 +42,7 @@ class ActualizarEquipoRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Validation errors',
+            'message'   => 'Errores en la actualizacion',
             'data'      => $validator->errors()
         ]));
     }

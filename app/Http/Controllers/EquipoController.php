@@ -23,12 +23,22 @@ class EquipoController extends Controller
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
-     *      description="Equipos encontrados",
-     *      @OA\JsonContent(ref="#/components/schemas/Equipo")
+     *      description="Equipo disponibles",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
+     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *      ),
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="No hay equipos"
+     *      description="No hay equipos encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No hay equipos")
+     *      )
      *  )
      *)
      */
@@ -36,7 +46,24 @@ class EquipoController extends Controller
     {
         $equipos = Equipo::with('jugadores', 'centro')->get();
 
-        return EquipoResource::collection($equipos);
+        if ($equipos->isEmpty()) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'No hay equipos'
+                ],
+                204
+            );
+        }
+
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Equipos disponibles',
+                'data' => ['equipos' => EquipoResource::collection($equipos)],
+            ],
+            200
+        );
     }
 
     /**
@@ -59,11 +86,21 @@ class EquipoController extends Controller
      *  @OA\Response(
      *      response=200,
      *      description="Equipo encontrado",
-     *      @OA\JsonContent(ref="#/components/schemas/Equipo")
-     * ),
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
+     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
+     *      ),
+     *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado"
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *      )
      *  )
      *)
      */
@@ -71,12 +108,22 @@ class EquipoController extends Controller
     {
         $equipo = Equipo::find($equipo);
         if (!$equipo) {
-            return response()->json(['message' => 'Equipo no encontrado'], 404);
+            return response()->json([
+                'status' => false,
+                'message' => 'Equipo no encontrado'
+            ], 404);
         }
 
-        return new EquipoResource($equipo->load('jugadores'));
+        return response()->json([
+            'status' => true,
+            'message' => 'Equipo encontrado',
+            'data' => new EquipoResource($equipo)
+        ], 200);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     /**
      * @OA\Post(
      *  path="/api/equipos",
@@ -100,8 +147,13 @@ class EquipoController extends Controller
      *  ),
      *  @OA\Response(
      *      response=201,
-     *      description="Equipo creado",
-     *      @OA\JsonContent(ref="#/components/schemas/Equipo")
+     *      description="Equipo creado correctamente",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipo creado correctamente"),
+     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
+     *      ),
      *  ),
      *)
      */
@@ -112,16 +164,22 @@ class EquipoController extends Controller
         $equipo = Equipo::create([
             'nombre' => $request->nombre,
             'grupo' => $request->grupo,
-            'centro_id' => $request->centro_id,
             /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
             'usuarioIdCreacion' => $request->usuarioIdCreacion
         ]);
 
         $equipo->jugadores()->createMany($request->jugadores);
 
-        return response()->json(['message' => 'Equipo creado correctamente', 'equipo' => $equipo], 200);
+        return response()->json([
+            'status' => true,
+            'message' => 'Equipo creado correctamente',
+            'data' => $equipo
+        ], 200);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     /**
      * @OA\Put(
      *  path="/api/equipos/{id}",
@@ -147,13 +205,22 @@ class EquipoController extends Controller
      *  @OA\Response(
      *     response=201,
      *     description="Equipo actualizado correctamente",
-     *     @OA\JsonContent(ref="#/components/schemas/Equipo"),
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipo actualizado correctamente"),
+     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *     ),
      *  ),
      *  @OA\Response(
-     *     response=404,
-     *     description="Equipo no encontrado",
-     *     @OA\JsonContent(ref="#/components/schemas/Equipo"),
-     *  ),
+     *      response=404,
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *      )
+     *  )
      *)
      */
     public function update(ActualizarEquipoRequest $request, $equipo)
@@ -162,16 +229,25 @@ class EquipoController extends Controller
 
         // Verificar si el equipo existe
         if (!$equipo) {
-            return response()->json(['message' => 'Equipo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Equipo no encontrado'
+            ], 404);
         }
 
         // Si la validación pasa, se procede a actualizar
-        $equipo->update($request->only('nombre', 'grupo', 'centro_id'));
+        $equipo->update($request->validated());
 
-        return response()->json(['message' => 'Equipo actualizado correctamente', 'equipo' => $equipo], 200);
+        return response()->json([
+            'status' => true,
+            'message' => 'Equipo actualizado correctamente',
+            'data' => ['equipo' => $equipo]
+        ], 200);
     }
 
-
+    /**
+     * Remove the specified resource from storage.
+     */
     /**
      * @OA\Delete(
      *  path="/api/equipos/{id}",
@@ -187,13 +263,23 @@ class EquipoController extends Controller
      *   @OA\Schema(type="integer",example="1")
      *  ),
      *  @OA\Response(
-     *  response=200,
-     *  description="Equipo eliminado correctamente",
-     * ),
-     *  @OA\Response(
-     *  response=404,
-     *  description="Equipo no encontrado"
+     *      response=200,
+     *      description="Equipo eliminado correctamente",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipo eliminado correctamente")
+     *      )
      *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *      )
+     *  )
      * ),
      */
     public function destroy($equipo)
@@ -201,11 +287,17 @@ class EquipoController extends Controller
         $equipo = Equipo::find($equipo);
 
         if (!$equipo) {
-            return response()->json(['message' => 'Equipo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Equipo no encontrado'
+            ], 404);
         }
 
         $equipo->delete();
 
-        return response()->json(['message' => 'Equipo eliminado correctamente'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipo eliminado correctamente'
+        ], 200);
     }
 }

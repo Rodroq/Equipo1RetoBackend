@@ -27,7 +27,6 @@ class JugadorResource extends JsonResource
             'tarjetas_amarillas' => $this->tarjetas_amarillas,
             'tarjetas_rojas' => $this->tarjetas_rojas,
             'lesiones' => $this->lesiones,
-            'equipo_nombre' => $this->equipo->nombre,
             'estudio' => new EstudioResource($this->estudio)
         ];
     }
