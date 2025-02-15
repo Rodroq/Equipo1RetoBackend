@@ -13,4 +13,4 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('equipos',EquipoController::class);
 Route::apiResource('jugadores',JugadorController::class);
-Route::apiResource('retos',RetoController::class);
+Route::apiResource('retos',RetoController::class)->only('index','show');

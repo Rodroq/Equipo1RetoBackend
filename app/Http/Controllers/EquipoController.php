@@ -67,8 +67,13 @@ class EquipoController extends Controller
      *  )
      *)
      */
-    public function show(Equipo $equipo)
+    public function show($equipo)
     {
+        $equipo = Equipo::find($equipo);
+        if (!$equipo) {
+            return response()->json(['message' => 'Equipo no encontrado'], 404);
+        }
+
         return new EquipoResource($equipo->load('jugadores'));
     }
 
@@ -77,7 +82,7 @@ class EquipoController extends Controller
      *  path="/api/equipos",
      *  summary="Crear un equipo con sus jugadores",
      *  description="Crear un equipo con sus jugadores",
-     *  operationId="store",
+     *  operationId="storeEquipo",
      *  tags={"equipos"},
      *  @OA\RequestBody(
      *      required=true,
@@ -113,6 +118,8 @@ class EquipoController extends Controller
         ]);
 
         $equipo->jugadores()->createMany($request->jugadores);
+
+        return response()->json(['message' => 'Equipo creado correctamente', 'equipo' => $equipo], 200);
     }
 
     /**
@@ -120,7 +127,7 @@ class EquipoController extends Controller
      *  path="/api/equipos/{id}",
      *  summary="Actualizar un equipo",
      *  description="Actualizar un equipo",
-     *  operationId="update",
+     *  operationId="updateEquipo",
      *  tags={"equipos"},
      *  @OA\Parameter(
      *      name="id",
@@ -133,14 +140,8 @@ class EquipoController extends Controller
      *      required=true,
      *      description="Datos del equipo",
      *      @OA\JsonContent(
-     *          required={"nombre","jugadores"},
      *          @OA\Property(property="nombre", type="string", example="Equipo 1"),
      *          @OA\Property(property="centro_id", type="integer", example="1"),
-     *          @OA\Property(
-     *              property="jugadores",
-     *              type="array",
-     *              @OA\Items(ref="#/components/schemas/Jugador"),
-     *          ),
      *      ),
      *  ),
      *  @OA\Response(
@@ -155,30 +156,28 @@ class EquipoController extends Controller
      *  ),
      *)
      */
-    public function update(ActualizarEquipoRequest $request, Equipo $equipo)
+    public function update(ActualizarEquipoRequest $request, $equipo)
     {
-        $request->validated();
+        $equipo = Equipo::find($equipo);
 
         // Verificar si el equipo existe
         if (!$equipo) {
             return response()->json(['message' => 'Equipo no encontrado'], 404);
         }
 
-        $equipo->update($request->only(
-            'nombre',
-            'grupo',
-            'centro_id'
-        ));
+        // Si la validación pasa, se procede a actualizar
+        $equipo->update($request->only('nombre', 'grupo', 'centro_id'));
 
         return response()->json(['message' => 'Equipo actualizado correctamente', 'equipo' => $equipo], 200);
     }
+
 
     /**
      * @OA\Delete(
      *  path="/api/equipos/{id}",
      *  summary="Eliminar un equipo",
      *  description="Eliminar un equipo por su id",
-     *  operationId="delete",
+     *  operationId="deleteEquipo",
      *  tags={"equipos"},
      *  @OA\Parameter(
      *      name="id",
@@ -197,8 +196,10 @@ class EquipoController extends Controller
      *  ),
      * ),
      */
-    public function destroy(Equipo $equipo)
+    public function destroy($equipo)
     {
+        $equipo = Equipo::find($equipo);
+
         if (!$equipo) {
             return response()->json(['message' => 'Equipo no encontrado'], 404);
         }

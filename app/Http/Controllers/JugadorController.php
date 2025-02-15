@@ -34,21 +34,45 @@ class JugadorController extends Controller
     {
         $jugadores = Jugador::with('estudio')->get();
         return JugadorResource::collection($jugadores);
+    }
 
+    /**
+     * Display the specified resource.
+     */
+    /**
+     * @OA\Get(
+     *  path="/api/jugador/{id}",
+     *  summary="Obtener un equipo",
+     *  description="Obtener un equipo por su id",
+     *  operationId="showJugador",
+     *  tags={"jugador"},
+     *  @OA\Parameter(
+     *      name="id",
+     *      in="path",
+     *      description="Id del equipo",
+     *      required=true,
+     *      @OA\Schema(type="integer",example="1")
+     *  ),
+     *  @OA\Response(
+     *      response=200,
+     *      description="Equipo encontrado",
+     *      @OA\JsonContent(ref="#/components/schemas/Equipo")
+     * ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Equipo no encontrado"
+     *  )
+     *)
+     */
+    public function show(string $id)
+    {
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
     {
         //
     }

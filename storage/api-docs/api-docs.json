@@ -39,7 +39,7 @@
                 ],
                 "summary": "Crear un equipo con sus jugadores",
                 "description": "Crear un equipo con sus jugadores",
-                "operationId": "store",
+                "operationId": "storeEquipo",
                 "requestBody": {
                     "description": "Datos del equipo",
                     "required": true,
@@ -127,7 +127,7 @@
                 ],
                 "summary": "Actualizar un equipo",
                 "description": "Actualizar un equipo",
-                "operationId": "update",
+                "operationId": "updateEquipo",
                 "parameters": [
                     {
                         "name": "id",
@@ -146,24 +146,18 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "nombre",
-                                    "jugadores"
-                                ],
                                 "properties": {
                                     "nombre": {
                                         "type": "string",
                                         "example": "Equipo 1"
                                     },
+                                    "grupo": {
+                                        "type": "string",
+                                        "example": "A"
+                                    },
                                     "centro_id": {
                                         "type": "integer",
                                         "example": "1"
-                                    },
-                                    "jugadores": {
-                                        "type": "array",
-                                        "items": {
-                                            "$ref": "#/components/schemas/Jugador"
-                                        }
                                     }
                                 },
                                 "type": "object"
@@ -200,7 +194,7 @@
                 ],
                 "summary": "Eliminar un equipo",
                 "description": "Eliminar un equipo por su id",
-                "operationId": "delete",
+                "operationId": "deleteEquipo",
                 "parameters": [
                     {
                         "name": "id",
@@ -244,6 +238,43 @@
                     },
                     "204": {
                         "description": "No hay equipos"
+                    }
+                }
+            }
+        },
+        "/api/jugador/{id}": {
+            "get": {
+                "tags": [
+                    "jugador"
+                ],
+                "summary": "Obtener un equipo",
+                "description": "Obtener un equipo por su id",
+                "operationId": "showJugador",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id del equipo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Equipo encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Equipo"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Equipo no encontrado"
                     }
                 }
             }
@@ -499,6 +530,10 @@
         {
             "name": "jugadores",
             "description": "jugadores"
+        },
+        {
+            "name": "jugador",
+            "description": "jugador"
         },
         {
             "name": "retos",

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CrearEquipoRequest extends FormRequest
 {
@@ -22,10 +24,10 @@ class CrearEquipoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|max:45',
+            'nombre' => 'required|string|max:45',
             'grupo' => 'in:A,B',
             'centro_id' => 'numeric|exists:centros,id',
-            'jugadores' => 'required|array',
+            'jugadores' => 'array|min:1',
             'jugadores.*.nombre' => 'required|string|max:45',
             'jugadores.*.apellido1' => 'string|max:45',
             'jugadores.*.apellido2' => 'string|max:45',
@@ -44,13 +46,14 @@ class CrearEquipoRequest extends FormRequest
     public function messages():array
     {
         return [
+            'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.required' => 'El nombre del equipo es requerido',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
             'grupo.in' => 'Los grupos permitidos son [A,B]',
             'centro_id.numeric' => 'El centro no es valido',
             'centro_id.exists' => 'El centro no existe',
-            'jugadores.required' => 'A de incluir a al menos 1 jugador',
             'jugadores.array' => 'Formato de jugadores no permitido',
+            'jugadores.min' => 'Minimo el equipo ha de estar compuesto por un jugador',
             'jugadores.*.nombre.required' => 'El nombre del jugador es requerido',
             'jugadores.*.nombre.string' => 'El nombre del jugador ha de ser texto',
             'jugadores.*.nombre.max' => 'El nombre del jugador solo tiene máximo 45 caracteres',
@@ -66,11 +69,22 @@ class CrearEquipoRequest extends FormRequest
             'jugadores.*.email.max' => 'El email del jugador solo tiene máximo 45 caracteres',
             'jugadores.*.telefono.string' => 'El telefono del jugador ha de ser texto',
             'jugadores.*.telefono.max' => 'El telefono del jugador solo tiene máximo 45 caracteres',
-            'jugadores.*.goles.integer' => 'Los goles del jugador solo tiene máximo 45 caracteres',
-            'jugadores.*.asistencias.integer' => 'Las asistencias del jugador han de ser valores numéricos',
-            'jugadores.*.tarjetas_amarillas.integer' => 'las tarjetas amarillas del jugador han de ser valores numéricos',
-            'jugadores.*.tarjetas_rojas.integer' => 'Las tarjetas rojas del jugador han de ser valores numéricos',
-            'jugadores.*.lesiones.integer' => 'las lesiones del jugador han de ser valores numéricos',
+            'jugadores.*.goles.integer' => 'Los goles del jugador ha de ser un valor numerico',
+            'jugadores.*.asistencias.integer' => 'Las asistencias del jugador ha de ser un valor numerico',
+            'jugadores.*.tarjetas_amarillas.integer' => 'las tarjetas amarillas del jugador ha de ser un valor numerico',
+            'jugadores.*.tarjetas_rojas.integer' => 'Las tarjetas rojas del jugador ha de ser un valor numerico',
+            'jugadores.*.lesiones.integer' => 'las lesiones del jugador ha de ser un valor numerico',
         ];
     }
+
+    /* Agregar para devolver los mensajes de error a traves de la API */
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Validation errors',
+            'data'      => $validator->errors()
+        ]));
+    }
+
 }
