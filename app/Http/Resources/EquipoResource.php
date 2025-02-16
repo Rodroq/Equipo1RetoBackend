@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Centro;
-use App\Models\Jugador;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +17,9 @@ class EquipoResource extends JsonResource
         return [
             'nombre' => $this->nombre,
             'grupo' => $this->grupo,
-            'centro' => new CentroResource($this->centro),
+            'centro' => [
+                'nombre' => $this->centro->nombre
+            ],
             'jugadores' => JugadorResource::collection($this->jugadores),
         ];
     }

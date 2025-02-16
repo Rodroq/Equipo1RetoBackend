@@ -25,6 +25,7 @@ class ActualizarEquipoRequest extends FormRequest
         return [
             'nombre' => 'string|max:45',
             'grupo' => 'in:A,B',
+            /* ¿Permitir actualizar tambien el centro? */
         ];
     }
 
@@ -43,7 +44,7 @@ class ActualizarEquipoRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'success'   => false,
             'message'   => 'Errores en la actualizacion',
-            'data'      => $validator->errors()
+            'errors'      => $validator->errors()
         ]));
     }
 }

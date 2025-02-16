@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EstadisticasJugadores extends Model
+class EstadisticasJugador extends Model
 {
-    protected $table = 'estadisticas_jugadores';
+    protected $table = 'estadisticas_jugadores_view';
 
     protected $primarykey = 'jugador_id';
 
-    protected $fillable = [
+    protected $guarded = [];
+
+    /* protected $fillable = [
         'jugador_id',
         'nombre',
         'apellido1',
@@ -19,5 +21,5 @@ class EstadisticasJugadores extends Model
         'asistencias',
         'tarjetas',
         'lesiones'
-    ];
+    ]; */
 }

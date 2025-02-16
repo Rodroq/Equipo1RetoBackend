@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
+use App\Models\Centro;
+use App\Models\Ciclo;
 use App\Models\Equipo;
+use App\Models\Estudio;
 
 class EquipoController extends Controller
 {
@@ -159,19 +162,33 @@ class EquipoController extends Controller
     {
         $request->validated();
 
+        //Obtener centro al que pertenece el equipo
+        $centro_id = Centro::where('nombre', $request->centro)->first()->id;
+
         $equipo = Equipo::create([
             'nombre' => $request->nombre,
             'grupo' => $request->grupo,
+            'centro_id' => $centro_id,
             /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
             'usuarioIdCreacion' => $request->usuarioIdCreacion
         ]);
 
-        $equipo->jugadores()->createMany($request->jugadores);
+        $equipo->jugadores()->createMany(
+            collect($request->jugadores)->map(function ($jugador) {
+                if (!array_key_exists('ciclo', $jugador)) {
+                    return $jugador;
+                }
+                $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
+                $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
+                $jugador['estudio_id'] = $estudio_id;
+                return $jugador;
+            })
+        );
 
         return response()->json([
             'status' => true,
             'message' => 'Equipo creado correctamente',
-            'data' => $equipo
+            'data' => new EquipoResource($equipo)
         ], 200);
     }
 
@@ -239,7 +256,7 @@ class EquipoController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Equipo actualizado correctamente',
-            'data' => ['equipo' => $equipo]
+            'data' => ['equipo' => new EquipoResource($equipo)]
         ], 200);
     }
 

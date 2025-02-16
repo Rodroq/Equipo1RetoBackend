@@ -26,20 +26,21 @@ class CrearEquipoRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:45',
             'grupo' => 'in:A,B',
-            'centro_id' => 'numeric|exists:centros,id',
+            'centro' => 'string|exists:centros,nombre',
             'jugadores' => 'required|array',
             'jugadores.*.nombre' => 'required|string|max:45',
             'jugadores.*.apellido1' => 'string|max:45',
             'jugadores.*.apellido2' => 'string|max:45',
             'jugadores.*.tipo' => 'required|in:jugador,capitan,entrenador',
             'jugadores.*.dni' => 'string|max:9',
-            'jugadores.*.email' => 'string|max:45',
+            'jugadores.*.email' => ['regex:/^.+@.+$/i', 'max:45'],
             'jugadores.*.telefono' => 'string|max:45',
             'jugadores.*.goles' => 'integer',
             'jugadores.*.asistencias' => 'integer',
             'jugadores.*.tarjetas_amarillas' => 'integer',
             'jugadores.*.tarjetas_rojas' => 'integer',
-            'jugadores.*.lesiones' => 'integer'
+            'jugadores.*.lesiones' => 'integer',
+            'jugadores.*.ciclo' => 'string|exists:ciclos,nombre',
         ];
     }
 
@@ -50,6 +51,8 @@ class CrearEquipoRequest extends FormRequest
             'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
             'grupo.in' => 'Los grupos permitidos son [A,B]',
+            'centro.string' =>'El nombre centro ha de ser texto',
+            'centro.exists' =>'El centro seleccionado no existe',
             'jugadores.required' => 'Los jugadores del equipo son requerido',
             'jugadores.array' => 'Formato de jugadores no permitido',
             'jugadores.*.nombre.required' => 'El nombre del jugador es requerido',
@@ -63,7 +66,7 @@ class CrearEquipoRequest extends FormRequest
             'jugadores.*.tipo.in' => 'Los valores del tipo de jugador son [jugador | capitan | entrenador]',
             'jugadores.*.dni.string' => 'El dni del jugador ha de ser texto',
             'jugadores.*.dni.max' => 'El dni del jugador solo tiene máximo 9 caracteres',
-            'jugadores.*.email.string' => 'El email del jugador ha de ser texto',
+            'jugadores.*.email.regex' => 'El email no corresponde con un formato valido',
             'jugadores.*.email.max' => 'El email del jugador solo tiene máximo 45 caracteres',
             'jugadores.*.telefono.string' => 'El telefono del jugador ha de ser texto',
             'jugadores.*.telefono.max' => 'El telefono del jugador solo tiene máximo 45 caracteres',
@@ -72,6 +75,8 @@ class CrearEquipoRequest extends FormRequest
             'jugadores.*.tarjetas_amarillas.integer' => 'las tarjetas amarillas del jugador ha de ser un valor numerico',
             'jugadores.*.tarjetas_rojas.integer' => 'Las tarjetas rojas del jugador ha de ser un valor numerico',
             'jugadores.*.lesiones.integer' => 'las lesiones del jugador ha de ser un valor numerico',
+            'jugadores.*.ciclo.string' => 'El ciclo del jugador ha de ser texto',
+            'jugadores.*.ciclo.exists' => 'El ciclo del jugador no existe',
         ];
     }
 

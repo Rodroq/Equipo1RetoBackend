@@ -15,7 +15,9 @@ class EstudioResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'centro' => new CentroResource($this->centro),
+            'centro' => [
+                'nombre' => $this->centro->nombre
+            ],
             'curso' => $this->curso,
             'ciclo' => new CicloResource($this->ciclo),
         ];

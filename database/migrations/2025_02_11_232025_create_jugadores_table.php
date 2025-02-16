@@ -20,11 +20,6 @@ return new class extends Migration
             $table->char('dni', 9)->nullable();
             $table->string('email', 45)->nullable();
             $table->string('telefono', 45)->nullable();
-            $table->smallInteger('goles')->nullable();
-            $table->smallInteger('asistencias')->nullable();
-            $table->smallInteger('tarjetas_amarillas')->nullable();
-            $table->smallInteger('tarjetas_rojas')->nullable();
-            $table->smallInteger('lesiones')->nullable();
             $table->unsignedBigInteger('usuarioIdCreacion');
             $table->timestamp('fechaCreacion')->useCurrent();
             $table->unsignedBigInteger('usuarioIdActualizacion')->nullable();

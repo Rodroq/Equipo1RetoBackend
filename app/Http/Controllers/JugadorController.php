@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorResource;
+use App\Models\Ciclo;
 use App\Models\Equipo;
+use App\Models\Estudio;
 use App\Models\Jugador;
 
 class JugadorController extends Controller
@@ -22,7 +24,7 @@ class JugadorController extends Controller
      *  tags={"jugadores"},
      *  @OA\Response(
      *      response=200,
-     *      description="jugadors encontrados",
+     *      description="Jugadores disponibles",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
@@ -32,7 +34,7 @@ class JugadorController extends Controller
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="Jugador no encontrado",
+     *      description="No hay jugadores",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -58,8 +60,8 @@ class JugadorController extends Controller
         return response()->json(
             [
                 'success' => true,
-                'message' => 'Equipos disponibles',
-                'data' => ['equipos' => JugadorResource::collection($jugadores)],
+                'message' => 'Jugadores disponibles',
+                'data' => ['jugadores' => JugadorResource::collection($jugadores)],
             ],
             200
         );
@@ -88,8 +90,8 @@ class JugadorController extends Controller
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
+     *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
+     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(
@@ -116,7 +118,7 @@ class JugadorController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Equipo encontrado',
+            'message' => 'Jugador encontrado',
             'data' => new JugadorResource($jugador)
         ], 200);
     }
@@ -155,23 +157,25 @@ class JugadorController extends Controller
     {
         $request->validated();
 
-        $equipo = Equipo::where('nombre', $request->equipo)->first();
+        //Obtener equipo al que pertenece el jugador
+        $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
 
-        if (!$equipo) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Jugador no encontrado'
-            ], 404);
+        //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
+        if ($request->ciclo) {
+            $ciclo_id = Ciclo::select('id')->where('nombre', $request->ciclo)->first()->id;
+            $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
         }
+
         $jugador = Jugador::create([
             'nombre' => $request->nombre,
-            'apellido1' => $request->grupo,
-            'apellido2' => $request->grupo,
-            'tipo' => $request->grupo,
-            'dni' => $request->grupo,
-            'email' => $request->grupo,
-            'telefono' => $request->grupo,
-            'equipo_id' => $equipo->id,
+            'apellido1' => $request->apellido1,
+            'apellido2' => $request->apellido2,
+            'tipo' => $request->tipo,
+            'dni' => $request->dni,
+            'email' => $request->email,
+            'telefono' => $request->telefono,
+            'equipo_id' => $equipo_id,
+            'estudio_id' => $estudio_id ?? null,
             /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
             'usuarioIdCreacion' => $request->usuarioIdCreacion
         ]);
@@ -179,7 +183,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jugador creado correctamente',
-            'data' => ['jugador' => $jugador]
+            'data' => ['jugador' => new JugadorResource($jugador)]
         ], 200);
     }
 
@@ -230,6 +234,7 @@ class JugadorController extends Controller
      */
     public function update(ActualizarJugadorRequest $request, $jugador)
     {
+
         $jugador = jugador::find($jugador);
 
         // Verificar si el jugador existe
@@ -240,13 +245,37 @@ class JugadorController extends Controller
             ], 404);
         }
 
+        $request->validated();
+
+        //Actualizar el equipo al que pertenece el jugador
+        if($request->equipo){
+            $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
+            $jugador->equipo_id = $equipo_id;
+        }
+
+        //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
+        if ($request->ciclo) {
+            $ciclo_id = Ciclo::where('nombre', $request->ciclo)->first()->id;
+            $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
+            $jugador->estudio_id = $estudio_id;
+        }
+
+
         // Si la validación pasa, se procede a actualizar
-        $jugador->update($request->validated());
+        $jugador->update($request->only([
+            'nombre',
+            'apellido1',
+            'apellido2',
+            'tipo',
+            'dni',
+            'email',
+            'telefono',
+        ]));
 
         return response()->json([
             'success' => true,
             'message' => 'jugador actualizado correctamente',
-            'data' => ['jugador' => $jugador]
+            'data' => ['jugador' => new JugadorResource($jugador)]
         ], 200);
     }
 
