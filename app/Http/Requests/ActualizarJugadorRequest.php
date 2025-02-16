@@ -31,7 +31,7 @@ class ActualizarJugadorRequest extends FormRequest
             'dni' => 'regex:/^\d{8}[A-Za-z]$/',
             'email' => ['regex:/^.+@.+$/i', 'max:45'],
             'telefono' => 'string|max:45',
-            'equipo' => 'required|string|max:45|exists:equipos,nombre',
+            'equipo' => 'string|max:45|exists:equipos,nombre',
             'ciclo' => 'string|exists:ciclos,nombre'
         ];
     }

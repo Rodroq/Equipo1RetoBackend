@@ -234,7 +234,7 @@ class JugadorController extends Controller
      */
     public function update(ActualizarJugadorRequest $request, $jugador)
     {
-
+        //Actualizar tambien las imagenes
         $jugador = jugador::find($jugador);
 
         // Verificar si el jugador existe
@@ -245,6 +245,7 @@ class JugadorController extends Controller
             ], 404);
         }
 
+        //probar a ver si se pueden borrar por usar el failedValidation function en los request
         $request->validated();
 
         //Actualizar el equipo al que pertenece el jugador
