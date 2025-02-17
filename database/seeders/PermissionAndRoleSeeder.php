@@ -67,10 +67,10 @@ class PermissionAndRoleSeeder extends Seeder
 
         /* Sección de los roles de la web */
 
-        $entrenador = Role::create(['name' => 'coach']);
+        $entrenador = Role::create(['name' => 'entrenador']);
         $director_torneo = Role::create(['name' => 'director']);
-        $periodista = Role::create(['name' => 'reporter']);
-        $administrador = Role::create(['name' => 'administrator']);
+        $periodista = Role::create(['name' => 'periodista']);
+        $administrador = Role::create(['name' => 'administrador']);
 
 
 

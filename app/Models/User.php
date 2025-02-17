@@ -9,6 +9,16 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @OA\Schema(
+ *     schema="Usuario",
+ *     type="object",
+ *     required={"nombre", "email", "rol"},
+ *     @OA\Property(property="nombre", type="string", example="David"),
+ *     @OA\Property(property="email", type="string", example="Merchandising de la Liga"),
+ *     @OA\Property(property="rol", type="string", example="[entrenador | director | periodista | administrador]"),
+ * )
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

@@ -53,8 +53,6 @@ class EquipoController extends Controller implements HasMiddleware
      *  )
      *)
      */
-
-
     public function index()
     {
         $equipos = Equipo::with('jugadores', 'centro')->get();
