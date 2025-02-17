@@ -16,18 +16,16 @@ return new class extends Migration
 
         DB::statement("
             CREATE VIEW estadisticas_jugadores_view AS
-            SELECT 
+            SELECT
                 j.id AS jugador_id,
-                j.nombre,
-                j.apellido1,
-                j.apellido2,
                 SUM(CASE WHEN a.incidencia = 'goles' THEN 1 ELSE 0 END) AS goles,
                 SUM(CASE WHEN a.incidencia = 'asistencias' THEN 1 ELSE 0 END) AS asistencias,
-                SUM(CASE WHEN a.incidencia = 'tarjetas' THEN 1 ELSE 0 END) AS tarjetas,
+                SUM(CASE WHEN a.incidencia = 'tarjetas_amarillas' THEN 1 ELSE 0 END) AS tarjetas_amarillas,
+                SUM(CASE WHEN a.incidencia = 'tarjetas_rojas' THEN 1 ELSE 0 END) AS tarjetas_rojas,
                 SUM(CASE WHEN a.incidencia = 'lesiones' THEN 1 ELSE 0 END) AS lesiones
             FROM jugadores j
             LEFT JOIN actas a ON j.id = a.jugador_id
-            GROUP BY j.id, j.nombre, j.apellido1, j.apellido2
+            GROUP BY j.id
         ");
     }
 

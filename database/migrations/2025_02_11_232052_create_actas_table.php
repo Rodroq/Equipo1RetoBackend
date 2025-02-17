@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('actas', function (Blueprint $table) {
             $table->id();
-            $table->enum('incidencia', ['goles', 'asistencias', 'tarjetas', 'lesiones'])->nullable();
+            $table->enum('incidencia', ['goles', 'asistencias', 'tarjetas_amarillas','tarjetas_rojas', 'lesiones'])->nullable();
             $table->time('hora')->nullable();
             $table->longText('comentario')->nullable();
             $table->unsignedBigInteger('usuarioIdCreacion');

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
@@ -10,8 +13,15 @@ use App\Models\Ciclo;
 use App\Models\Equipo;
 use App\Models\Estudio;
 
-class EquipoController extends Controller
+class EquipoController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:administrator|coach', except: ['index', 'show']),
+            new Middleware('role:coach', only: ['create']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -43,6 +53,8 @@ class EquipoController extends Controller
      *  )
      *)
      */
+
+
     public function index()
     {
         $equipos = Equipo::with('jugadores', 'centro')->get();

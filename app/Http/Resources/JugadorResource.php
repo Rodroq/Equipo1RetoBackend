@@ -24,6 +24,7 @@ class JugadorResource extends JsonResource
             'dni' => $this->dni,
             'email' => $this->email,
             'telefono' => $this->telefono,
+            // Hace falta el 0?
             'estadisticas' => [
                 'goles' => $estadisticas->goles ?? 0,
                 'asistencias' => $estadisticas->asistencias ?? 0,
