@@ -128,7 +128,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearerAuth"
+                    }
+                ]
             }
         },
         "/api/equipos/{id}": {

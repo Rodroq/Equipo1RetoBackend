@@ -141,6 +141,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  summary="Crear un equipo con sus jugadores",
      *  description="Crear un equipo con sus jugadores",
      *  operationId="storeEquipo",
+     *  security={"bearerAuth"},
      *  tags={"equipos"},
      *  @OA\RequestBody(
      *      required=true,
