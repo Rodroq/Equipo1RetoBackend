@@ -359,7 +359,7 @@
                 "operationId": "indexJugadores",
                 "responses": {
                     "200": {
-                        "description": "jugadors encontrados",
+                        "description": "Jugadores disponibles",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -385,7 +385,7 @@
                         }
                     },
                     "204": {
-                        "description": "Jugador no encontrado",
+                        "description": "No hay jugadores",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -496,10 +496,10 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Equipo encontrado"
+                                            "example": "Jugador encontrado"
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/Equipo"
+                                            "$ref": "#/components/schemas/Jugador"
                                         }
                                     },
                                     "type": "object"
@@ -673,6 +673,124 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/partidos": {
+            "get": {
+                "tags": [
+                    "partidos"
+                ],
+                "summary": "Obtener todos los partidos",
+                "description": "Devuelve una lista de todos los partidos registrados",
+                "operationId": "indexPartidos",
+                "responses": {
+                    "200": {
+                        "description": "Lista de partidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Partido"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "partidos"
+                ],
+                "summary": "Crear un nuevo partido",
+                "description": "Registra un nuevo partido en la base de datos",
+                "operationId": "storePartido",
+                "requestBody": {
+                    "description": "Datos del partido",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "fecha",
+                                    "hora",
+                                    "equipoL",
+                                    "equipoV"
+                                ],
+                                "properties": {
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-02-20"
+                                    },
+                                    "hora": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "16:00:00"
+                                    },
+                                    "equipoL": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "equipoV": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Partido creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Partido"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/partidos/{id}": {
+            "get": {
+                "tags": [
+                    "partidos"
+                ],
+                "summary": "Obtener un partido específico",
+                "description": "Devuelve los detalles de un partido por ID",
+                "operationId": "showPartido",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del partido",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles del partido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Partido"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Partido no encontrado"
                     }
                 }
             }
@@ -893,6 +1011,36 @@
                 },
                 "type": "object"
             },
+            "Partido": {
+                "title": "Partido",
+                "required": [
+                    "fecha",
+                    "hora",
+                    "equipoL",
+                    "golesV",
+                    "pabellon"
+                ],
+                "properties": {
+                    "fecha": {
+                        "type": "string",
+                        "example": "2021-10-10"
+                    },
+                    "hora": {
+                        "type": "string",
+                        "format": "time",
+                        "example": "16:00:00"
+                    },
+                    "equipoL": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "equipoV": {
+                        "type": "integer",
+                        "example": 2
+                    }
+                },
+                "type": "object"
+            },
             "Reto": {
                 "required": [
                     "id",
@@ -928,6 +1076,10 @@
         {
             "name": "jugadores",
             "description": "jugadores"
+        },
+        {
+            "name": "partidos",
+            "description": "partidos"
         },
         {
             "name": "retos",
