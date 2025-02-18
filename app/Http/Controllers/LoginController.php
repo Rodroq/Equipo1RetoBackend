@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class LoginController extends Controller
 {
     /**
      * Login a specific user to use the API
@@ -50,7 +50,6 @@ class UserController extends Controller
      *  ),
      * )
      */
-
     public function login(LoginUserController $request)
     {
         $request->validated();
@@ -60,14 +59,16 @@ class UserController extends Controller
         if (!Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Credenciales incorrectas. Acceso no autorizado'
+                'message' => 'Credenciales incorrectas'
             ], 401);
         }
 
+        // Genera el token con las abilities
+        $token = $user->createToken('token_usuario')->plainTextToken;
         return response()->json([
             'success' => true,
             'message' => 'Usuario logueado correctamente',
-            'data' => new UserResource($user),
+            'data' => ['usuario' => new UserResource($user), 'token' => $token],
         ], 200);
     }
 }

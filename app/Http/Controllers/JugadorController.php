@@ -61,7 +61,7 @@ class JugadorController extends Controller
             [
                 'success' => true,
                 'message' => 'Jugadores disponibles',
-                'data' => ['jugadores' => JugadorResource::collection($jugadores)],
+                'jugadores' => JugadorResource::collection($jugadores),
             ],
             200
         );
@@ -117,9 +117,9 @@ class JugadorController extends Controller
         }
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Jugador encontrado',
-            'data' => new JugadorResource($jugador)
+            'jugador' => new JugadorResource($jugador)
         ], 200);
     }
 
@@ -183,7 +183,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jugador creado correctamente',
-            'data' => ['jugador' => new JugadorResource($jugador)]
+            'jugador' => new JugadorResource($jugador)
         ], 200);
     }
 
@@ -249,7 +249,7 @@ class JugadorController extends Controller
         $request->validated();
 
         //Actualizar el equipo al que pertenece el jugador
-        if($request->equipo){
+        if ($request->equipo) {
             $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
             $jugador->equipo_id = $equipo_id;
         }
@@ -276,7 +276,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'jugador actualizado correctamente',
-            'data' => ['jugador' => new JugadorResource($jugador)]
+            'jugador' => new JugadorResource($jugador)
         ], 200);
     }
 
@@ -322,11 +322,17 @@ class JugadorController extends Controller
         $jugador = Jugador::find($jugador);
 
         if (!$jugador) {
-            return response()->json(['success' => false, 'message' => 'Jugador no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Jugador no encontrado'
+            ], 404);
         }
 
         $jugador->delete();
 
-        return response()->json(['success' => true, 'message' => 'Jugador eliminado correctamente'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Jugador eliminado correctamente'
+        ], 200);
     }
 }

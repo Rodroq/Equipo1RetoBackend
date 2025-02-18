@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\ActualizarEquipoRequest;
@@ -18,8 +19,9 @@ class EquipoController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('role:administrator|coach', except: ['index', 'show']),
-            new Middleware('role:coach', only: ['create']),
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware('role:administrador|entrenador', except: ['index', 'show']),
+            new Middleware('role:entrenador', only: ['create']),
         ];
     }
     /**
@@ -58,23 +60,17 @@ class EquipoController extends Controller implements HasMiddleware
         $equipos = Equipo::with('jugadores', 'centro')->get();
 
         if ($equipos->isEmpty()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'No hay equipos'
-                ],
-                204
-            );
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay equipos'
+            ], 204);
         }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Equipos disponibles',
-                'data' => ['equipos' => EquipoResource::collection($equipos)],
-            ],
-            200
-        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipos disponibles',
+            'equipos' => EquipoResource::collection($equipos)
+        ], 200);
     }
 
     /**
@@ -126,9 +122,9 @@ class EquipoController extends Controller implements HasMiddleware
         }
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo encontrado',
-            'data' => new EquipoResource($equipo)
+            'equipo' => new EquipoResource($equipo)
         ], 200);
     }
 
@@ -180,8 +176,6 @@ class EquipoController extends Controller implements HasMiddleware
             'nombre' => $request->nombre,
             'grupo' => $request->grupo,
             'centro_id' => $centro_id,
-            /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
-            'usuarioIdCreacion' => $request->usuarioIdCreacion
         ]);
 
         $equipo->jugadores()->createMany(
@@ -197,9 +191,9 @@ class EquipoController extends Controller implements HasMiddleware
         );
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo creado correctamente',
-            'data' => new EquipoResource($equipo)
+            'equipo' => new EquipoResource($equipo)
         ], 200);
     }
 
@@ -265,9 +259,9 @@ class EquipoController extends Controller implements HasMiddleware
         $equipo->update($request->validated());
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo actualizado correctamente',
-            'data' => ['equipo' => new EquipoResource($equipo)]
+            'equipo' => new EquipoResource($equipo)
         ], 200);
     }
 
