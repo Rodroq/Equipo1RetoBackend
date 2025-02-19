@@ -14,7 +14,14 @@ use Illuminate\Support\Facades\Auth;
  *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
  *  @OA\Property(property="grupo", type="string", example="A"),
  *  @OA\Property(property="centro", type="object", ref="#/components/schemas/Centro"),
- *  @OA\Property(property="jugadores", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+ *  @OA\Property(
+ *      property="jugador",
+ *      type="object",
+ *      @OA\Property(property="nombre", type="string", example="Nombre"),
+ *      @OA\Property(property="apellido1", type="string", example="Apellido 1"),
+ *      @OA\Property(property="apellido2", type="string", example="Apellido 2"),
+ *      @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+ *  ),
  *)
  */
 
@@ -31,7 +38,6 @@ class Equipo extends Model
         'fechaActualizacion',
         'centro_id'
     ];
-
 
     protected static function boot()
     {

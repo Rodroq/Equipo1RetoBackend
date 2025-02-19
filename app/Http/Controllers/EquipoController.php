@@ -219,7 +219,7 @@ class EquipoController extends Controller implements HasMiddleware
      *      description="Datos del equipo",
      *      @OA\JsonContent(
      *          @OA\Property(property="nombre", type="string", example="Equipo 1"),
-     *          @OA\Property(property="centro_id", type="integer", example="1"),
+     *          @OA\Property(property="grupo", type="integer", example="A"),
      *      ),
      *  ),
      *  @OA\Response(

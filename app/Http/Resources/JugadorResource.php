@@ -15,21 +15,11 @@ class JugadorResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $estadisticas = EstadisticasJugador::where('jugador_id', $this->id)->first();
         return [
             'nombre' => $this->nombre,
             'apellido1' => $this->apellido1,
             'apellido2' => $this->apellido2,
             'tipo' => $this->tipo,
-            // Hace falta el 0?
-            'estadisticas' => [
-                'goles' => $estadisticas->goles ?? 0,
-                'asistencias' => $estadisticas->asistencias ?? 0,
-                'tarjetas_amarillas' => $estadisticas->tarjetas ?? 0,
-                'tarjetas_rojas' => $estadisticas->tarjetas ?? 0,
-                'lesiones' => $estadisticas->lesiones ?? 0,
-            ],
-            'estudio' => new EstudioResource($this->estudio)
         ];
     }
 }

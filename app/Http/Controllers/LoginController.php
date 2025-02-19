@@ -36,7 +36,12 @@ class LoginController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Usuario logueado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Usuario")),
+     *          @OA\Property(
+     *              property="data",
+     *              type="object",
+     *              @OA\Property(property="usuario", type="object", ref="#/components/schemas/Usuario"),
+     *              @OA\Property(property="token", type="string", example="1|Token"),
+     *          ),
      *      ),
      *  ),
      *  @OA\Response(

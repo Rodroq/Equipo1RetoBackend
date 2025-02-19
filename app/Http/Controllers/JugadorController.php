@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
+use App\Http\Resources\JugadorDetalleResource;
 use App\Http\Resources\JugadorResource;
 use App\Models\Ciclo;
 use App\Models\Equipo;
@@ -29,7 +30,14 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugadores disponibles"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(
+     *              property="jugador",
+     *              type="object",
+     *              @OA\Property(property="nombre", type="string", example="Nombre"),
+     *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
+     *              @OA\Property(property="apellido2", type="string", example="Apellido 2"),
+     *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+     *          ),
      *      ),
      *  ),
      *  @OA\Response(
@@ -91,7 +99,7 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Jugador"),
+     *          @OA\Property(property="data", type="jugador", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(
@@ -119,7 +127,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jugador encontrado',
-            'jugador' => new JugadorResource($jugador)
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 
@@ -148,7 +156,7 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador creado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(property="jugador", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
      *     ),
      *  ),
      * )
@@ -183,7 +191,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jugador creado correctamente',
-            'jugador' => new JugadorResource($jugador)
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 
@@ -218,7 +226,7 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador actualizado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(property="jugador", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
      *     ),
      *  ),
      *  @OA\Response(
@@ -276,7 +284,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'jugador actualizado correctamente',
-            'jugador' => new JugadorResource($jugador)
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 

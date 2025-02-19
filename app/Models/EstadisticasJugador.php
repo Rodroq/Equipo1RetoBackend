@@ -11,15 +11,4 @@ class EstadisticasJugador extends Model
     protected $primarykey = 'jugador_id';
 
     protected $guarded = [];
-
-    /* protected $fillable = [
-        'jugador_id',
-        'nombre',
-        'apellido1',
-        'apellido2',
-        'goles',
-        'asistencias',
-        'tarjetas',
-        'lesiones'
-    ]; */
 }

@@ -232,9 +232,9 @@
                                         "type": "string",
                                         "example": "Equipo 1"
                                     },
-                                    "centro_id": {
+                                    "grupo": {
                                         "type": "integer",
-                                        "example": "1"
+                                        "example": "A"
                                     }
                                 },
                                 "type": "object"
@@ -377,11 +377,26 @@
                                             "type": "string",
                                             "example": "Jugadores disponibles"
                                         },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Jugador"
-                                            }
+                                        "jugador": {
+                                            "properties": {
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Nombre"
+                                                },
+                                                "apellido1": {
+                                                    "type": "string",
+                                                    "example": "Apellido 1"
+                                                },
+                                                "apellido2": {
+                                                    "type": "string",
+                                                    "example": "Apellido 2"
+                                                },
+                                                "tipo": {
+                                                    "type": "string",
+                                                    "example": "[jugador|capitan|entrenador]"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -453,7 +468,7 @@
                                             "type": "string",
                                             "example": "Jugador creado correctamente"
                                         },
-                                        "data": {
+                                        "jugador": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Jugador"
@@ -585,7 +600,7 @@
                                             "type": "string",
                                             "example": "Jugador actualizado correctamente"
                                         },
-                                        "data": {
+                                        "jugador": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Jugador"
@@ -682,6 +697,95 @@
                 }
             }
         },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "login"
+                ],
+                "summary": "registrar a un usuario en la web",
+                "description": "Registrar a un usuario en la web para devolver su rol y su token con abilities",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "description": "Datos del usuario a loguearphp",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "minillanillo@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario logueado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario logueado correctamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "usuario": {
+                                                    "$ref": "#/components/schemas/Usuario"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|Token"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Credenciales incorrectas. Acceso no autorizado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/retos": {
             "get": {
                 "tags": [
@@ -743,89 +847,6 @@
                     }
                 }
             }
-        },
-        "/api/login": {
-            "post": {
-                "tags": [
-                    "login"
-                ],
-                "summary": "registrar a un usuario en la web",
-                "description": "Registrar a un usuario en la web para devolver su rol y su token con abilities",
-                "operationId": "loginUser",
-                "requestBody": {
-                    "description": "Datos del usuario a loguearphp",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "minillanillo@gmail.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Usuario logueado correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Usuario logueado correctamente"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Usuario"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "No autorizado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Credenciales incorrectas. Acceso no autorizado"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "components": {
@@ -877,11 +898,26 @@
                     "centro": {
                         "$ref": "#/components/schemas/Centro"
                     },
-                    "jugadores": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Jugador"
-                        }
+                    "jugador": {
+                        "properties": {
+                            "nombre": {
+                                "type": "string",
+                                "example": "Nombre"
+                            },
+                            "apellido1": {
+                                "type": "string",
+                                "example": "Apellido 1"
+                            },
+                            "apellido2": {
+                                "type": "string",
+                                "example": "Apellido 2"
+                            },
+                            "tipo": {
+                                "type": "string",
+                                "example": "[jugador|capitan|entrenador]"
+                            }
+                        },
+                        "type": "object"
                     }
                 },
                 "type": "object"
@@ -919,8 +955,7 @@
             "Jugador": {
                 "title": "Jugador",
                 "required": [
-                    "nombre",
-                    "equipo_id"
+                    "nombre"
                 ],
                 "properties": {
                     "nombre": {
@@ -937,7 +972,7 @@
                     },
                     "tipo": {
                         "type": "string",
-                        "example": "jugador/capitan/entrenador"
+                        "example": "[jugador|capitan|entrenador]"
                     },
                     "dni": {
                         "type": "string",
@@ -970,10 +1005,6 @@
                     "lesiones": {
                         "type": "integer",
                         "example": 1
-                    },
-                    "equipo_nombre": {
-                        "type": "string",
-                        "example": "Equipo Example"
                     },
                     "estudios": {
                         "$ref": "#/components/schemas/Estudio"
@@ -1050,12 +1081,12 @@
             "description": "jugadores"
         },
         {
-            "name": "retos",
-            "description": "retos"
-        },
-        {
             "name": "login",
             "description": "login"
+        },
+        {
+            "name": "retos",
+            "description": "retos"
         }
     ]
 }
