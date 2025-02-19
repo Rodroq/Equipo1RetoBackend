@@ -77,7 +77,7 @@ class LoginController extends Controller
                 $abilities = "crear_equipo";
             } else {
                 $id_equipo = $usuario_tiene_equipo->id;
-                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}"];
+                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}", "crear_jugador"];
             }
             $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
         }
@@ -87,7 +87,6 @@ class LoginController extends Controller
         }
 
         // Genera el token con las abilities dependiendo del rol del usuario
-
         return response()->json([
             'success' => true,
             'message' => 'Usuario logueado correctamente',

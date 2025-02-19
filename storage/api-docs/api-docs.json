@@ -64,7 +64,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearerAuth"
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -121,6 +126,26 @@
                                         },
                                         "data": {
                                             "$ref": "#/components/schemas/Equipo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes para crear un nuevo equipo. Revisa si ya creaste uno"
                                         }
                                     },
                                     "type": "object"
@@ -288,6 +313,26 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permiso para editar este equipo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -324,6 +369,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Equipo eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permiso para borrar este equipo"
                                         }
                                     },
                                     "type": "object"

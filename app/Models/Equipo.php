@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 /**
  *@OA\Schema(
@@ -14,14 +13,7 @@ use Illuminate\Support\Facades\Auth;
  *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
  *  @OA\Property(property="grupo", type="string", example="A"),
  *  @OA\Property(property="centro", type="object", ref="#/components/schemas/Centro"),
- *  @OA\Property(
- *      property="jugador",
- *      type="object",
- *      @OA\Property(property="nombre", type="string", example="Nombre"),
- *      @OA\Property(property="apellido1", type="string", example="Apellido 1"),
- *      @OA\Property(property="apellido2", type="string", example="Apellido 2"),
- *      @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
- *  ),
+ *  @OA\Property(property="jugadores", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
  *)
  */
 
@@ -39,21 +31,21 @@ class Equipo extends Model
         'centro_id'
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
+    /*
+        protected static function boot(){
+            parent::boot();
 
-        static::creating(function ($model) {
-            $model->usuarioIdCreacion = Auth::user()->id;
-            $model->fechaCreacion = now();
-        });
+            static::creating(function($model){
+                $model->usuarioIdCreacion = auth()->id();
+                $model->fechaCreacion = now();
+            });
 
-        static::updating(function ($model) {
-            $model->usuarioIdActualizacion = Auth::user()->id;
-            $model->fechaActualizacion = now();
-        });
-    }
-
+            static::updating(function($model){
+                $model->usuarioIdActualizacion = auth()->id();
+                $model->fechaActualizacion = now();
+            });
+        }
+    */
 
     public function partidos()
     {

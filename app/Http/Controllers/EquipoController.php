@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Middleware\CanRecoverToken;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
@@ -58,7 +58,6 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        //filtrar los datos de devolucion de equipos si el rol de usuario es de administrador
         if ($this->user && $this->user->hasRole('administrador')) {
             $equipos = Equipo::with('jugadores', 'centro')->get();
         } else {
@@ -71,7 +70,7 @@ class EquipoController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'No hay equipos'
-            ], 204);
+            ], 200);
         }
 
 
@@ -123,6 +122,7 @@ class EquipoController extends Controller implements HasMiddleware
     public function show($equipo)
     {
         $equipo = Equipo::find($equipo);
+
         if (!$equipo) {
             return response()->json([
                 'status' => false,
@@ -172,6 +172,15 @@ class EquipoController extends Controller implements HasMiddleware
      *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
      *      ),
      *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes para crear un nuevo equipo. Revisa si ya creaste uno")
+     *      )
+     *  ),
      *)
      */
     public function store(CrearEquipoRequest $request)
@@ -182,7 +191,7 @@ class EquipoController extends Controller implements HasMiddleware
                 'message' => 'No tienes permisos para crear un nuevo equipo. Revisa si ya creaste uno',
             ], 403);
         }
-        //Obtener centro al que pertenece el equipo
+
         $centro_id = Centro::where('nombre', $request->centro)->first()->id;
 
         $equipo = Equipo::create([
@@ -196,9 +205,11 @@ class EquipoController extends Controller implements HasMiddleware
                 if (!array_key_exists('ciclo', $jugador)) {
                     return $jugador;
                 }
+
                 $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
                 $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
                 $jugador['estudio_id'] = $estudio_id;
+
                 return $jugador;
             })
         );
@@ -253,14 +264,22 @@ class EquipoController extends Controller implements HasMiddleware
      *          @OA\Property(property="success", type="boolean", example=false),
      *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
      *      )
-     *  )
+     *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permiso para editar este equipo")
+     *      )
+     *  ),
      *)
      */
     public function update(ActualizarEquipoRequest $request, $equipo)
     {
         $equipo = Equipo::find($equipo);
 
-        // Verificar si el equipo existe
         if (!$equipo) {
             return response()->json([
                 'success' => false,
@@ -268,15 +287,14 @@ class EquipoController extends Controller implements HasMiddleware
             ], 404);
         }
 
-        // Verificar que tienes permisos para editar este equipo
         if ($this->user->tokenCant("editar_equipo_{$equipo->id}")) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para actualizar este equipo',
             ], 403);
         }
-        // Si la validación pasa, se procede a actualizar
-        $equipo->update($request->validated());
+
+        $equipo->update($request);
 
         return response()->json([
             'success' => true,
@@ -312,6 +330,15 @@ class EquipoController extends Controller implements HasMiddleware
      *      )
      *  ),
      *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permiso para borrar este equipo")
+     *      )
+     *  ),
+     *  @OA\Response(
      *      response=404,
      *      description="Equipo no encontrado",
      *      @OA\JsonContent(
@@ -333,8 +360,7 @@ class EquipoController extends Controller implements HasMiddleware
             ], 404);
         }
 
-        // Verificar que tienes permisos para borrar este equipo
-        if ($this->user->tokenCant("borrar_equipo{$equipo->id}")) {
+        if ($this->user->tokenCant("borrar_equipo_{$equipo->id}")) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para borrar este equipo',

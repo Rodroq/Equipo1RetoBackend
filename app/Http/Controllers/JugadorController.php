@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorDetalleResource;
@@ -13,6 +15,16 @@ use App\Models\Jugador;
 
 class JugadorController extends Controller
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware(CanRecoverToken::class, only: ['index', 'show']),
+            new Middleware('role:administrador|entrenador', except: ['index', 'show']),
+            new Middleware('role:entrenador', only: ['store']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -163,12 +175,23 @@ class JugadorController extends Controller
      */
     public function store(CrearJugadorRequest $request)
     {
-        $request->validated();
+        if ($this->user->tokenCant('crear_jugador')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para crear un nuevo jugador en este equipo',
+            ], 403);
+        }
 
-        //Obtener equipo al que pertenece el jugador
-        $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
+        $equipo = Equipo::where('nombre', $request->equipo)->first();
 
-        //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
+        //impedir crear jugador si el cupo ya esta lleno
+        if (!$equipo->canCreateJugador()){
+            return response()->json([
+                'success' => true,
+                'message' => 'Equipo lleno',
+            ]);
+        }
+
         if ($request->ciclo) {
             $ciclo_id = Ciclo::select('id')->where('nombre', $request->ciclo)->first()->id;
             $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
@@ -182,7 +205,7 @@ class JugadorController extends Controller
             'dni' => $request->dni,
             'email' => $request->email,
             'telefono' => $request->telefono,
-            'equipo_id' => $equipo_id,
+            'equipo_id' => $equipo->id,
             'estudio_id' => $estudio_id ?? null,
             /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
             'usuarioIdCreacion' => $request->usuarioIdCreacion
