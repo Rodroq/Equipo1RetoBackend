@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\CanRecoverToken;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\ActualizarEquipoRequest;
@@ -20,8 +19,9 @@ class EquipoController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware(CanRecoverToken::class, only: ['index', 'show']),
             new Middleware('role:administrador|entrenador', except: ['index', 'show']),
-            new Middleware('role:entrenador', only: ['create']),
+            new Middleware('role:entrenador', only: ['store']),
         ];
     }
     /**
@@ -33,6 +33,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  summary="Obtener todos los equipos de la web",
      *  description="Obtener todos los equipos en la llamada a la API",
      *  operationId="indexEquipos",
+     *  security={"bearerAuth"},
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
@@ -57,7 +58,14 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $equipos = Equipo::with('jugadores', 'centro')->get();
+        //filtrar los datos de devolucion de equipos si el rol de usuario es de administrador
+        if ($this->user && $this->user->hasRole('administrador')) {
+            $equipos = Equipo::with('jugadores', 'centro')->get();
+        } else {
+            $equipos = Equipo::whereHas('inscripciones', function ($query) {
+                $query->where('estado', 'aprobada');
+            })->with('jugadores', 'centro')->get();
+        }
 
         if ($equipos->isEmpty()) {
             return response()->json([
@@ -65,6 +73,7 @@ class EquipoController extends Controller implements HasMiddleware
                 'message' => 'No hay equipos'
             ], 204);
         }
+
 
         return response()->json([
             'success' => true,
@@ -167,8 +176,12 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function store(CrearEquipoRequest $request)
     {
-        $request->validated();
-
+        if ($this->user->tokenCant('crear_equipo')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para crear un nuevo equipo. Revisa si ya creaste uno',
+            ], 403);
+        }
         //Obtener centro al que pertenece el equipo
         $centro_id = Centro::where('nombre', $request->centro)->first()->id;
 
@@ -255,6 +268,13 @@ class EquipoController extends Controller implements HasMiddleware
             ], 404);
         }
 
+        // Verificar que tienes permisos para editar este equipo
+        if ($this->user->tokenCant("editar_equipo_{$equipo->id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para actualizar este equipo',
+            ], 403);
+        }
         // Si la validación pasa, se procede a actualizar
         $equipo->update($request->validated());
 
@@ -311,6 +331,14 @@ class EquipoController extends Controller implements HasMiddleware
                 'success' => false,
                 'message' => 'Equipo no encontrado'
             ], 404);
+        }
+
+        // Verificar que tienes permisos para borrar este equipo
+        if ($this->user->tokenCant("borrar_equipo{$equipo->id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para borrar este equipo',
+            ], 403);
         }
 
         $equipo->delete();

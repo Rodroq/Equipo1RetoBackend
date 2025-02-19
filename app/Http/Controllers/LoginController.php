@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserController;
 use App\Http\Resources\UserResource;
+use App\Models\Equipo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -68,8 +69,25 @@ class LoginController extends Controller
             ], 401);
         }
 
-        // Genera el token con las abilities
-        $token = $user->createToken('token_usuario')->plainTextToken;
+        //creacion del token del usuario
+        if ($user->hasRole('entrenador')) {
+            $usuario_tiene_equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
+
+            if (!$usuario_tiene_equipo) {
+                $abilities = "crear_equipo";
+            } else {
+                $id_equipo = $usuario_tiene_equipo->id;
+                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}"];
+            }
+            $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
+        }
+
+        if ($user->hasRole('administrador')) {
+            $token = $user->createToken('token_usuario')->plainTextToken;
+        }
+
+        // Genera el token con las abilities dependiendo del rol del usuario
+
         return response()->json([
             'success' => true,
             'message' => 'Usuario logueado correctamente',
