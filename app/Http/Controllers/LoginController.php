@@ -71,14 +71,20 @@ class LoginController extends Controller
 
         //creacion del token del usuario
         if ($user->hasRole('entrenador')) {
-            $usuario_tiene_equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
+            $equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
 
-            if (!$usuario_tiene_equipo) {
-                $abilities = "crear_equipo";
+            $jugadores_equipo = $equipo->jugadores()->count();
+
+            if (!$equipo) {
+                $abilities = ["crear_equipo"];
             } else {
-                $id_equipo = $usuario_tiene_equipo->id;
-                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}", "crear_jugador"];
+                $id_equipo = $equipo->id;
+                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}", "actualizar_jugador_equipo_{$id_equipo}", "borrar_jugador_equipo_{$id_equipo}"];
+
+                $jugadores_equipo < 12 ?: $abilities[] = "crear_jugador_equipo_{$equipo->nombre}";
             }
+
+
             $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
         }
 

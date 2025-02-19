@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *@OA\Schema(
@@ -31,21 +32,21 @@ class Equipo extends Model
         'centro_id'
     ];
 
-    /*
-        protected static function boot(){
-            parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-            static::creating(function($model){
-                $model->usuarioIdCreacion = auth()->id();
-                $model->fechaCreacion = now();
-            });
+        static::creating(function ($model) {
+            $model->usuarioIdCreacion = Auth::user()->id;
+            $model->fechaCreacion = now();
+        });
 
-            static::updating(function($model){
-                $model->usuarioIdActualizacion = auth()->id();
-                $model->fechaActualizacion = now();
-            });
-        }
-    */
+        static::updating(function ($model) {
+            $model->usuarioIdActualizacion = Auth::user()->id;
+            $model->fechaActualizacion = now();
+        });
+    }
+
 
     public function partidos()
     {

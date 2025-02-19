@@ -544,6 +544,46 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "No tienes permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permisos para crear un nuevo jugador en este equipo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Equipo lleno",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Equipo lleno | No puedes crear más jugadores"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -690,6 +730,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Jugador no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permisos para actualizar a este jugador"
                                         }
                                     },
                                     "type": "object"
@@ -963,26 +1023,11 @@
                     "centro": {
                         "$ref": "#/components/schemas/Centro"
                     },
-                    "jugador": {
-                        "properties": {
-                            "nombre": {
-                                "type": "string",
-                                "example": "Nombre"
-                            },
-                            "apellido1": {
-                                "type": "string",
-                                "example": "Apellido 1"
-                            },
-                            "apellido2": {
-                                "type": "string",
-                                "example": "Apellido 2"
-                            },
-                            "tipo": {
-                                "type": "string",
-                                "example": "[jugador|capitan|entrenador]"
-                            }
-                        },
-                        "type": "object"
+                    "jugadores": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Jugador"
+                        }
                     }
                 },
                 "type": "object"
@@ -1123,6 +1168,28 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "responses": {
+            "403": {
+                "description": "No tienes permisos",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "No tienes permisos para borrar a este jugador"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
             }
         },
         "securitySchemes": {
