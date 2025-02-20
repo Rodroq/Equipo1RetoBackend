@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\JugadorController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\RetoController;
 use Illuminate\Http\Request;
