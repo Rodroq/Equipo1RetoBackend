@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *@OA\Schema(
@@ -31,22 +32,43 @@ class Equipo extends Model
         'centro_id'
     ];
 
-    /*
-        Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
-        protected static function boot(){
-            parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-            static::creating(function($model){
-                $model->usuarioIdCreacion = auth()->id();
-                $model->fechaCreacion = now();
-            });
+        static::creating(function ($model) {
+            $model->usuarioIdCreacion = Auth::user()->id;
+            $model->fechaCreacion = now();
+        });
 
-            static::updating(function($model){
-                $model->usuarioIdActualizacion = auth()->id();
-                $model->fechaActualizacion = now();
-            });
-        }
-    */
+        static::updating(function ($model) {
+            $model->usuarioIdActualizacion = Auth::user()->id;
+            $model->fechaActualizacion = now();
+        });
+    }
+
+    /**
+     * Crea múltiples jugadores relacionados con el equipo.
+     *
+     * @param array $jugadores Un array de datos de jugadores (pueden ser arrays con los campos necesarios para crear un Jugador).
+     * @return void
+     */
+    public function crearJugadores($jugadores)
+    {
+        $this->jugadores()->createMany(
+            collect($jugadores)->map(function ($jugador) {
+                if (!array_key_exists('ciclo', $jugador)) {
+                    return $jugador;
+                }
+
+                $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
+                $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
+                $jugador['estudio_id'] = $estudio_id;
+
+                return $jugador;
+            })
+        );
+    }
 
     public function partidos()
     {

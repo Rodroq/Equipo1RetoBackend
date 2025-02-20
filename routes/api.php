@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('login',[LoginController::class,'login'])->name('login');
 
 Route::apiResource('equipos',EquipoController::class);
 Route::apiResource('jugadores',JugadorController::class);

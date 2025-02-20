@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API Equipos",
-        "description": "API de equipos del torneo solidario",
+        "title": "API Torneo Solidario",
+        "description": "API del torneo solidario",
         "contact": {
             "email": "minillanillo@gmail.com"
         },
@@ -64,7 +64,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearerAuth"
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -127,8 +132,33 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes para crear un nuevo equipo. Revisa si ya creaste uno"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "scalar": "bearerAuth"
+                    }
+                ]
             }
         },
         "/api/equipos/{id}": {
@@ -227,9 +257,9 @@
                                         "type": "string",
                                         "example": "Equipo 1"
                                     },
-                                    "centro_id": {
+                                    "grupo": {
                                         "type": "integer",
-                                        "example": "1"
+                                        "example": "A"
                                     }
                                 },
                                 "type": "object"
@@ -283,6 +313,26 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permiso para editar este equipo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -319,6 +369,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Equipo eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Prohibido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permiso para borrar este equipo"
                                         }
                                     },
                                     "type": "object"
@@ -372,11 +442,26 @@
                                             "type": "string",
                                             "example": "Jugadores disponibles"
                                         },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Jugador"
-                                            }
+                                        "jugador": {
+                                            "properties": {
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Nombre"
+                                                },
+                                                "apellido1": {
+                                                    "type": "string",
+                                                    "example": "Apellido 1"
+                                                },
+                                                "apellido2": {
+                                                    "type": "string",
+                                                    "example": "Apellido 2"
+                                                },
+                                                "tipo": {
+                                                    "type": "string",
+                                                    "example": "[jugador|capitan|entrenador]"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -448,11 +533,51 @@
                                             "type": "string",
                                             "example": "Jugador creado correctamente"
                                         },
-                                        "data": {
+                                        "jugador": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Jugador"
                                             }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permisos para crear un nuevo jugador en este equipo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Equipo lleno",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Equipo lleno | No puedes crear más jugadores"
                                         }
                                     },
                                     "type": "object"
@@ -580,7 +705,7 @@
                                             "type": "string",
                                             "example": "Jugador actualizado correctamente"
                                         },
-                                        "data": {
+                                        "jugador": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Jugador"
@@ -605,6 +730,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Jugador no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No tienes permisos para actualizar a este jugador"
                                         }
                                     },
                                     "type": "object"
@@ -677,67 +822,32 @@
                 }
             }
         },
-        "/api/partidos": {
-            "get": {
-                "tags": [
-                    "partidos"
-                ],
-                "summary": "Obtener todos los partidos",
-                "description": "Devuelve una lista de todos los partidos registrados",
-                "operationId": "indexPartidos",
-                "responses": {
-                    "200": {
-                        "description": "Lista de partidos",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Partido"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+        "/api/login": {
             "post": {
                 "tags": [
-                    "partidos"
+                    "login"
                 ],
-                "summary": "Crear un nuevo partido",
-                "description": "Registra un nuevo partido en la base de datos",
-                "operationId": "storePartido",
+                "summary": "registrar a un usuario en la web",
+                "description": "Registrar a un usuario en la web para devolver su rol y su token con abilities",
+                "operationId": "loginUser",
                 "requestBody": {
-                    "description": "Datos del partido",
+                    "description": "Datos del usuario a loguearphp",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "fecha",
-                                    "hora",
-                                    "equipoL",
-                                    "equipoV"
+                                    "email",
+                                    "password"
                                 ],
                                 "properties": {
-                                    "fecha": {
+                                    "email": {
                                         "type": "string",
-                                        "format": "date",
-                                        "example": "2025-02-20"
+                                        "example": "minillanillo@gmail.com"
                                     },
-                                    "hora": {
+                                    "password": {
                                         "type": "string",
-                                        "format": "time",
-                                        "example": "16:00:00"
-                                    },
-                                    "equipoL": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "equipoV": {
-                                        "type": "integer",
-                                        "example": 2
+                                        "example": "123"
                                     }
                                 },
                                 "type": "object"
@@ -746,51 +856,57 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Partido creado correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Partido"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/partidos/{id}": {
-            "get": {
-                "tags": [
-                    "partidos"
-                ],
-                "summary": "Obtener un partido específico",
-                "description": "Devuelve los detalles de un partido por ID",
-                "operationId": "showPartido",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID del partido",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
                     "200": {
-                        "description": "Detalles del partido",
+                        "description": "Usuario logueado correctamente",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Partido"
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario logueado correctamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "usuario": {
+                                                    "$ref": "#/components/schemas/Usuario"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|Token"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "404": {
-                        "description": "Partido no encontrado"
+                    "403": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Credenciales incorrectas. Acceso no autorizado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -949,8 +1065,7 @@
             "Jugador": {
                 "title": "Jugador",
                 "required": [
-                    "nombre",
-                    "equipo_id"
+                    "nombre"
                 ],
                 "properties": {
                     "nombre": {
@@ -967,7 +1082,7 @@
                     },
                     "tipo": {
                         "type": "string",
-                        "example": "jugador/capitan/entrenador"
+                        "example": "[jugador|capitan|entrenador]"
                     },
                     "dni": {
                         "type": "string",
@@ -1000,10 +1115,6 @@
                     "lesiones": {
                         "type": "integer",
                         "example": 1
-                    },
-                    "equipo_nombre": {
-                        "type": "string",
-                        "example": "Equipo Example"
                     },
                     "estudios": {
                         "$ref": "#/components/schemas/Estudio"
@@ -1065,6 +1176,60 @@
                     }
                 },
                 "type": "object"
+            },
+            "Usuario": {
+                "required": [
+                    "nombre",
+                    "email",
+                    "rol"
+                ],
+                "properties": {
+                    "nombre": {
+                        "type": "string",
+                        "example": "David"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "Merchandising de la Liga"
+                    },
+                    "rol": {
+                        "type": "string",
+                        "example": "[entrenador | director | periodista | administrador]"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "403": {
+                "description": "No tienes permisos",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "No tienes permisos para borrar a este jugador"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Use a token to authenticate",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
@@ -1078,8 +1243,8 @@
             "description": "jugadores"
         },
         {
-            "name": "partidos",
-            "description": "partidos"
+            "name": "login",
+            "description": "login"
         },
         {
             "name": "retos",

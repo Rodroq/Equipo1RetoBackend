@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Schema(
  *  schema="Jugador",
  *  type="object",
  *  title="Jugador",
- *  required={"nombre","equipo_id"},
+ *  required={"nombre"},
  *  @OA\Property(property="nombre", type="string", example="Álvaro"),
  *  @OA\Property(property="apellido1", type="string", example="Ruiz"),
  *  @OA\Property(property="apellido2", type="string", example="Gutierrez"),
- *  @OA\Property(property="tipo", type="string", example="jugador/capitan/entrenador"),
+ *  @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
  *  @OA\Property(property="dni", type="string", example="12345678A"),
  *  @OA\Property(property="email", type="string", example="example@exa.com"),
  *  @OA\Property(property="telefono", type="string", example="+34 666 666 666"),
@@ -22,7 +23,6 @@ use Illuminate\Database\Eloquent\Model;
  *  @OA\Property(property="tarjetas_amarillas", type="integer", example=1),
  *  @OA\Property(property="tarjetas_rojas", type="integer", example=1),
  *  @OA\Property(property="lesiones", type="integer", example=1),
- *  @OA\Property(property="equipo_nombre", type="string", example="Equipo Example"),
  *  @OA\Property(property="estudios", type="object", ref="#/components/schemas/Estudio")
  *  )
  */
@@ -46,22 +46,20 @@ class Jugador extends Model
         'estudio_id'
     ];
 
-    /*
-        Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
-        protected static function boot(){
-            parent::boot();
+    protected static function boot()
+    {
+        parent::boot();
 
-            static::creating(function($model){
-                $model->usuarioIdCreacion = auth()->id();
-                $model->fechaCreacion = now();
-            });
+        static::creating(function ($model) {
+            $model->usuarioIdCreacion = Auth::user()->id;
+            $model->fechaCreacion = now();
+        });
 
-            static::updating(function($model){
-                $model->usuarioIdActualizacion = auth()->id();
-                $model->fechaActualizacion = now();
-            });
-        }
-    */
+        static::updating(function ($model) {
+            $model->usuarioIdActualizacion = Auth::user()->id;
+            $model->fechaActualizacion = now();
+        });
+    }
 
     public function estudio()
     {

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
@@ -10,8 +13,24 @@ use App\Models\Ciclo;
 use App\Models\Equipo;
 use App\Models\Estudio;
 
-class EquipoController extends Controller
+class EquipoController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            //seguridad para la autenticación del ususario
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware(CanRecoverToken::class, only: ['index', 'show']),
+
+            //seguridad para las rutas de update y destroy SI YA TIENE CREADO UN EQUIPO
+            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
+            new Middleware('permission:editar_equipo|borrar_equipo', only: ['update', 'destroy']),
+
+            //seguridad para la ruta store a traves de rol y permisos SOLO SI NO SE TIENE CREADO YA UN EQUIPO
+            new Middleware('role:entrenador', only: ['store']),
+            new Middleware('permission:crear_equipo', only: ['store']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -21,6 +40,7 @@ class EquipoController extends Controller
      *  summary="Obtener todos los equipos de la web",
      *  description="Obtener todos los equipos en la llamada a la API",
      *  operationId="indexEquipos",
+     *  security={"bearerAuth"},
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
@@ -45,26 +65,28 @@ class EquipoController extends Controller
      */
     public function index()
     {
-        $equipos = Equipo::with('jugadores', 'centro')->get();
-
-        if ($equipos->isEmpty()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'No hay equipos'
-                ],
-                204
-            );
+        //si se es administrador se pueden visualizar todos los equipos, aunque no esten aprobados
+        if ($this->user && $this->user->hasRole('administrador')) {
+            $equipos = Equipo::with('jugadores', 'centro')->get();
+        } else {
+            $equipos = Equipo::whereHas('inscripciones', function ($query) {
+                $query->where('estado', 'aprobada');
+            })->with('jugadores', 'centro')->get();
         }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Equipos disponibles',
-                'data' => ['equipos' => EquipoResource::collection($equipos)],
-            ],
-            200
-        );
+        if ($equipos->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay equipos'
+            ], 200);
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipos disponibles',
+            'equipos' => EquipoResource::collection($equipos)
+        ], 200);
     }
 
     /**
@@ -107,8 +129,18 @@ class EquipoController extends Controller
      */
     public function show($equipo)
     {
+        //si se es administrador se pueden visualizar el equipo en concreto, aunque no esten aprobados
+        /* $equipo = Equipo::find($equipo);
+        if ($this->user && $this->user->hasRole('administrador')) {
+            $equipo = Equipo::find($equipo);
+        } else {
+            $equipo = Equipo::whereHas('inscripciones', function ($query) use ($equipo) {
+                $query->where('equipo_id', $equipo->id);
+            })->with('jugadores', 'centro')->get();
+        }
+         */
         $equipo = Equipo::find($equipo);
-        if (!$equipo) {
+        if ($equipo->isEmpty()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Equipo no encontrado'
@@ -116,9 +148,9 @@ class EquipoController extends Controller
         }
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo encontrado',
-            'data' => new EquipoResource($equipo)
+            'equipo' => new EquipoResource($equipo)
         ], 200);
     }
 
@@ -131,6 +163,7 @@ class EquipoController extends Controller
      *  summary="Crear un equipo con sus jugadores",
      *  description="Crear un equipo con sus jugadores",
      *  operationId="storeEquipo",
+     *  security={"bearerAuth"},
      *  tags={"equipos"},
      *  @OA\RequestBody(
      *      required=true,
@@ -156,39 +189,48 @@ class EquipoController extends Controller
      *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
      *      ),
      *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes para crear un nuevo equipo. Revisa si ya creaste uno")
+     *      )
+     *  ),
      *)
      */
     public function store(CrearEquipoRequest $request)
     {
-        $request->validated();
-
-        //Obtener centro al que pertenece el equipo
-        $centro_id = Centro::where('nombre', $request->centro)->first()->id;
+        if ($request->centro) {
+            $centro_id = Centro::where('nombre', $request->centro)->first()->id;
+        }
 
         $equipo = Equipo::create([
             'nombre' => $request->nombre,
             'grupo' => $request->grupo,
-            'centro_id' => $centro_id,
-            /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
-            'usuarioIdCreacion' => $request->usuarioIdCreacion
+            'centro_id' => $centro_id ?? null,
         ]);
 
-        $equipo->jugadores()->createMany(
-            collect($request->jugadores)->map(function ($jugador) {
-                if (!array_key_exists('ciclo', $jugador)) {
-                    return $jugador;
-                }
-                $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
-                $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
-                $jugador['estudio_id'] = $estudio_id;
-                return $jugador;
-            })
-        );
+        //llamar a la funcion para crear todos los jugadores de un equipo
+        $equipo->crearJugadores($request->jugadores);
+
+        //eliminar en el usuario el permiso de poder crear un equipo
+        $this->user->revokePermissionTo('crear_equipo');
+        //agregar en el usuario el permiso de poder editar y borrar un equipo
+        $this->user->givePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
+
+        $this->user->deleteTokens();
+
+        $id_equipo = $equipo->id;
+        $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}","crear_jugador_equipo_{$id_equipo}" ,"actualizar_jugador_equipo_{$id_equipo}", "borrar_jugador_equipo_{$id_equipo}"];
+        $newToken = $this->user->createToken('token_usuario', $abilities)->plainTextToken;
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo creado correctamente',
-            'data' => new EquipoResource($equipo)
+            'equipo' => new EquipoResource($equipo),
+            'token' => $newToken
         ], 200);
     }
 
@@ -214,7 +256,7 @@ class EquipoController extends Controller
      *      description="Datos del equipo",
      *      @OA\JsonContent(
      *          @OA\Property(property="nombre", type="string", example="Equipo 1"),
-     *          @OA\Property(property="centro_id", type="integer", example="1"),
+     *          @OA\Property(property="grupo", type="integer", example="A"),
      *      ),
      *  ),
      *  @OA\Response(
@@ -235,14 +277,22 @@ class EquipoController extends Controller
      *          @OA\Property(property="success", type="boolean", example=false),
      *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
      *      )
-     *  )
+     *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permiso para editar este equipo")
+     *      )
+     *  ),
      *)
      */
     public function update(ActualizarEquipoRequest $request, $equipo)
     {
         $equipo = Equipo::find($equipo);
 
-        // Verificar si el equipo existe
         if (!$equipo) {
             return response()->json([
                 'success' => false,
@@ -250,13 +300,19 @@ class EquipoController extends Controller
             ], 404);
         }
 
-        // Si la validación pasa, se procede a actualizar
-        $equipo->update($request->validated());
+        if ($this->user->tokenCant("editar_equipo_{$equipo->id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para actualizar este equipo',
+            ], 403);
+        }
+
+        $equipo->update($request->all());
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Equipo actualizado correctamente',
-            'data' => ['equipo' => new EquipoResource($equipo)]
+            'equipo' => new EquipoResource($equipo)
         ], 200);
     }
 
@@ -287,6 +343,15 @@ class EquipoController extends Controller
      *      )
      *  ),
      *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permiso para borrar este equipo")
+     *      )
+     *  ),
+     *  @OA\Response(
      *      response=404,
      *      description="Equipo no encontrado",
      *      @OA\JsonContent(
@@ -308,7 +373,18 @@ class EquipoController extends Controller
             ], 404);
         }
 
+        if ($this->user->tokenCant("borrar_equipo_{$equipo->id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para borrar este equipo',
+            ], 403);
+        }
+
         $equipo->delete();
+        //agregar en el usuario el permiso de poder crear un equipo
+        $this->user->givePermissionTo('crear_equipo');
+        //eliminar en el usuario el permiso de poder editar y borrar un equipo
+        $this->user->revokePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
 
         return response()->json([
             'success' => true,

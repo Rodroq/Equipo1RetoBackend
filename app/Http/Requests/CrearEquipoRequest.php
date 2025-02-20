@@ -24,7 +24,7 @@ class CrearEquipoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:45',
+            'nombre' => 'required|string|max:45|unique:equipos,nombre',
             'grupo' => 'in:A,B',
             'centro' => 'string|exists:centros,nombre',
             'jugadores' => 'required|array',
@@ -44,15 +44,16 @@ class CrearEquipoRequest extends FormRequest
         ];
     }
 
-    public function messages():array
+    public function messages(): array
     {
         return [
             'nombre.required' => 'El nombre del equipo es requerido',
             'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
+            'nombre.unique' => 'El nombre del equipo ya existe',
             'grupo.in' => 'Los grupos permitidos son [A,B]',
-            'centro.string' =>'El nombre centro ha de ser texto',
-            'centro.exists' =>'El centro seleccionado no existe',
+            'centro.string' => 'El nombre centro ha de ser texto',
+            'centro.exists' => 'El centro seleccionado no existe',
             'jugadores.required' => 'Los jugadores del equipo son requerido',
             'jugadores.array' => 'Formato de jugadores no permitido',
             'jugadores.*.nombre.required' => 'El nombre del jugador es requerido',
@@ -89,5 +90,4 @@ class CrearEquipoRequest extends FormRequest
             'errors'      => $validator->errors()
         ]));
     }
-
 }

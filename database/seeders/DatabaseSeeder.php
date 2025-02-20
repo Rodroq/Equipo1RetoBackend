@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('permissions')->delete();
+        DB::table('roles')->delete();
         DB::table('users')->delete();
         DB::table('centros')->delete();
         DB::table('pabellones')->delete();
@@ -27,6 +29,7 @@ class DatabaseSeeder extends Seeder
         DB::table('partidos')->delete();
         DB::table('actas')->delete();
 
+        $this->call(PermissionAndRoleSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(CentroSeeder::class);
         $this->call(PabellonSeeder::class);
@@ -39,5 +42,6 @@ class DatabaseSeeder extends Seeder
         $this->call(JugadorSeeder::class);
         $this->call(PartidosSeeder::class);
         $this->call(ActasSeeder::class);
+
     }
 }

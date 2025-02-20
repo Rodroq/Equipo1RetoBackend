@@ -2,16 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
+use App\Http\Resources\JugadorDetalleResource;
 use App\Http\Resources\JugadorResource;
 use App\Models\Ciclo;
 use App\Models\Equipo;
 use App\Models\Estudio;
 use App\Models\Jugador;
 
-class JugadorController extends Controller
+class JugadorController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
+            new Middleware('role:entrenador', only: ['store']),
+
+            //seguridad de permisos SI NO TIENE CREADO NINGUN EQUIPO
+            new Middleware('permission:crear_jugador', only: ['store']),
+            new Middleware('permission:editar_jugador', only: ['update']),
+            new Middleware('permission:borrar_jugador', only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +47,14 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugadores disponibles"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(
+     *              property="jugador",
+     *              type="object",
+     *              @OA\Property(property="nombre", type="string", example="Nombre"),
+     *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
+     *              @OA\Property(property="apellido2", type="string", example="Apellido 2"),
+     *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+     *          ),
      *      ),
      *  ),
      *  @OA\Response(
@@ -61,7 +86,7 @@ class JugadorController extends Controller
             [
                 'success' => true,
                 'message' => 'Jugadores disponibles',
-                'data' => ['jugadores' => JugadorResource::collection($jugadores)],
+                'jugadores' => JugadorResource::collection($jugadores),
             ],
             200
         );
@@ -91,7 +116,7 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Jugador"),
+     *          @OA\Property(property="data", type="jugador", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(
@@ -117,9 +142,9 @@ class JugadorController extends Controller
         }
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'Jugador encontrado',
-            'data' => new JugadorResource($jugador)
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 
@@ -148,19 +173,49 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador creado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(property="jugador", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *     ),
+     *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="No tienes permisos",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para crear un nuevo jugador en este equipo"),
+     *     ),
+     *  ),
+     *  @OA\Response(
+     *      response=409,
+     *      description="Equipo lleno",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Equipo lleno | No puedes crear más jugadores"),
      *     ),
      *  ),
      * )
      */
     public function store(CrearJugadorRequest $request)
     {
-        $request->validated();
+        $equipo = Equipo::where('nombre', $request->equipo)->first();
 
-        //Obtener equipo al que pertenece el jugador
-        $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
+        if ($this->user->tokenCant("crear_jugador_equipo_{$equipo->id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para crear un nuevo jugador en este equipo',
+            ], 403);
+        }
 
-        //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
+        if ($equipo->jugadores()->count() === 12) {
+            $this->user->revokePermissionTo('crear_jugador');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Equipo lleno | No puedes crear más jugadores',
+            ], 409);
+        }
+
         if ($request->ciclo) {
             $ciclo_id = Ciclo::select('id')->where('nombre', $request->ciclo)->first()->id;
             $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
@@ -174,16 +229,14 @@ class JugadorController extends Controller
             'dni' => $request->dni,
             'email' => $request->email,
             'telefono' => $request->telefono,
-            'equipo_id' => $equipo_id,
+            'equipo_id' => $equipo->id,
             'estudio_id' => $estudio_id ?? null,
-            /* Este campo se tendra que eliminar y realizar el agregado a través del modelo con la autenticacion de usuarios */
-            'usuarioIdCreacion' => $request->usuarioIdCreacion
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Jugador creado correctamente',
-            'data' => ['jugador' => new JugadorResource($jugador)]
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 
@@ -218,7 +271,7 @@ class JugadorController extends Controller
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador actualizado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
+     *          @OA\Property(property="jugador", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
      *     ),
      *  ),
      *  @OA\Response(
@@ -230,6 +283,15 @@ class JugadorController extends Controller
      *          @OA\Property(property="message", type="string", example="Jugador no encontrado")
      *       ),
      *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="No tienes permisos",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para actualizar a este jugador")
+     *       ),
+     *  ),
      * )
      */
     public function update(ActualizarJugadorRequest $request, $jugador)
@@ -237,7 +299,6 @@ class JugadorController extends Controller
         //Actualizar tambien las imagenes
         $jugador = jugador::find($jugador);
 
-        // Verificar si el jugador existe
         if (!$jugador) {
             return response()->json([
                 'success' => false,
@@ -245,13 +306,11 @@ class JugadorController extends Controller
             ], 404);
         }
 
-        //probar a ver si se pueden borrar por usar el failedValidation function en los request
-        $request->validated();
-
-        //Actualizar el equipo al que pertenece el jugador
-        if($request->equipo){
-            $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
-            $jugador->equipo_id = $equipo_id;
+        if ($this->user->tokenCant("actualizar_jugador_equipo_{$jugador->equipo_id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para actualizar a este jugador',
+            ], 403);
         }
 
         //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
@@ -276,7 +335,7 @@ class JugadorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'jugador actualizado correctamente',
-            'data' => ['jugador' => new JugadorResource($jugador)]
+            'jugador' => new JugadorDetalleResource($jugador)
         ], 200);
     }
 
@@ -316,17 +375,42 @@ class JugadorController extends Controller
      *       )
      *  ),
      * ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="No tienes permisos",
+     *       @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para borrar a este jugador")
+     *       )
+     *  ),
+     * ),
      */
     public function destroy($jugador)
     {
         $jugador = Jugador::find($jugador);
 
         if (!$jugador) {
-            return response()->json(['success' => false, 'message' => 'Jugador no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Jugador no encontrado'
+            ], 404);
+        }
+
+        if ($this->user->tokenCant("borrar_jugador_equipo_{$jugador->equipo_id}")) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para borrar a este jugador',
+            ], 403);
         }
 
         $jugador->delete();
 
-        return response()->json(['success' => true, 'message' => 'Jugador eliminado correctamente'], 200);
+        $this->user->givePermissionTo('crear_jugador');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jugador eliminado correctamente'
+        ], 200);
     }
 }
