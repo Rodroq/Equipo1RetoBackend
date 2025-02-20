@@ -18,10 +18,17 @@ class EquipoController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
+            //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware(CanRecoverToken::class, only: ['index', 'show']),
-            new Middleware('role:administrador|entrenador', except: ['index', 'show']),
+
+            //seguridad para las rutas de update y destroy SI YA TIENE CREADO UN EQUIPO
+            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
+            new Middleware('permission:editar_equipo|borrar_equipo', only: ['update', 'destroy']),
+
+            //seguridad para la ruta store a traves de rol y permisos SOLO SI NO SE TIENE CREADO YA UN EQUIPO
             new Middleware('role:entrenador', only: ['store']),
+            new Middleware('permission:crear_equipo', only: ['store']),
         ];
     }
     /**
@@ -58,6 +65,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function index()
     {
+        //si se es administrador se pueden visualizar todos los equipos, aunque no esten aprobados
         if ($this->user && $this->user->hasRole('administrador')) {
             $equipos = Equipo::with('jugadores', 'centro')->get();
         } else {
@@ -121,9 +129,18 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function show($equipo)
     {
+        //si se es administrador se pueden visualizar el equipo en concreto, aunque no esten aprobados
+        /* $equipo = Equipo::find($equipo);
+        if ($this->user && $this->user->hasRole('administrador')) {
+            $equipo = Equipo::find($equipo);
+        } else {
+            $equipo = Equipo::whereHas('inscripciones', function ($query) use ($equipo) {
+                $query->where('equipo_id', $equipo->id);
+            })->with('jugadores', 'centro')->get();
+        }
+         */
         $equipo = Equipo::find($equipo);
-
-        if (!$equipo) {
+        if ($equipo->isEmpty()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Equipo no encontrado'
@@ -185,39 +202,35 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function store(CrearEquipoRequest $request)
     {
-        if ($this->user->tokenCant('crear_equipo')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para crear un nuevo equipo. Revisa si ya creaste uno',
-            ], 403);
+        if ($request->centro) {
+            $centro_id = Centro::where('nombre', $request->centro)->first()->id;
         }
-
-        $centro_id = Centro::where('nombre', $request->centro)->first()->id;
 
         $equipo = Equipo::create([
             'nombre' => $request->nombre,
             'grupo' => $request->grupo,
-            'centro_id' => $centro_id,
+            'centro_id' => $centro_id ?? null,
         ]);
 
-        $equipo->jugadores()->createMany(
-            collect($request->jugadores)->map(function ($jugador) {
-                if (!array_key_exists('ciclo', $jugador)) {
-                    return $jugador;
-                }
+        //llamar a la funcion para crear todos los jugadores de un equipo
+        $equipo->crearJugadores($request->jugadores);
 
-                $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
-                $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
-                $jugador['estudio_id'] = $estudio_id;
+        //eliminar en el usuario el permiso de poder crear un equipo
+        $this->user->revokePermissionTo('crear_equipo');
+        //agregar en el usuario el permiso de poder editar y borrar un equipo
+        $this->user->givePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
 
-                return $jugador;
-            })
-        );
+        $this->user->deleteTokens();
+
+        $id_equipo = $equipo->id;
+        $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}","crear_jugador_equipo_{$id_equipo}" ,"actualizar_jugador_equipo_{$id_equipo}", "borrar_jugador_equipo_{$id_equipo}"];
+        $newToken = $this->user->createToken('token_usuario', $abilities)->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Equipo creado correctamente',
-            'equipo' => new EquipoResource($equipo)
+            'equipo' => new EquipoResource($equipo),
+            'token' => $newToken
         ], 200);
     }
 
@@ -294,7 +307,7 @@ class EquipoController extends Controller implements HasMiddleware
             ], 403);
         }
 
-        $equipo->update($request);
+        $equipo->update($request->all());
 
         return response()->json([
             'success' => true,
@@ -368,6 +381,10 @@ class EquipoController extends Controller implements HasMiddleware
         }
 
         $equipo->delete();
+        //agregar en el usuario el permiso de poder crear un equipo
+        $this->user->givePermissionTo('crear_equipo');
+        //eliminar en el usuario el permiso de poder editar y borrar un equipo
+        $this->user->revokePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
 
         return response()->json([
             'success' => true,

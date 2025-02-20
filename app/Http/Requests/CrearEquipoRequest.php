@@ -24,10 +24,10 @@ class CrearEquipoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:45',
+            'nombre' => 'required|string|max:45|unique:equipos,nombre',
             'grupo' => 'in:A,B',
             'centro' => 'string|exists:centros,nombre',
-            'jugadores' => 'required|array|min:10',
+            'jugadores' => 'required|array',
             'jugadores.*.nombre' => 'required|string|max:45',
             'jugadores.*.apellido1' => 'string|max:45',
             'jugadores.*.apellido2' => 'string|max:45',
@@ -44,18 +44,18 @@ class CrearEquipoRequest extends FormRequest
         ];
     }
 
-    public function messages():array
+    public function messages(): array
     {
         return [
             'nombre.required' => 'El nombre del equipo es requerido',
             'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
+            'nombre.unique' => 'El nombre del equipo ya existe',
             'grupo.in' => 'Los grupos permitidos son [A,B]',
-            'centro.string' =>'El nombre centro ha de ser texto',
-            'centro.exists' =>'El centro seleccionado no existe',
+            'centro.string' => 'El nombre centro ha de ser texto',
+            'centro.exists' => 'El centro seleccionado no existe',
             'jugadores.required' => 'Los jugadores del equipo son requerido',
             'jugadores.array' => 'Formato de jugadores no permitido',
-            'jugadores.min' => 'El equipo ha de estar compuesto mínimo por 10 jugadores',
             'jugadores.*.nombre.required' => 'El nombre del jugador es requerido',
             'jugadores.*.nombre.string' => 'El nombre del jugador ha de ser texto',
             'jugadores.*.nombre.max' => 'El nombre del jugador solo tiene máximo 45 caracteres',
@@ -90,5 +90,4 @@ class CrearEquipoRequest extends FormRequest
             'errors'      => $validator->errors()
         ]));
     }
-
 }

@@ -25,6 +25,13 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasRoles, HasFactory, HasApiTokens, Notifiable;
 
+    public function deleteTokens()
+    {
+        $this->tokens->each(function ($token) {
+            $token->delete();
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *

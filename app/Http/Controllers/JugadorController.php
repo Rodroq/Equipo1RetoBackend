@@ -21,9 +21,13 @@ class JugadorController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware('role:administrador|entrenador', except: ['index', 'show']),
+            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
             new Middleware('role:entrenador', only: ['store']),
-            new Middleware('permission:create player', only: ['store']),
+
+            //seguridad de permisos SI NO TIENE CREADO NINGUN EQUIPO
+            new Middleware('permission:crear_jugador', only: ['store']),
+            new Middleware('permission:editar_jugador', only: ['update']),
+            new Middleware('permission:borrar_jugador', only: ['destroy']),
         ];
     }
     /**
@@ -196,18 +200,15 @@ class JugadorController extends Controller implements HasMiddleware
     {
         $equipo = Equipo::where('nombre', $request->equipo)->first();
 
-        if ($this->user->tokenCant("crear_jugador_equipo_{$equipo->nombre}")) {
+        if ($this->user->tokenCant("crear_jugador_equipo_{$equipo->id}")) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permisos para crear un nuevo jugador en este equipo',
             ], 403);
         }
 
-        $jugadores_cantidad = $equipo->jugadores()->count();
-
-        if ($jugadores_cantidad === 12) {
-
-            $this->user->revokePermissionTo("create player");
+        if ($equipo->jugadores()->count() === 12) {
+            $this->user->revokePermissionTo('crear_jugador');
 
             return response()->json([
                 'success' => true,
@@ -312,15 +313,7 @@ class JugadorController extends Controller implements HasMiddleware
             ], 403);
         }
 
-        //Actualizar el equipo al que pertenece el jugador
-        //Es necesario????
-        if ($request->equipo) {
-            $equipo_id = Equipo::where('nombre', $request->equipo)->first()->id;
-            $jugador->equipo_id = $equipo_id;
-        }
-
         //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
-        //Es necesario????
         if ($request->ciclo) {
             $ciclo_id = Ciclo::where('nombre', $request->ciclo)->first()->id;
             $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
@@ -410,9 +403,10 @@ class JugadorController extends Controller implements HasMiddleware
                 'message' => 'No tienes permisos para borrar a este jugador',
             ], 403);
         }
+
         $jugador->delete();
 
-        $this->user->givePermissionTo("create player");
+        $this->user->givePermissionTo('crear_jugador');
 
         return response()->json([
             'success' => true,

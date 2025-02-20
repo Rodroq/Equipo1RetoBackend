@@ -46,7 +46,7 @@ class LoginController extends Controller
      *      ),
      *  ),
      *  @OA\Response(
-     *      response="403",
+     *      response="401",
      *      description="No autorizado",
      *      @OA\JsonContent(
      *          type="object",
@@ -73,19 +73,18 @@ class LoginController extends Controller
         if ($user->hasRole('entrenador')) {
             $equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
 
-            $jugadores_equipo = $equipo->jugadores()->count();
-
             if (!$equipo) {
-                $abilities = ["crear_equipo"];
+                $user->givePermissionTo('crear_equipo');
+                $token = $user->createToken('token_usuario', [])->plainTextToken;
             } else {
+                $user->givePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
+                $jugadores_equipo = $equipo->jugadores()->count();
                 $id_equipo = $equipo->id;
                 $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}", "actualizar_jugador_equipo_{$id_equipo}", "borrar_jugador_equipo_{$id_equipo}"];
 
-                $jugadores_equipo < 12 ?: $abilities[] = "crear_jugador_equipo_{$equipo->nombre}";
+                $jugadores_equipo < 12 ?: $abilities[] = "crear_jugador_equipo_{$id_equipo}";
+                $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
             }
-
-
-            $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
         }
 
         if ($user->hasRole('administrador')) {

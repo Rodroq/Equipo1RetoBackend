@@ -47,6 +47,28 @@ class Equipo extends Model
         });
     }
 
+    /**
+     * Crea múltiples jugadores relacionados con el equipo.
+     *
+     * @param array $jugadores Un array de datos de jugadores (pueden ser arrays con los campos necesarios para crear un Jugador).
+     * @return void
+     */
+    public function crearJugadores($jugadores)
+    {
+        $this->jugadores()->createMany(
+            collect($jugadores)->map(function ($jugador) {
+                if (!array_key_exists('ciclo', $jugador)) {
+                    return $jugador;
+                }
+
+                $ciclo_id = Ciclo::where('nombre', $jugador['ciclo'])->first()->id;
+                $estudio_id = Estudio::where('ciclo_id', $ciclo_id)->first()->id;
+                $jugador['estudio_id'] = $estudio_id;
+
+                return $jugador;
+            })
+        );
+    }
 
     public function partidos()
     {

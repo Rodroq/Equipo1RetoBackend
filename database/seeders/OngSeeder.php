@@ -14,8 +14,8 @@ class OngSeeder extends Seeder
     public function run(): void
     {
         DB::table('ongs')->insert([
-            'nombre' => 'Cruz Roja/Torrelavega',
-            'landingPage' => 'https://www2.cruzroja.es/'
+            'nombre' => 'Cruz Roja',
+            'landingPage' => 'https://cercadeti.cruzroja.es/ligasolidariadeformacionprofesional'
         ]);
     }
 }
