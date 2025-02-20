@@ -1,9 +1,20 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ * schema="Partido",
+ * type="object",
+ * title="Partido",
+ * required={"fecha", "hora", "equipoLoc", "golesVis", "pabellon"},
+ * @OA\Property(property="fecha", type="string", example="2021-10-10"),
+ * @OA\Property(property="hora", type="string", format="time", example="16:00:00"),
+ * @OA\Property(property="equipoLoc", type="integer", example=1),
+ * @OA\Property(property="equipoVis", type="integer", example=2),
+ * )
+ */
 class Partido extends Model
 {
     protected $table = 'partidos';
@@ -20,37 +31,36 @@ class Partido extends Model
         'equipoL',
         'equipoV',
         'pabellon_id'
-
     ];
 
-    // protected static function boot(){
-    //     parent::boot();
-
-    //     static::creating(function($model){
-    //         $model->usuarioIdCreacion = auth()->id();
-    //         $model->fechaCreacion = now();
-    //     });
-        
-    //     static::updating(function($model){
-    //         $model->usuarioIdActualizacion = auth()->id();
-    //         $model->fechaActualizacion = now();
-    //     });
-    // }
-
-    public function actas(){
+    public function actas()
+    {
         return $this->hasMany(Acta::class);
     }
 
-    public function equipos(){
-        //Cada belongsTo devuelve un id de equipo por eso los junto
-        return $this->belongsTo(Equipo::class,'equipoL')->get()->merge($this->belongsTo(Equipo::class,'equipoV')->get());
+    public function equipoLoc()
+    {
+        return $this->belongsTo(Equipo::class, 'equipoL');
     }
 
-    public function imagenes(){
+    public function equipoVis()
+    {
+        return $this->belongsTo(Equipo::class, 'equipoV');
+    }
+
+    public function imagenes()
+    {
         return $this->hasMany(Imagen::class);
     }
 
-    public function publicaciones(){
+    public function publicaciones()
+    {
         return $this->hasMany(Publicacion::class);
     }
+
+    public function pabellon()
+    {
+        return $this->belongsTo(Pabellon::class);
+    }
 }
+?>
