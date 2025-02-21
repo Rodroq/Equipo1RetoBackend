@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-
 /**
  * @OA\Info(title="API Torneo Solidario", version="1.0",description="API del torneo solidario",
  * @OA\Server(url="http://localhost:8000"),
@@ -20,9 +18,4 @@ use Illuminate\Support\Facades\Auth;
  */
 abstract class Controller
 {
-    protected $user;
-    public function __construct()
-    {
-        $this->user = Auth::user();
-    }
 }

@@ -23,7 +23,7 @@ class ActualizarEquipoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'string|max:45',
+            'nombre' => 'string|max:45|unique:equipos,nombre',
             'grupo' => 'in:A,B',
             /* ¿Permitir actualizar tambien el centro? */
         ];
@@ -34,6 +34,7 @@ class ActualizarEquipoRequest extends FormRequest
         return [
             'nombre.string' => 'El nombre del equipo ha de ser texto',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
+            'nombre.unique' => 'El nombre del equipo ya esta escogido',
             'grupo.in' => 'El grupo solo puede ser [A | B]',
         ];
     }

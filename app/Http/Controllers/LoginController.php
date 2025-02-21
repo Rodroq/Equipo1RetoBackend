@@ -6,11 +6,18 @@ use App\Http\Requests\LoginUserController;
 use App\Http\Resources\UserResource;
 use App\Models\Equipo;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    protected AuthService $servicio_autenticacion;
+
+    public function __construct(AuthService $servicio_autenticacion)
+    {
+        $this->servicio_autenticacion = $servicio_autenticacion;
+    }
     /**
      * Login a specific user to use the API
      */
@@ -58,44 +65,19 @@ class LoginController extends Controller
      */
     public function login(LoginUserController $request)
     {
-        $request->validated();
+        $resultado_autenticacion = $this->servicio_autenticacion->authenticateUser($request->all());
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Credenciales incorrectas'
-            ], 401);
+        if(!$resultado_autenticacion['success']){
+            return response()->json(['success'=>false,'message'=>$resultado_autenticacion['message']],$resultado_autenticacion['status']);
         }
 
-        //creacion del token del usuario
-        if ($user->hasRole('entrenador')) {
-            $equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
-
-            if (!$equipo) {
-                $user->givePermissionTo('crear_equipo');
-                $token = $user->createToken('token_usuario', [])->plainTextToken;
-            } else {
-                $user->givePermissionTo(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
-                $jugadores_equipo = $equipo->jugadores()->count();
-                $id_equipo = $equipo->id;
-                $abilities = ["editar_equipo_{$id_equipo}", "borrar_equipo_{$id_equipo}", "actualizar_jugador_equipo_{$id_equipo}", "borrar_jugador_equipo_{$id_equipo}"];
-
-                $jugadores_equipo < 12 ?: $abilities[] = "crear_jugador_equipo_{$id_equipo}";
-                $token = $user->createToken('token_usuario', $abilities)->plainTextToken;
-            }
-        }
-
-        if ($user->hasRole('administrador')) {
-            $token = $user->createToken('token_usuario')->plainTextToken;
-        }
-
-        // Genera el token con las abilities dependiendo del rol del usuario
         return response()->json([
             'success' => true,
             'message' => 'Usuario logueado correctamente',
-            'data' => ['usuario' => new UserResource($user), 'token' => $token],
+            'data' => [
+                'usuario' => new UserResource($resultado_autenticacion['user']),
+                'token' => $resultado_autenticacion['token'],
+            ],
         ], 200);
     }
 }

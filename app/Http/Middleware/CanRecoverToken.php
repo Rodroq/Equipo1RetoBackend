@@ -19,11 +19,16 @@ class CanRecoverToken
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();
-
         if ($token) {
             $tokenRecord = PersonalAccessToken::findToken($token);
-            $user = User::find($tokenRecord->tokenable_id);
 
+            if(!$tokenRecord){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token expirado o incorrecto'
+                ], 200);
+            }
+            $user = User::find($tokenRecord->tokenable_id);
             if ($user) {
                 Auth::setUser($user);
             }
