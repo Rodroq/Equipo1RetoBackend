@@ -31,7 +31,6 @@ class CrearJugadorRequest extends FormRequest
             'dni' => 'regex:/^\d{8}[A-Za-z]$/',
             'email' => ['regex:/^.+@.+$/i', 'max:45'],
             'telefono' => 'string|max:45',
-            'equipo' => 'required|string|max:45|exists:equipos,nombre',
             'ciclo' => 'string|exists:ciclos,nombre'
         ];
     }
@@ -52,10 +51,6 @@ class CrearJugadorRequest extends FormRequest
             'email.max' => 'El email solo tiene maximo 45 caracteres',
             'telefono.string' => 'El telefono del jugador ha de ser texto',
             'telefono.max' => 'El telefono solo tiene maximo 45 caracteres',
-            'equipo.required' => 'El nombre del equipo del jugador es requerido',
-            'equipo.string' => 'El nombre del equipo del jugador ha de ser texto',
-            'equipo.max' => 'El nombre del equipo del jugador solo tiene maximo 45 caracteres',
-            'equipo.exists' => 'El equipo del jugador no existe',
             'ciclo.string' => 'El ciclo del jugador ha de ser texto',
             'ciclo.exists' => 'El ciclo del jugador no existe',
         ];

@@ -12,9 +12,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('login',[LoginController::class,'login'])->name('login');
+Route::post('login', [LoginController::class, 'login'])->name('login');
 
-Route::apiResource('equipos',EquipoController::class);
-Route::apiResource('jugadores',JugadorController::class);
-Route::apiResource('retos',RetoController::class)->only('index','show');
-Route::apiResource('partidos',PartidoController::class)->only('index','show','store');
+Route::apiResource('equipos', EquipoController::class);
+Route::apiResource('jugadores', JugadorController::class)
+    ->parameters([
+        'jugadores' => 'jugador'
+    ]);
+Route::apiResource('retos', RetoController::class)->only('index', 'show');
+Route::apiResource('partidos', PartidoController::class)->only('index', 'show', 'store');

@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Services\AuthService;
+use Illuminate\Support\Facades\Auth;
+
 /**
  * @OA\Info(title="API Torneo Solidario", version="1.0",description="API del torneo solidario",
  * @OA\Server(url="http://localhost:8000"),
@@ -18,4 +22,13 @@ namespace App\Http\Controllers;
  */
 abstract class Controller
 {
+
+    protected AuthService $servicio_autenticacion;
+    protected ?User $user;
+
+    public function __construct(AuthService $servicio_autenticacion)
+    {
+        $this->user = Auth::user();
+        $this->servicio_autenticacion = $servicio_autenticacion;
+    }
 }

@@ -15,7 +15,7 @@ class EquipoPolicy
     {
         return $user->hasPermissionTo('crear_equipo')
             ? Response::allow()
-            : Response::denyWithStatus(403, 'No puedes crear ningún equipo', 'EQUIPO_NOT_CREATED');
+            : Response::denyWithStatus(403, 'No puedes crear ningún equipo', 'EQUIPO_CREATE_FORBIDDEN');
     }
 
     /**
@@ -23,7 +23,7 @@ class EquipoPolicy
      */
     public function update(User $user, Equipo $equipo): Response
     {
-        if (!$user->hasPermissionTo('borrar_equipo')) return Response::denyWithStatus(403, 'No tienes permisos para editar ningún equipo', 'EQUIPO_EDIT_FORBIDDEN');
+        if (!$user->hasPermissionTo('editar_equipo')) return Response::denyWithStatus(403, 'No tienes permisos para editar ningún equipo', 'EQUIPO_EDIT_FORBIDDEN');
         if (!$user->tokenCan("editar_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes editar el equipo {$equipo->nombre}.", 'EQUIPO_EDIT_FORBIDDEN');
 
         return Response::allow();

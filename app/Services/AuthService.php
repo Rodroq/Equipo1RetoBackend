@@ -13,7 +13,6 @@ final class AuthService
 
     public function authenticateUser($credentials)
     {
-
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
@@ -39,19 +38,19 @@ final class AuthService
             if (!$equipo) {
                 $user->syncPermissions(['crear_equipo']);
             } else {
-                $user->syncPermissions(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
+                $user->syncPermissions(['editar_equipo', 'borrar_equipo', 'editar_jugador', 'borrar_jugador']);
+
+                if ($equipo->jugadores()->count() < 12) {
+                    $user->givePermissionTo('crear_jugador');
+                }
 
                 $id_equipo = $equipo->id;
                 $abilities = [
                     "editar_equipo_{$id_equipo}",
                     "borrar_equipo_{$id_equipo}",
-                    "actualizar_jugador_equipo_{$id_equipo}",
+                    "editar_jugador_equipo_{$id_equipo}",
                     "borrar_jugador_equipo_{$id_equipo}"
                 ];
-
-                if ($equipo->jugadores()->count() < 12) {
-                    $abilities[] = "crear_jugador_equipo_{$id_equipo}";
-                }
             }
         }
         return $user->createToken('token_usuario', $abilities)->plainTextToken;

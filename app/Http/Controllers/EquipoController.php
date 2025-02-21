@@ -8,25 +8,12 @@ use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
 use App\Models\Centro;
 use App\Models\Equipo;
-use App\Models\User;
-use App\Services\AuthService;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class EquipoController extends Controller implements HasMiddleware
 {
-
-    protected AuthService $servicio_autenticacion;
-    protected ?User $user;
-
-    public function __construct(AuthService $servicio_autenticacion)
-    {
-        $this->user = Auth::user();
-        $this->servicio_autenticacion = $servicio_autenticacion;
-    }
-
     public static function middleware(): array
     {
         return [
@@ -84,17 +71,10 @@ class EquipoController extends Controller implements HasMiddleware
         }
 
         if ($equipos->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay equipos'
-            ], 200);
+            return response()->json(['success' => false, 'message' => 'No hay equipos'], 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Equipos disponibles',
-            'equipos' => EquipoResource::collection($equipos)
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);
     }
 
     /**
@@ -135,21 +115,9 @@ class EquipoController extends Controller implements HasMiddleware
      *  )
      *)
      */
-    public function show($equipo)
+    public function show(Equipo $equipo)
     {
-        $equipo = Equipo::find($equipo);
-        if ($equipo->isEmpty()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Equipo no encontrado'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Equipo encontrado',
-            'equipo' => new EquipoResource($equipo)
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Equipo encontrado', 'equipo' => new EquipoResource($equipo)], 200);
     }
 
     /**
@@ -280,6 +248,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function update(ActualizarEquipoRequest $request, Equipo $equipo)
     {
+        dd($equipo,$equipo->nombre);
         $response = Gate::inspect('update', [$equipo, $this->user]);
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
@@ -338,6 +307,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function destroy(Equipo $equipo)
     {
+        dd($this->user->getPermissionNames());
         $response = Gate::inspect('delete', [$equipo, $this->user]);
 
         if (!$response->allowed()) {

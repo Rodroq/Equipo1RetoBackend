@@ -61,6 +61,11 @@ class Jugador extends Model
         });
     }
 
+    public function equipo()
+    {
+        return $this->belongsTo(Equipo::class);
+    }
+
     public function estudio()
     {
         return $this->belongsTo(Estudio::class);
@@ -79,10 +84,5 @@ class Jugador extends Model
     public function imagenes()
     {
         return $this->hasMany(Imagen::class);
-    }
-
-    public function equipo()
-    {
-        return $this->belongsTo(Equipo::class);
     }
 }

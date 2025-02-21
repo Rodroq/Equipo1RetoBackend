@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorDetalleResource;
 use App\Http\Resources\JugadorResource;
 use App\Models\Ciclo;
-use App\Models\Equipo;
 use App\Models\Estudio;
+use App\Models\Equipo;
 use App\Models\Jugador;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class JugadorController extends Controller implements HasMiddleware
 {
@@ -23,11 +23,6 @@ class JugadorController extends Controller implements HasMiddleware
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
             new Middleware('role:entrenador', only: ['store']),
-
-            //seguridad de permisos SI NO TIENE CREADO NINGUN EQUIPO
-            new Middleware('permission:crear_jugador', only: ['store']),
-            new Middleware('permission:editar_jugador', only: ['update']),
-            new Middleware('permission:borrar_jugador', only: ['destroy']),
         ];
     }
     /**
@@ -73,23 +68,10 @@ class JugadorController extends Controller implements HasMiddleware
         $jugadores = Jugador::with('estudio')->get();
 
         if ($jugadores->isEmpty()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'No hay jugadores'
-                ],
-                204
-            );
+            return response()->json(['success' => false, 'message' => 'No hay jugadores'], 204);
         }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Jugadores disponibles',
-                'jugadores' => JugadorResource::collection($jugadores),
-            ],
-            200
-        );
+        return response()->json(['success' => true, 'message' => 'Jugadores disponibles', 'jugadores' => JugadorResource::collection($jugadores),], 200);
     }
 
     /**
@@ -130,22 +112,9 @@ class JugadorController extends Controller implements HasMiddleware
      *  ),
      * )
      */
-    public function show($jugador)
+    public function show(Jugador $jugador)
     {
-        $jugador = Jugador::find($jugador);
-
-        if (!$jugador) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Jugador no encontrado'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Jugador encontrado',
-            'jugador' => new JugadorDetalleResource($jugador)
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Jugador encontrado', 'jugador' => new JugadorDetalleResource($jugador)], 200);
     }
 
     /**
@@ -198,23 +167,13 @@ class JugadorController extends Controller implements HasMiddleware
      */
     public function store(CrearJugadorRequest $request)
     {
-        $equipo = Equipo::where('nombre', $request->equipo)->first();
+        $response = Gate::inspect('create', [Jugador::class, $this->user]);
 
-        if ($this->user->tokenCant("crear_jugador_equipo_{$equipo->id}")) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para crear un nuevo jugador en este equipo',
-            ], 403);
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        if ($equipo->jugadores()->count() === 12) {
-            $this->user->revokePermissionTo('crear_jugador');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Equipo lleno | No puedes crear más jugadores',
-            ], 409);
-        }
+        $equipo = Equipo::where('usuarioIdCreacion', $this->user->id)->firstOrFail();
 
         if ($request->ciclo) {
             $ciclo_id = Ciclo::select('id')->where('nombre', $request->ciclo)->first()->id;
@@ -233,11 +192,11 @@ class JugadorController extends Controller implements HasMiddleware
             'estudio_id' => $estudio_id ?? null,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Jugador creado correctamente',
-            'jugador' => new JugadorDetalleResource($jugador)
-        ], 200);
+        if ($equipo->jugadores()->count() === 12) {
+            $this->user->revokePermissionTo('crear_jugador');
+        }
+
+        return response()->json(['success' => true, 'message' => 'Jugador creado correctamente', 'jugador' => new JugadorDetalleResource($jugador)], 200);
     }
 
     /**
@@ -294,23 +253,12 @@ class JugadorController extends Controller implements HasMiddleware
      *  ),
      * )
      */
-    public function update(ActualizarJugadorRequest $request, $jugador)
+    public function update(ActualizarJugadorRequest $request, Jugador $jugador)
     {
-        //Actualizar tambien las imagenes
-        $jugador = jugador::find($jugador);
+        $response = Gate::inspect('update', [$jugador, $this->user]);
 
-        if (!$jugador) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Jugador no encontrado'
-            ], 404);
-        }
-
-        if ($this->user->tokenCant("actualizar_jugador_equipo_{$jugador->equipo_id}")) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para actualizar a este jugador',
-            ], 403);
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
         //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
@@ -320,8 +268,6 @@ class JugadorController extends Controller implements HasMiddleware
             $jugador->estudio_id = $estudio_id;
         }
 
-
-        // Si la validación pasa, se procede a actualizar
         $jugador->update($request->only([
             'nombre',
             'apellido1',
@@ -332,11 +278,7 @@ class JugadorController extends Controller implements HasMiddleware
             'telefono',
         ]));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'jugador actualizado correctamente',
-            'jugador' => new JugadorDetalleResource($jugador)
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'jugador actualizado correctamente', 'jugador' => new JugadorDetalleResource($jugador)], 200);
     }
 
     /**
@@ -386,31 +328,18 @@ class JugadorController extends Controller implements HasMiddleware
      *  ),
      * ),
      */
-    public function destroy($jugador)
+    public function destroy(Jugador $jugador)
     {
-        $jugador = Jugador::find($jugador);
+        $response = Gate::inspect('delete', [$jugador, $this->user]);
 
-        if (!$jugador) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Jugador no encontrado'
-            ], 404);
-        }
-
-        if ($this->user->tokenCant("borrar_jugador_equipo_{$jugador->equipo_id}")) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para borrar a este jugador',
-            ], 403);
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
         $jugador->delete();
 
         $this->user->givePermissionTo('crear_jugador');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Jugador eliminado correctamente'
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Jugador eliminado correctamente'], 200);
     }
 }
