@@ -46,7 +46,7 @@ class Jugador extends Model
         'estudio_id'
     ];
 
-    protected static function boot()
+    /* protected static function boot()
     {
         parent::boot();
 
@@ -59,7 +59,7 @@ class Jugador extends Model
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    }
+    } */
 
     public function equipo()
     {

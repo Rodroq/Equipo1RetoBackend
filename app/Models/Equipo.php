@@ -32,7 +32,7 @@ class Equipo extends Model
         'centro_id'
     ];
 
-    protected static function boot()
+    /* protected static function boot()
     {
         parent::boot();
 
@@ -45,7 +45,7 @@ class Equipo extends Model
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    }
+    } */
 
     /**
      * Crea múltiples jugadores relacionados con el equipo.

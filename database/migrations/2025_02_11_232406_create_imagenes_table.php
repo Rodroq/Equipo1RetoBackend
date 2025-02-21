@@ -24,31 +24,9 @@ return new class extends Migration
             $table->string('url', 45);
             $table->string('nombre', 45);
 
-            //clave foranea para los equipos
-            $table->foreignIdFor(Equipo::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los partido
-            $table->foreignIdFor(Partido::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los patrociandores
-            $table->foreignIdFor(Patrocinador::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los jugadores
-            $table->foreignIdFor(Jugador::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los reto
-            $table->foreignIdFor(Reto::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los ong
-            $table->unsignedBigInteger('ong_id')->nullable();
-            $table->foreign('ong_id')->references('id')->on('ongs')->cascadeOnDelete();
-
-            //clave foranea para las publicaciones
-            $table->foreignIdFor(Publicacion::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los pabellon
-            $table->unsignedBigInteger('pabellon_id')->nullable();
-            $table->foreign('pabellon_id')->references('id')->on('pabellones')->cascadeOnDelete();
+            //Gestion de relaciones con imagenes a través de claves polimorficas para evitar crear las FK
+            $table->integer('imageable_id');
+            $table->string('imageable_type');
 
             $table->unsignedBigInteger('usuarioIdCreacion');
             $table->timestamp('fechaCreacion')->useCurrent();

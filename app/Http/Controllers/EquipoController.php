@@ -35,7 +35,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  summary="Obtener todos los equipos de la web",
      *  description="Obtener todos los equipos en la llamada a la API",
      *  operationId="indexEquipos",
-     *  security={"bearerAuth"},
+     *  security={{"bearerAuth": {}}},
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
