@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pabellones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
+            $table->string('slug', 45);
             $table->string('descripcion', 45)->nullable();
             $table->timestamps();
         });

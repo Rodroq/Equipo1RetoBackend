@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('partidos', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->date('fecha')->nullable();
             $table->time('hora')->nullable();
             $table->smallInteger('golesL')->nullable();

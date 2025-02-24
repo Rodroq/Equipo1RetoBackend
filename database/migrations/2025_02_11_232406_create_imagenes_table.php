@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('nombre', 45);
 
             //Gestion de relaciones con imagenes a través de claves polimorficas para evitar crear las FK
-            $table->integer('imageable_id');
+            $table->unsignedBigInteger('imageable_id');
             $table->string('imageable_type');
 
             $table->unsignedBigInteger('usuarioIdCreacion');

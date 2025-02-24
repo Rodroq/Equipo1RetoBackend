@@ -21,6 +21,7 @@ return new class extends Migration
         Schema::create('publicaciones', function (Blueprint $table) {
             $table->id();
             $table->string('titulo', 45)->nullable();
+            $table->string('slug', 45);
             $table->longText('texto')->nullable();
             $table->tinyInteger('portada')->nullable();
             $table->string('rutavideo', 45)->nullable();

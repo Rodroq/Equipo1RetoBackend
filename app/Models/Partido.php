@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 /**
  * @OA\Schema(
@@ -17,9 +20,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Partido extends Model
 {
+    use HasSlug;
+
     protected $table = 'partidos';
 
     protected $fillable = [
+        'id',
         'fecha',
         'hora',
         'golesL',
@@ -32,6 +38,26 @@ class Partido extends Model
         'equipoV',
         'pabellon_id'
     ];
+
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom(fn() => 'partido')
+            ->saveSlugsTo('slug');
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function actas()
     {
@@ -48,11 +74,6 @@ class Partido extends Model
         return $this->belongsTo(Equipo::class, 'equipoV');
     }
 
-    public function imagenes()
-    {
-        return $this->hasMany(Imagen::class);
-    }
-
     public function publicaciones()
     {
         return $this->hasMany(Publicacion::class);
@@ -63,4 +84,3 @@ class Partido extends Model
         return $this->belongsTo(Pabellon::class);
     }
 }
-?>

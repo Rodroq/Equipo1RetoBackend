@@ -2,24 +2,42 @@
 
 namespace App\Services;
 
-use App\Models\Imagen;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Http\UploadedFile;
 
-
 final class ImageService
 {
-    public function getImages($model, string $collection = 'default')
+
+    protected $disk;
+
+    public function __construct(string $disk)
     {
-        return $model->getMedia($collection);
+        $this->disk = $disk;
     }
 
-    public function uploadImage($model, UploadedFile $file, string $collection = 'default')
+    public function uploadImage($model, UploadedFile $file, string $folder,  string $filename, string $collection = 'default')
     {
-        return $model->addMedia($file)->toMediaCollection($collection);
+
+        $path = $file->storeAs($folder, $filename, $this->disk);
+
+        $media = $model->addMedia(storage_path("app/{$path}"))->usingFileName($filename)->toMediaCollection($collection, $this->disk);
+
+        return $media;
     }
-    public function delete($model)
+
+    public function getImages($model, string $collection = 'default')
     {
-        return $model->delete;
+        return $model->getFirstMedia($collection);
+    }
+
+    public function getImageByName($model, string $filename, string $collection = 'default')
+    {
+
+        return $model->getMedia($collection)->firstWhere('file_name', $filename);
+    }
+
+    public function delete(Media $media)
+    {
+        return $media->delete();
     }
 }

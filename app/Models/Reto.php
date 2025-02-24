@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 /**
  * @OA\Schema(
@@ -17,18 +19,37 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Reto extends Model
 {
+    use HasSlug;
+
     protected $table = 'retos';
 
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('titulo')
+            ->saveSlugsTo('slug');
+    }
 
-    public function publicaciones(){
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    public function publicaciones()
+    {
         return $this->hasMany(Publicacion::class);
     }
 
-    public function estudio(){
+    public function estudio()
+    {
         return $this->belongsTo(Estudio::class);
-    }
-
-    public function imagenes() {
-        return $this->hasMany(Imagen::class);
     }
 }

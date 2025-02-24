@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('equipos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
+            $table->string('slug', 45);
             $table->char('grupo', 1)->nullable();
             $table->unsignedBigInteger('usuarioIdCreacion');
             $table->timestamp('fechaCreacion')->useCurrent();

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('retos', function (Blueprint $table) {
             $table->id();
             $table->string('titulo', 120)->nullable();
+            $table->string('slug', 200);
             $table->longText('texto')->nullable();
             $table->timestamps();
         });

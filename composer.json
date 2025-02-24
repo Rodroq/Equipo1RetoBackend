@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.9",
         "spatie/laravel-medialibrary": "^11.12",
         "spatie/laravel-permission": "^6.14",
+        "spatie/laravel-sluggable": "^3.7",
         "zircote/swagger-php": "^4.11"
     },
     "require-dev": {

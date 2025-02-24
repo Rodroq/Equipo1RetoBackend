@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('jugadores', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
+            $table->string('slug', 45);
             $table->string('apellido1', 45)->nullable();
             $table->string('apellido2', 45)->nullable();
             $table->enum('tipo', ['jugador', 'capitan', 'entrenador'])->nullable();

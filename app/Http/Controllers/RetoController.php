@@ -31,9 +31,11 @@ class RetoController extends Controller
      */
     public function index()
     {
-        $retos = Reto::with('estudio')->get();    
+        $retos = Reto::with('estudio')->get();
 
-        return RetoResource::collection($retos);
+        if ($retos->isEmpty()) return response()->json(['success' => true, 'message' => 'No hay retos'], 404);
+
+        return response()->json(['success' => true, 'message' => 'Retos encontrados', 'reto' =>  RetoResource::collection($retos)], 200);
     }
 
 
@@ -67,6 +69,6 @@ class RetoController extends Controller
      */
     public function show(Reto $reto)
     {
-        return new RetoResource($reto->load('estudio'));
+        return response()->json(['success' => true, 'message' => 'Reto encontrado', 'reto' => new RetoResource($reto->load('estudio'))], 200);
     }
 }

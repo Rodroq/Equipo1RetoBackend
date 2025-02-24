@@ -20,7 +20,7 @@ class Ciclo extends Model
 
     public function estudio()
     {
-        return $this->belongsTo(Estudio::class);
+        return $this->hasOne(Estudio::class);
     }
 
     public function familia(){

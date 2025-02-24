@@ -6,8 +6,7 @@ use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoResource;
-use App\Models\Centro;
-use App\Models\Equipo;
+use App\Models\{Centro, Equipo};
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +18,7 @@ class EquipoController extends Controller implements HasMiddleware
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware(CanRecoverToken::class, only: ['index', 'show']),
+            new Middleware(CanRecoverToken::class, only: ['index']),
             //seguridad para las rutas de update y destroy SI YA TIENE CREADO UN EQUIPO
             new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
             //seguridad para la ruta store a traves de rol y permisos SOLO SI NO SE TIENE CREADO YA UN EQUIPO
@@ -70,9 +69,7 @@ class EquipoController extends Controller implements HasMiddleware
             })->with('jugadores', 'centro')->get();
         }
 
-        if ($equipos->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No hay equipos'], 404);
-        }
+        if ($equipos->isEmpty()) return response()->json(['success' => true, 'message' => 'No hay equipos'], 404);
 
         return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);
     }
@@ -170,18 +167,11 @@ class EquipoController extends Controller implements HasMiddleware
     {
         $response = Gate::inspect('create', [Equipo::class, $this->user]);
 
-        if (!$response->allowed()) {
-            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
-        }
+        if (!$response->allowed()) return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
 
         $centro_id = $request->centro ? Centro::where('nombre', $request->centro)->first()->id : null;
 
-        $equipo = Equipo::create([
-            'nombre' => $request->nombre,
-            'grupo' => $request->grupo,
-            'centro_id' => $centro_id,
-        ]);
-
+        $equipo = Equipo::create(['nombre' => $request->nombre, 'grupo' => $request->grupo, 'centro_id' => $centro_id,]);
         $equipo->crearJugadores($request->jugadores);
 
         $this->user->syncPermissions(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
@@ -248,7 +238,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function update(ActualizarEquipoRequest $request, Equipo $equipo)
     {
-        dd($equipo,$equipo->nombre);
+        dd($equipo, $equipo->nombre);
         $response = Gate::inspect('update', [$equipo, $this->user]);
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());

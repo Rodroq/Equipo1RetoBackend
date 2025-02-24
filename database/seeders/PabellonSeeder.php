@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Pabellon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class PabellonSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class PabellonSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('pabellones')->insert([
+        Pabellon::create([
             'nombre' => 'Pabellon La Habana Vieja'
         ]);
     }

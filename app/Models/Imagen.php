@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -23,6 +24,12 @@ class Imagen extends Model implements HasMedia
         'usuarioIdActualizacion',
         'fechaActualizacion'
     ];
+
+
+    public function imageable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     protected static function boot()
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -24,6 +25,7 @@ abstract class Controller
 {
 
     protected AuthService $servicio_autenticacion;
+    protected ImageService $servicio_imagenes;
     protected ?User $user;
 
     public function __construct(AuthService $servicio_autenticacion)

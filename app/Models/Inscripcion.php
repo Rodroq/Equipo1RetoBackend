@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Inscripcion extends Model
 {
@@ -22,12 +23,12 @@ class Inscripcion extends Model
         parent::boot();
 
         static::creating(function($model){
-            $model->usuarioIdCreacion = auth()->id();
+            $model->usuarioIdCreacion = Auth::user()->id;
             $model->fechaCreacion = now();
         });
-        
+
         static::updating(function($model){
-            $model->usuarioIdActualizacion = auth()->id();
+            $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
     }

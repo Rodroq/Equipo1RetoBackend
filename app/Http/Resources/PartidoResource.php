@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Equipo;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,6 +15,7 @@ class PartidoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'slug' => $this->slug,
             'fecha' => $this->fecha,
             'hora' => $this->hora,
             'equipoL' => $this->equipoLoc->nombre,

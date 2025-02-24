@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 /**
  *@OA\Schema(
@@ -20,6 +22,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Equipo extends Model
 {
+    use HasSlug;
+
     protected $table = 'equipos';
 
     protected $fillable = [
@@ -31,6 +35,26 @@ class Equipo extends Model
         'fechaActualizacion',
         'centro_id'
     ];
+
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('nombre')
+            ->saveSlugsTo('slug');
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     /* protected static function boot()
     {
@@ -89,11 +113,6 @@ class Equipo extends Model
     public function publicaciones()
     {
         return $this->hasMany(Publicacion::class);
-    }
-
-    public function imagenes()
-    {
-        return $this->hasMany(Imagen::class);
     }
 
     public function patrocinadores()

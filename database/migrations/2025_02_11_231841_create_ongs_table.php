@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('ongs', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
+            $table->string('slug', 45);
             $table->string('landingPage', 100);
             $table->timestamps();
         });
