@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Equipo;
 use App\Models\User;
 
-
 final class AuthService
 {
 

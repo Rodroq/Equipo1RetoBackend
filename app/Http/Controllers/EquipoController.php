@@ -43,12 +43,12 @@ class EquipoController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *          @OA\Property(property="equipos", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
      *      ),
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="No hay equipos encontrado",
+     *      description="No hay equipos",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -60,7 +60,7 @@ class EquipoController extends Controller implements HasMiddleware
     public function index()
     {
         $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
-        //si se es administrador se pueden visualizar todos los equipos, aunque no esten aprobados
+
         if ($esAdmin) {
             $equipos = Equipo::with('jugadores', 'centro')->get();
         } else {
@@ -81,17 +81,17 @@ class EquipoController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Get(
-     *  path="/api/equipos/{id}",
+     *  path="/api/equipos/{slug}",
      *  summary="Obtener un equipo",
-     *  description="Obtener un equipo por su id",
+     *  description="Obtener un equipo por su Slug",
      *  operationId="showEquipo",
      *  tags={"equipos"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del equipo",
+     *      description="Slug del equipo",
      *      required=true,
-     *      @OA\Schema(type="integer",example="1")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Response(
      *      response=200,
@@ -100,7 +100,7 @@ class EquipoController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
+     *          @OA\Property(property="equipo", type="object", ref="#/components/schemas/Equipo"),
      *      ),
      *  ),
      *  @OA\Response(
@@ -109,7 +109,7 @@ class EquipoController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
      *      )
      *  )
      *)
@@ -128,7 +128,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  summary="Crear un equipo con sus jugadores",
      *  description="Crear un equipo con sus jugadores",
      *  operationId="storeEquipo",
-     *  security={"bearerAuth"},
+     *  security={{"bearerAuth": {}}},
      *  tags={"equipos"},
      *  @OA\RequestBody(
      *      required=true,
@@ -151,8 +151,17 @@ class EquipoController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Equipo creado correctamente"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Equipo"),
+     *          @OA\Property(property="equipo", type="object", ref="#/components/schemas/Equipo"),
      *      ),
+     *  ),
+     *  @OA\Response(
+     *      response=401,
+     *      description="No autorizado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
      *  ),
      *  @OA\Response(
      *      response=403,
@@ -160,7 +169,7 @@ class EquipoController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes para crear un nuevo equipo. Revisa si ya creaste uno")
+     *          @OA\Property(property="message", type="string", example="No puedes crear ningún equipo")
      *      )
      *  ),
      *)
@@ -194,17 +203,18 @@ class EquipoController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Put(
-     *  path="/api/equipos/{id}",
+     *  path="/api/equipos/{slug}",
      *  summary="Actualizar un equipo",
-     *  description="Actualizar un equipo",
+     *  description="Actualizar un equipo por su Slug",
      *  operationId="updateEquipo",
+     *  security={{"bearerAuth": {}}},
      *  tags={"equipos"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del equipo",
+     *      description="Slug del equipo",
      *      required=true,
-     *      @OA\Schema(type="integer",example="1")
+     *      @OA\Schema(type="slug",example="desguace-fc")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
@@ -221,16 +231,16 @@ class EquipoController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Equipo actualizado correctamente"),
-     *          @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *          @OA\Property(property="equipo", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
      *     ),
      *  ),
      *  @OA\Response(
-     *      response=404,
-     *      description="Equipo no encontrado",
+     *      response=401,
+     *      description="No autorizado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
      *      )
      *  ),
      *  @OA\Response(
@@ -239,9 +249,19 @@ class EquipoController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permiso para editar este equipo")
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para editar ningún equipo | No puedes editar el equipo Desguace FC"),
+     *          @OA\Property(property="code", type="string", example="EQUIPO_EDIT_FORBIDDEN"),
      *      )
      *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
+     *      )
+     *  )
      *)
      */
     public function update(ActualizarEquipoRequest $request, Equipo $equipo)
@@ -261,17 +281,18 @@ class EquipoController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Delete(
-     *  path="/api/equipos/{id}",
+     *  path="/api/equipos/{slug}",
      *  summary="Eliminar un equipo",
-     *  description="Eliminar un equipo por su id",
+     *  description="Eliminar un equipo por su Slug",
      *  operationId="deleteEquipo",
+     *  security={{"bearerAuth": {}}},
      *  tags={"equipos"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del equipo",
+     *      description="Slug del equipo",
      *   required=true,
-     *   @OA\Schema(type="integer",example="1")
+     *   @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Response(
      *      response=200,
@@ -283,12 +304,22 @@ class EquipoController extends Controller implements HasMiddleware
      *      )
      *  ),
      *  @OA\Response(
+     *      response=401,
+     *      description="No autorizado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
+     *  ),
+     *  @OA\Response(
      *      response=403,
      *      description="Prohibido",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permiso para borrar este equipo")
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para borrar ningún equipo | No puedes borrar el equipo Desguace FC"),
+     *          @OA\Property(property="code", type="string", example="EQUIPO_DELETE_FORBIDDEN")
      *      )
      *  ),
      *  @OA\Response(
@@ -297,10 +328,10 @@ class EquipoController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Equipo no encontrado")
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
      *      )
      *  )
-     * ),
+     * )
      */
     public function destroy(Equipo $equipo)
     {

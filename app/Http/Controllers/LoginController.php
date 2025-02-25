@@ -33,7 +33,7 @@ class LoginController extends Controller
      *      description="Datos del usuario a loguearphp",
      *      @OA\JsonContent(
      *          required={"email","password"},
-     *          @OA\Property(property="email", type="string", example="minillanillo@gmail.com"),
+     *          @OA\Property(property="email", type="string", example="admin@gmail.com"),
      *          @OA\Property(property="password", type="string", example="123"),
      *      ),
      *  ),

@@ -16,8 +16,8 @@ class UserController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:sanctum', except: []),
-            new Middleware('role:administrador', only: ['index', 'show', 'store', 'update', 'destroy']),
+            new Middleware('auth:sanctum'),
+            new Middleware('role:administrador'),
         ];
     }
 
@@ -64,23 +64,9 @@ class UserController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
-
-        if (!$esAdmin) {
-            return response()->json(['success' => false, 'message' => 'No tienes permisos para ver los usuarios'], 403);
-        }
-
         $usuarios = User::all();
 
-        if ($usuarios->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No hay usuarios'], 204);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuarios disponibles',
-            'data' => UserResource::collection($usuarios),
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Usuarios disponibles', 'data' => UserResource::collection($usuarios),], 200);
     }
 
     /**
@@ -141,11 +127,7 @@ class UserController extends Controller implements HasMiddleware
             'rol' => $request->rol,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario creado correctamente',
-            'data' => new UserResource($usuario),
-        ], 201);
+        return response()->json(['success' => true, 'message' => 'Usuario creado correctamente', 'usuarios' => new UserResource($usuario),], 201);
     }
 
     /**
@@ -153,18 +135,18 @@ class UserController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Get(
-     *  path="/api/usuarios/{id}",
+     *  path="/api/usuarios/{slug}",
      *  summary="Obtener un usuario específico",
-     *  description="Devuelve los detalles de un usuario por ID",
+     *  description="Devuelve los detalles de un usuario por Slug",
      *  operationId="showUsuario",
      *  tags={"usuarios"},
      *  security={{"bearerAuth": {}}},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="ID del usuario",
+     *      description="Slug del usuario",
      *      required=true,
-     *      @OA\Schema(type="integer"),
+     *      @OA\Schema(type="string"),
      *  ),
      *  @OA\Response(
      *      response=200,
@@ -173,7 +155,7 @@ class UserController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Usuario encontrado"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Usuario"),
+     *          @OA\Property(property="usuario", type="object", ref="#/components/schemas/Usuario"),
      *      ),
      *  ),
      *  @OA\Response(
@@ -198,17 +180,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function show(User $usuario)
     {
-        $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
-
-        if (!$esAdmin) {
-            return response()->json(['success' => false, 'message' => 'No tienes permisos para ver este usuario'], 403);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario encontrado',
-            'data' => new UserResource($usuario),
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Usuario encontrado', 'usuario' => new UserResource($usuario),], 200);
     }
 
     /**
@@ -216,18 +188,18 @@ class UserController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Put(
-     *  path="/api/usuarios/{id}",
+     *  path="/api/usuarios/{slug}",
      *  summary="Actualizar un usuario",
      *  description="Actualiza los datos de un usuario existente",
      *  operationId="updateUsuario",
      *  tags={"usuarios"},
      *  security={{"bearerAuth": {}}},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="ID del usuario",
+     *      description="Slug del usuario",
      *      required=true,
-     *      @OA\Schema(type="integer"),
+     *      @OA\Schema(type="string"),
      *  ),
      *  @OA\RequestBody(
      *      required=false,
@@ -246,7 +218,7 @@ class UserController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Usuario actualizado correctamente"),
-     *          @OA\Property(property="data", type="object", ref="#/components/schemas/Usuario"),
+     *          @OA\Property(property="usuario", type="object", ref="#/components/schemas/Usuario"),
      *      ),
      *  ),
      *  @OA\Response(
@@ -271,12 +243,6 @@ class UserController extends Controller implements HasMiddleware
      */
     public function update(ActualizarUsuarioRequest $request, User $usuario)
     {
-        $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
-
-        if (!$esAdmin) {
-            return response()->json(['success' => false, 'message' => 'No tienes permisos para actualizar este usuario'], 403);
-        }
-
         $data = $request->only(['name', 'email', 'rol']);
         if ($request->has('password')) {
             $data['password'] = Hash::make($request->password);
@@ -284,11 +250,7 @@ class UserController extends Controller implements HasMiddleware
 
         $usuario->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario actualizado correctamente',
-            'data' => new UserResource($usuario),
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Usuario actualizado correctamente', 'usuario' => new UserResource($usuario),], 200);
     }
 
     /**
@@ -296,18 +258,18 @@ class UserController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Delete(
-     *  path="/api/usuarios/{id}",
+     *  path="/api/usuarios/{slug}",
      *  summary="Eliminar un usuario",
-     *  description="Elimina un usuario por su ID",
+     *  description="Elimina un usuario por su Slug",
      *  operationId="destroyUsuario",
      *  tags={"usuarios"},
      *  security={{"bearerAuth": {}}},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="ID del usuario",
+     *      description="Slug del usuario",
      *      required=true,
-     *      @OA\Schema(type="integer"),
+     *      @OA\Schema(type="string"),
      *  ),
      *  @OA\Response(
      *      response=200,

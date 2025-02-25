@@ -32,13 +32,13 @@ class LoginUserController extends FormRequest
     public function messages()
     {
         return [
-            'email.required' => 'El email de usuario es requerido',
-            'email.regex' => 'El email no corresponde con un formato valido',
-            'email.max' => 'El email solo tiene maximo 255 caracteres',
-            'email.exists' => 'El usuario no existe',
-            'password.required' => 'La contraseña del usuario es requerida',
-            'password.string' => 'La contraseña del usuario ha de ser texto',
-            'password.max' => 'La contraseña del usuario solo tiene maximo 255 caracteres',
+            'email.required' => 'El email de usuario es requerido.',
+            'email.regex' => 'El email no corresponde con un formato valido.',
+            'email.max' => 'El email solo tiene maximo 255 caracteres.',
+            'email.exists' => 'El usuario no existe.',
+            'password.required' => 'La contraseña del usuario es requerida.',
+            'password.string' => 'La contraseña del usuario ha de ser texto.',
+            'password.max' => 'La contraseña del usuario solo tiene maximo 255 caracteres.',
         ];
     }
 
@@ -46,7 +46,7 @@ class LoginUserController extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la creacion',
+            'message'   => 'Errores en el logueo del usuario',
             'errors'      => $validator->errors()
         ]));
     }

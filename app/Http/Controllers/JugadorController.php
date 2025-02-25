@@ -79,17 +79,17 @@ class JugadorController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Get(
-     *  path="/api/jugadores/{id}",
+     *  path="/api/jugadores/{slug}",
      *  summary="Obtener un jugador",
-     *  description="Obtener un jugador por su id",
+     *  description="Obtener un jugador por su Slug",
      *  operationId="showJugador",
      *  tags={"jugadores"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del jugador",
+     *      description="Slug del jugador",
      *      required=true,
-     *      @OA\Schema(type="integer",example="1")
+     *      @OA\Schema(type="slug",example="samuel-tamayo-muniz")
      *  ),
      *  @OA\Response(
      *      response=200,
@@ -98,7 +98,7 @@ class JugadorController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
-     *          @OA\Property(property="data", type="jugador", ref="#/components/schemas/Jugador"),
+     *          @OA\Property(property="jugador", type="jugador", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(
@@ -126,6 +126,7 @@ class JugadorController extends Controller implements HasMiddleware
      *  summary="Crear un nuevo jugador",
      *  description="Crear un nuevo jugador",
      *  operationId="storeJugador",
+     *  security={{"bearerAuth": {}}},
      *  tags={"jugadores"},
      *  @OA\RequestBody(
      *      required=true,
@@ -146,22 +147,22 @@ class JugadorController extends Controller implements HasMiddleware
      *     ),
      *  ),
      *  @OA\Response(
-     *      response=403,
-     *      description="No tienes permisos",
+     *      response=401,
+     *      description="No autorizado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para crear un nuevo jugador en este equipo"),
-     *     ),
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
      *  ),
      *  @OA\Response(
-     *      response=409,
-     *      description="Equipo lleno",
+     *      response=403,
+     *      description="Prohibido",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Equipo lleno | No puedes crear más jugadores"),
-     *     ),
+     *          @OA\Property(property="message", type="string", example="No puedes crear ningún equipo")
+     *      )
      *  ),
      * )
      */
@@ -204,17 +205,18 @@ class JugadorController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Put(
-     *  path="/api/jugadores/{id}",
+     *  path="/api/jugadores/{slug}",
      *  summary="Actualizar un jugador",
-     *  description="Actualizar un jugador",
+     *  description="Actualizar un jugador por su Slug",
      *  operationId="updateJugador",
+     *  security={{"bearerAuth": {}}},
      *  tags={"jugadores"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del jugador",
+     *      description="Slug del jugador",
      *      required=true,
-     *      @OA\Schema(type="integer",example="1")
+     *      @OA\Schema(type="string",example="samuel-tamayo-muniz")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
@@ -234,23 +236,33 @@ class JugadorController extends Controller implements HasMiddleware
      *     ),
      *  ),
      *  @OA\Response(
-     *      response=404,
-     *      description="Jugador no encontrado",
+     *      response=401,
+     *      description="No autorizado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Jugador no encontrado")
-     *       ),
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
      *  ),
      *  @OA\Response(
      *      response=403,
-     *      description="No tienes permisos",
+     *      description="Prohibido",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para actualizar a este jugador")
-     *       ),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para editar ningún jugador | No puedes editar el jugador samuel-tamayo-muniz del equipo Desguace FC"),
+     *          @OA\Property(property="code", type="string", example="JUGADOR_EDIT_FORBIDDEN")
+     *      )
      *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
+     *      )
+     *  )
      * )
      */
     public function update(ActualizarJugadorRequest $request, Jugador $jugador)
@@ -286,17 +298,18 @@ class JugadorController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Delete(
-     *  path="/api/jugadores/{id}",
+     *  path="/api/jugadores/{slug}",
      *  summary="Eliminar un jugador",
-     *  description="Eliminar un jugador por su id",
+     *  description="Eliminar un jugador por su Slug",
      *  operationId="deleteJugador",
+     *  security={{"bearerAuth": {}}},
      *  tags={"jugadores"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="Id del jugador",
+     *      description="Slug del jugador",
      *      required=true,
-     *      @OA\Schema(type="integer",example="1")
+     *      @OA\Schema(type="string",example="samuel-tamayo-muniz")
      *  ),
      *  @OA\Response(
      *      response=200,
@@ -308,25 +321,34 @@ class JugadorController extends Controller implements HasMiddleware
      *       )
      *  ),
      *  @OA\Response(
-     *      response=404,
-     *      description="Jugador no encontrado",
-     *       @OA\JsonContent(
+     *      response=401,
+     *      description="No autorizado",
+     *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Jugador no encontrado")
-     *       )
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
      *  ),
-     * ),
      *  @OA\Response(
      *      response=403,
-     *      description="No tienes permisos",
-     *       @OA\JsonContent(
+     *      description="Prohibido",
+     *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para borrar a este jugador")
-     *       )
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para borar ningún jugador | No puedes borrar el jugador samuel-tamayo-muniz del equipo Desguace FC"),
+     *          @OA\Property(property="code", type="string", example="JUGADOR_DELETE_FORBIDDEN")
+     *      )
      *  ),
-     * ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Equipo no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
+     *      )
+     *  )
+     * )
      */
     public function destroy(Jugador $jugador)
     {

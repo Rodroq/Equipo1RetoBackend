@@ -16,6 +16,7 @@ use Spatie\Sluggable\SlugOptions;
  *  title="Equipo",
  *  required={"nombre", "jugadores"},
  *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
+ * * @OA\Property(property="slug", type="string", example="desguace-fc"),
  *  @OA\Property(property="grupo", type="string", example="A"),
  *  @OA\Property(property="centro", type="object", ref="#/components/schemas/Centro"),
  *  @OA\Property(property="jugadores", type="array", @OA\Items(ref="#/components/schemas/Jugador")),

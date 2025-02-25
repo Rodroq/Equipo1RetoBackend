@@ -12,6 +12,7 @@ use Spatie\Sluggable\SlugOptions;
  * type="object",
  * title="Partido",
  * required={"fecha", "hora", "equipoLoc", "golesVis", "pabellon"},
+ * @OA\Property(property="slug", type="string", example="partido"),
  * @OA\Property(property="fecha", type="string", example="2021-10-10"),
  * @OA\Property(property="hora", type="string", format="time", example="16:00:00"),
  * @OA\Property(property="equipoLoc", type="integer", example=1),

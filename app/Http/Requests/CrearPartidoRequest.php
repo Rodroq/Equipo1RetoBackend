@@ -38,9 +38,9 @@ class CrearPartidoRequest extends FormRequest
     {
         return [
             'fecha.required' => 'La fecha es obligatoria.',
-            'fecha.date' => 'El formato de la fecha debe ser YYYY-MM-DD.',
+            'fecha.date' => 'El formato de la fecha debe ser YYYY-MM-DD',
             'hora.required' => 'La hora es obligatoria.',
-            'hora.date_format' => 'El formato de la hora debe ser HH:MM:SS.',
+            'hora.date_format' => 'El formato de la hora debe ser HH:MM:SS',
             'equipoL.required' => 'El equipo local es obligatorio.',
             'equipoL.exists' => 'El equipo local no existe.',
             'equipoV.required' => 'El equipo visitante es obligatorio.',
@@ -56,7 +56,7 @@ class CrearPartidoRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la creacion',
+            'message'   => 'Errores en la creacion del partido',
             'errors'      => $validator->errors()
         ]));
     }

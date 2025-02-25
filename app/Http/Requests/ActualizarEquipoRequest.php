@@ -32,9 +32,9 @@ class ActualizarEquipoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nombre.string' => 'El nombre del equipo ha de ser texto',
-            'nombre.max' => 'El nombre solo tiene maximo 45 caracteres',
-            'nombre.unique' => 'El nombre del equipo ya esta escogido',
+            'nombre.string' => 'El nombre del equipo ha de ser texto.',
+            'nombre.max' => 'El nombre solo tiene maximo 45 caracteres.',
+            'nombre.unique' => 'El nombre del equipo ya esta escogido.',
             'grupo.in' => 'El grupo solo puede ser [A | B]',
         ];
     }
@@ -44,7 +44,7 @@ class ActualizarEquipoRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la actualizacion',
+            'message'   => 'Errores en la actualizacion del equipo',
             'errors'      => $validator->errors()
         ]));
     }

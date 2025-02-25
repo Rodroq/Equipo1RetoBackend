@@ -21,22 +21,22 @@ class RetoSeeder extends Seeder
         $retos = [
             [
                 'titulo' => 'Merchandising de la Liga',
-                'texto' => 'Desde de la familia profesional de Textil, Confección y Piel el IES Besaya a través de su ciclo Profesional Básico en Tapicería y Cortinaje ha diseñado el RETO de Merchadising. Este RETO tiene la finalidad de diseñar y confeccionan productos de merchandising como chapas, llaveros, gorras con los logos de la Liga, centros participantes y diseños exclusivos para la venta y recaudación de fondos destinados a nuestra ONG. La venta se realizará en el propio reciento del evento durante los días 12 y 13 de marzo. Para ello se instalará una expositor tienda dentro del propio recinto.',
+                'texto' => 'Desde la familia profesional de Textil, Confección y Piel el IES Besaya a través de su ciclo Profesional Básico en Tapicería y Cortinaje ha diseñado el RETO de Merchadising. Este RETO tiene la finalidad de diseñar y confeccionan productos de merchandising como chapas, llaveros, gorras con los logos de la Liga, centros participantes y diseños exclusivos para la venta y recaudación de fondos destinados a nuestra ONG. La venta se realizará en el propio reciento del evento durante los días 12 y 13 de marzo. Para ello se instalará una expositor tienda dentro del propio recinto.',
                 'estudio_id' => $estudios->first()->id,
             ],
             [
                 'titulo' => 'FoodTruck',
-                'texto' => 'Desde de la familia profesional de Hostelería y Turismo el IES Besaya a través de sus ciclos Profesionales Básico en Cocina y Restauracion y Grado Medio en Servicios de Restauracion han diseñado el RETO de Food truck. Este RETO tiene la finalidad de diseñar y producir bebidas isotónicas y barritas energéticas para la venta y recaudación de fondos destinados a nuestra ONG. La venta se realizará en el propio reciento del evento durante los días 12 y 13 de marzo. Para ello se instalará una foodtruck en los aledaños del recinto.',
+                'texto' => 'Desde la familia profesional de Hostelería y Turismo el IES Besaya a través de sus ciclos Profesionales Básico en Cocina y Restauracion y Grado Medio en Servicios de Restauracion han diseñado el RETO de Food truck. Este RETO tiene la finalidad de diseñar y producir bebidas isotónicas y barritas energéticas para la venta y recaudación de fondos destinados a nuestra ONG. La venta se realizará en el propio reciento del evento durante los días 12 y 13 de marzo. Para ello se instalará una foodtruck en los aledaños del recinto.',
                 'estudio_id' => $estudios->get(1)->id,
             ],
             [
                 'titulo' => 'Diseño de Logos, etiquetas, packering',
-                'texto' => 'Desde de la familia profesional de Comercio y Marketing el IES Besaya a través de sus ciclos Grado Medio en Comercialización de Productos Alimentarios y Grado Superior en Transporte y Logística han diseñado el RETO de Logos, etiquetas, packering. Este RETO tiene la finalidad de diseñar el logo de la Liga para la Sede de Torrelavega y las etiquetas así como el packequing para los productos que se vendarán a través del RETO Foodtruck.',
+                'texto' => 'Desde la familia profesional de Comercio y Marketing el IES Besaya a través de sus ciclos Grado Medio en Comercialización de Productos Alimentarios y Grado Superior en Transporte y Logística han diseñado el RETO de Logos, etiquetas, packering. Este RETO tiene la finalidad de diseñar el logo de la Liga para la Sede de Torrelavega y las etiquetas así como el packequing para los productos que se vendarán a través del RETO Foodtruck.',
                 'estudio_id' => $estudios->get(2)->id,
             ],
             [
                 'titulo' => 'EXPO “BARRIOGRAFÍA DE LA INCLUSIÓN”',
-                'texto' => 'Desde de la familia profesional de Servicios Socioculturales y a la Comunidad el IES Besaya a través de su ciclo Grado Superior en Integración Social han diseñado la exposición BARRIOGRAFÍA DE LA INCLUSIÓN. Esta exposición muestra como las cosas que vemos cambian dependiendo de los ojos que usemos para verlas, del tiempo que tomemos para observarlas y del lado de la calle donde nos situemos para hacerlo. Por lo tanto, es una experiencia de intervención socioeducativa basada en una exposición de fotografías realizadas por el alumnado de primer curso de integración social durante una salida por los barrios de Torrelavega.',
+                'texto' => 'Desde la familia profesional de Servicios Socioculturales y a la Comunidad el IES Besaya a través de su ciclo Grado Superior en Integración Social han diseñado la exposición BARRIOGRAFÍA DE LA INCLUSIÓN. Esta exposición muestra como las cosas que vemos cambian dependiendo de los ojos que usemos para verlas, del tiempo que tomemos para observarlas y del lado de la calle donde nos situemos para hacerlo. Por lo tanto, es una experiencia de intervención socioeducativa basada en una exposición de fotografías realizadas por el alumnado de primer curso de integración social durante una salida por los barrios de Torrelavega.',
                 'estudio_id' => $estudios->get(3)->id,
             ],
             [

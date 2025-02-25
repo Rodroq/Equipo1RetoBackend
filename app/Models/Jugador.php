@@ -18,6 +18,7 @@ use Spatie\Sluggable\SlugOptions;
  *  @OA\Property(property="nombre", type="string", example="Álvaro"),
  *  @OA\Property(property="apellido1", type="string", example="Ruiz"),
  *  @OA\Property(property="apellido2", type="string", example="Gutierrez"),
+ * * @OA\Property(property="slug", type="string", example="alvaro-ruiz-gutierrez"),
  *  @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
  *  @OA\Property(property="dni", type="string", example="12345678A"),
  *  @OA\Property(property="email", type="string", example="example@exa.com"),

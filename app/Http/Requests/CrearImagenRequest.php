@@ -31,9 +31,9 @@ class CrearImagenRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'image.required' => 'La imagen del equipo es requerido',
+            'image.required' => 'La imagen del equipo es requerido.',
             'image.mimes' => 'Los tipos de imagen permitidos son [png,jpg,jpeg,gif]',
-            'image.max' => 'El tamaño maximo de la imagen debe rondar los 2 MB',
+            'image.max' => 'El tamaño maximo de la imagen debe rondar los 2 MB.',
         ];
     }
 
@@ -41,7 +41,7 @@ class CrearImagenRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la creacion',
+            'message'   => 'Errores en la creacion de la imagen',
             'errors'      => $validator->errors()
         ]));
     }

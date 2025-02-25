@@ -23,43 +23,23 @@ class PartidoController extends Controller
      *      response=200,
      *      description="Lista de partidos",
      *      @OA\JsonContent(
-     *          type="array",
-     *          @OA\Items(ref="#/components/schemas/Partido")
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Partidos disponibles"),
+     *          @OA\Property(property="partidos", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
      *      ),
      *  ),
      * )
      */
     public function index()
     {
-
         $partidos = Partido::with('equipoLoc', 'equipoVis')->get();
 
         if ($partidos->isEmpty()) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'No hay partidos'
-                ],
-                204
-            );
+            return response()->json(['success' => false, 'message' => 'No hay partidos'], 204);
         }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Partidos disponibles',
-                'data' => ['partidos' => PartidoResource::collection($partidos)],
-            ],
-            200
-        );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(['success' => true, 'message' => 'Partidos disponibles', 'partidos' => ['partidos' => PartidoResource::collection($partidos)]], 200);
     }
 
     /**
@@ -86,7 +66,12 @@ class PartidoController extends Controller
      *  @OA\Response(
      *      response=201,
      *      description="Partido creado correctamente",
-     *      @OA\JsonContent(ref="#/components/schemas/Partido")
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
+     *          @OA\Property(property="partido", type="array", @OA\Items(ref="#/components/schemas/Partido")),
+     *      ),
      *  ),
      * )
      */
@@ -105,12 +90,7 @@ class PartidoController extends Controller
             'usuarioIdCreacion' => $request->usuarioIdCreacion,
         ]);
 
-        // Responder con el partido creado
-        return response()->json([
-            'success' => true,
-            'message' => 'Partido creado correctamente',
-            'data' => ['partido' => new PartidoResource($partido)]
-        ], 200);
+        return response()->json(['success' => true, 'message' => 'Partido creado correctamente', 'data' => ['partido' => new PartidoResource($partido)]], 200);
     }
 
     /**
@@ -118,22 +98,27 @@ class PartidoController extends Controller
      */
     /**
      * @OA\Get(
-     *  path="/api/partidos/{id}",
+     *  path="/api/partidos/{slug}",
      *  summary="Obtener un partido específico",
-     *  description="Devuelve los detalles de un partido por ID",
+     *  description="Devuelve los detalles de un partido por Slug",
      *  operationId="showPartido",
      *  tags={"partidos"},
      *  @OA\Parameter(
-     *      name="id",
+     *      name="slug",
      *      in="path",
-     *      description="ID del partido",
+     *      description="Slug del partido",
      *      required=true,
-     *      @OA\Schema(type="integer")
+     *      @OA\Schema(type="string", example="partido")
      *  ),
      *  @OA\Response(
      *      response=200,
      *      description="Detalles del partido",
-     *      @OA\JsonContent(ref="#/components/schemas/Partido"),
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Partido encontrado"),
+     *          @OA\Property(property="partido", type="array", @OA\Items(ref="#/components/schemas/Partido")),
+     *      ),
      *  ),
      *  @OA\Response(
      *      response=404,
@@ -141,45 +126,8 @@ class PartidoController extends Controller
      *  ),
      * )
      */
-    public function show($partido)
+    public function show(Partido $partido)
     {
-        $partidos = Partido::find($partido);
-        
-        if (!$partidos) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Partido no encontrado'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Partido encontrado',
-            'data' => new PartidoResource($partidos)
-        ], 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['status' => true, 'message' => 'Partido encontrado', 'partido' => new PartidoResource($partido)], 200);
     }
 }

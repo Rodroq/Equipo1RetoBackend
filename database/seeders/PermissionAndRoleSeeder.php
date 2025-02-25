@@ -23,11 +23,15 @@ class PermissionAndRoleSeeder extends Seeder
         $crear_equipo_permiso = Permission::firstOrCreate(['name' => 'crear_equipo']);
         $editar_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_equipo']);
         $borrar_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_equipo']);
+        $editar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_equipo']);
+        $borrar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_equipo']);
 
         // jugadores C - U D
         $crear_jugador_permiso = Permission::firstOrCreate(['name' => 'crear_jugador']);
         $editar_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_jugador']);
         $borrar_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_jugador']);
+        $editar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_jugador']);
+        $borrar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_jugador']);
 
         // patrocinadores C - U D
         $crear_patrocinador_permiso = Permission::firstOrCreate(['name' => 'crear_patrocinador']);
@@ -49,30 +53,23 @@ class PermissionAndRoleSeeder extends Seeder
 
         //actas C R U D
         $crear_actas_permiso = Permission::firstOrCreate(['name' => 'crear_acta']);
-        $leer_actas_permiso = Permission::firstOrCreate(['name' => 'leer_acta']);                            //posiblemente innecesario
+        $leer_actas_permiso = Permission::firstOrCreate(['name' => 'leer_acta']);
         $editar_actas_permiso = Permission::firstOrCreate(['name' => 'editar_acta']);                        //posiblemente innecesario
-        $borrar_actas_permiso = Permission::firstOrCreate(['name' => 'borrar_acta']);                      //posiblemente innecesario
-
-        //imagenes C - U D
-        $crear_imagen_permiso = Permission::firstOrCreate(['name' => 'crear_imagen']);
-        $editar_imagen_permiso = Permission::firstOrCreate(['name' => 'editar_imagen']);
-        $borrar_imagen_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen']);
+        $borrar_actas_permiso = Permission::firstOrCreate(['name' => 'borrar_acta']);                        //posiblemente innecesario
 
         //inscripciones - R U -
-        $crear_inscripcion_permiso = Permission::firstOrCreate(['name' => 'crear_inscripcion']);             //posiblemente innecesario
         $leer_inscripcion_permiso = Permission::firstOrCreate(['name' => 'leer_inscripcion']);
         $editar_inscripcion_permiso = Permission::firstOrCreate(['name' => 'editar_inscripcion']);
 
 
 
-        /* Sección de los roles de la web */
+        Role::create(['name' => 'entrenador']);
+        Role::create(['name' => 'director']);
+        Role::create(['name' => 'periodista']);
 
-        $entrenador = Role::create(['name' => 'entrenador']);
-        $director_torneo = Role::create(['name' => 'director']);
-        $periodista = Role::create(['name' => 'periodista']);
+
+        /* Asignar permisos al rol administrador */
         $administrador = Role::create(['name' => 'administrador']);
-
-        /* Asignar permisos a los roles */
         $administrador->syncPermissions(
             $editar_equipo_permiso,
             $borrar_equipo_permiso,
@@ -86,7 +83,10 @@ class PermissionAndRoleSeeder extends Seeder
             $leer_actas_permiso,
             $editar_actas_permiso,
             $borrar_actas_permiso,
-            $borrar_imagen_permiso,
+            $editar_imagen_equipo_permiso,
+            $borrar_imagen_equipo_permiso,
+            $editar_imagen_jugador_permiso,
+            $borrar_imagen_jugador_permiso,
             $leer_inscripcion_permiso,
             $editar_inscripcion_permiso
         );
