@@ -12,17 +12,17 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
 
-class ImagenController extends Controller /* implements HasMiddleware */
+class ImagenController extends Controller  implements HasMiddleware
 {
 
-    /* public static function middleware(): array
+    public static function middleware(): array
     {
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('role:administrador|entrenador|periodista', only: ['store', 'update', 'destroy']),
         ];
-    } */
+    }
 
     public function __construct()
     {

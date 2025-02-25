@@ -178,7 +178,11 @@ class EquipoController extends Controller implements HasMiddleware
         $equipo = Equipo::create(['nombre' => $request->nombre, 'grupo' => $request->grupo, 'centro_id' => $centro_id,]);
         $equipo->crearJugadores($request->jugadores);
 
-        $this->user->syncPermissions(['editar_equipo', 'borrar_equipo', 'crear_jugador', 'borrar_jugador', 'editar_jugador']);
+        $this->user->syncPermissions(['editar_equipo', 'borrar_equipo', 'borrar_jugador', 'editar_jugador']);
+
+        if ($equipo->jugadores()->count() < 12) {
+            $this->user->givePermissionTo('crear_jugador');
+        }
 
         $nuevo_token = $this->servicio_autenticacion->generateUserToken($this->user);
 
