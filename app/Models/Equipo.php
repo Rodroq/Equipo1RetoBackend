@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -20,9 +22,10 @@ use Spatie\Sluggable\SlugOptions;
  *)
  */
 
-class Equipo extends Model
+class Equipo extends Model implements HasMedia
 {
     use HasSlug;
+    use InteractsWithMedia;
 
     protected $table = 'equipos';
 

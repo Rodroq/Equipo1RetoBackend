@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CrearImagenRequest;
 use App\Http\Resources\ImagenResource;
 use App\Models\Imagen;
 use App\Services\ImageService;
@@ -11,17 +12,17 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
 
-class ImagenController extends Controller implements HasMiddleware
+class ImagenController extends Controller /* implements HasMiddleware */
 {
 
-    public static function middleware(): array
+    /* public static function middleware(): array
     {
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('role:administrador|entrenador|periodista', only: ['store', 'update', 'destroy']),
         ];
-    }
+    } */
 
     public function __construct()
     {
@@ -35,14 +36,14 @@ class ImagenController extends Controller implements HasMiddleware
     {
         $clase_modelo = Relation::getMorphedModel($modelo);
 
-        if (!class_exists($clase_modelo)) return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 400);
+        if (!class_exists($clase_modelo) || !$clase_modelo) return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 400);
 
         $items = $clase_modelo::all();
 
-        $images = $items->map(function ($item) {
-            $image = $this->servicio_imagenes->getImages($item, "equipo_{$item->slug}_images")->first();
-
+        $images = $items->map(function ($item) use ($modelo) {
+            $image = $this->servicio_imagenes->getImages($item, "{$modelo}-{$item->slug}-images");
             return [
+
                 'slug' => $item->slug,
                 'image' => $image ? new ImagenResource($image) : null,
             ];
@@ -54,9 +55,21 @@ class ImagenController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $modelo)
+    public function store(CrearImagenRequest $request, string $modelo, string $slug)
     {
-        //
+        $clase_modelo = Relation::getMorphedModel($modelo);
+
+        if (!$clase_modelo || !$clase_modelo) return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
+
+        $item = $clase_modelo::where('slug', $slug)->first();
+
+        if (!$item) return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+
+        $imagen = $request->file('image');
+
+        $media = $this->servicio_imagenes->uploadImage($item, $imagen);
+
+        return response()->json(['success' => true, 'message' => 'Imagen guardada exitosamente', 'imagen' => new ImagenResource($media)], 201);
     }
 
     /**

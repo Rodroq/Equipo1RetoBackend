@@ -15,12 +15,14 @@ final class ImageService
         $this->disk = $disk;
     }
 
-    public function uploadImage($model, UploadedFile $file, string $folder,  string $filename, string $collection = 'default')
+    public function uploadImage($model, UploadedFile $file)
     {
+        $filename = "{$model->getTable()}-{$model->slug}." . $file->getClientOriginalExtension();
+        $collection = "{$model->getTable()}-{$model->slug}-images";
 
-        $path = $file->storeAs($folder, $filename, $this->disk);
-
-        $media = $model->addMedia(storage_path("app/{$path}"))->usingFileName($filename)->toMediaCollection($collection, $this->disk);
+        $media = $model->addMediaFromRequest('image')
+            ->usingFileName($filename)
+            ->toMediaCollection($collection, $this->disk);
 
         return $media;
     }

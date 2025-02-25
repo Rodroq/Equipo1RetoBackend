@@ -22,6 +22,6 @@ Route::apiResource('partidos', PartidoController::class)->only('index', 'show', 
 
 Route::controller(ImagenController::class)->group(function (){
     Route::get('imagenes/{imageable_type}','index')->name('imagenes.index');
-    Route::post('imagenes/{imageable_type}','store')->name('imagenes.store');
+    Route::post('imagenes/{imageable_type}/{slug}','store')->name('imagenes.store');
 });
 
