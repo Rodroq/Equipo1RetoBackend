@@ -36,16 +36,18 @@ class ImagenController extends Controller /* implements HasMiddleware */
     {
         $clase_modelo = Relation::getMorphedModel($modelo);
 
-        if (!class_exists($clase_modelo) || !$clase_modelo) return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 400);
+        if (!class_exists($clase_modelo) || !$clase_modelo) {
+            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 400);
+        }
 
         $items = $clase_modelo::all();
 
         $images = $items->map(function ($item) use ($modelo) {
-            $image = $this->servicio_imagenes->getImages($item, "{$modelo}-{$item->slug}-images");
+            $image = $this->servicio_imagenes->getFirstImage($item, "{$modelo}-{$item->slug}-images");
             return [
 
                 'slug' => $item->slug,
-                'image' => $image ? new ImagenResource($image) : null,
+                'imagen' => $image ? new ImagenResource($image) : null,
             ];
         });
 
@@ -59,11 +61,15 @@ class ImagenController extends Controller /* implements HasMiddleware */
     {
         $clase_modelo = Relation::getMorphedModel($modelo);
 
-        if (!$clase_modelo || !$clase_modelo) return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
+        if (!$clase_modelo || !$clase_modelo) {
+            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
+        }
 
         $item = $clase_modelo::where('slug', $slug)->first();
 
-        if (!$item) return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+        }
 
         $imagen = $request->file('image');
 

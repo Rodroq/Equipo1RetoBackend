@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -28,10 +30,10 @@ use Spatie\Sluggable\SlugOptions;
  *  @OA\Property(property="estudios", type="object", ref="#/components/schemas/Estudio")
  *  )
  */
-class Jugador extends Model
+class Jugador extends Model implements HasMedia
 {
     use HasSlug;
-
+    use InteractsWithMedia;
     protected $table = 'jugadores';
 
     protected $fillable = [

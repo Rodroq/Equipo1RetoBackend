@@ -7,7 +7,6 @@ use Illuminate\Http\UploadedFile;
 
 final class ImageService
 {
-
     protected $disk;
 
     public function __construct(string $disk)
@@ -27,9 +26,14 @@ final class ImageService
         return $media;
     }
 
-    public function getImages($model, string $collection = 'default')
+    public function getFirstImage($model, string $collection = 'default')
     {
         return $model->getFirstMedia($collection);
+    }
+
+    public function getImages($model, string $collection = 'default')
+    {
+        return $model->getMedia($collection);
     }
 
     public function getImageByName($model, string $filename, string $collection = 'default')

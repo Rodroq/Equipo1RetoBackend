@@ -67,7 +67,9 @@ class JugadorController extends Controller implements HasMiddleware
     {
         $jugadores = Jugador::with('estudio')->get();
 
-        if ($jugadores->isEmpty()) return response()->json(['success' => false, 'message' => 'No hay jugadores'], 204);
+        if ($jugadores->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No hay jugadores'], 204);
+        }
 
         return response()->json(['success' => true, 'message' => 'Jugadores disponibles', 'jugadores' => JugadorResource::collection($jugadores),], 200);
     }
@@ -167,7 +169,9 @@ class JugadorController extends Controller implements HasMiddleware
     {
         $response = Gate::inspect('create', [Jugador::class, $this->user]);
 
-        if (!$response->allowed()) return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        }
 
         $equipo = Equipo::where('usuarioIdCreacion', $this->user->id)->firstOrFail();
 
@@ -253,7 +257,9 @@ class JugadorController extends Controller implements HasMiddleware
     {
         $response = Gate::inspect('update', [$jugador, $this->user]);
 
-        if (!$response->allowed()) return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        }
 
         //Obtener estudio al que pertenece el jugador a través del ciclo al que pertenece, si es que se especificó
         if ($request->ciclo) {

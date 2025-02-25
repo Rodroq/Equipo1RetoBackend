@@ -69,7 +69,9 @@ class EquipoController extends Controller implements HasMiddleware
             })->with('jugadores', 'centro')->get();
         }
 
-        if ($equipos->isEmpty()) return response()->json(['success' => true, 'message' => 'No hay equipos'], 404);
+        if ($equipos->isEmpty()) {
+            return response()->json(['success' => true, 'message' => 'No hay equipos'], 404);
+        }
 
         return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);
     }
@@ -167,7 +169,9 @@ class EquipoController extends Controller implements HasMiddleware
     {
         $response = Gate::inspect('create', [Equipo::class, $this->user]);
 
-        if (!$response->allowed()) return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
+        }
 
         $centro_id = $request->centro ? Centro::where('nombre', $request->centro)->first()->id : null;
 
