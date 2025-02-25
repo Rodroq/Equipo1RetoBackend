@@ -242,7 +242,6 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function update(ActualizarEquipoRequest $request, Equipo $equipo)
     {
-        dd($equipo, $equipo->nombre);
         $response = Gate::inspect('update', [$equipo, $this->user]);
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
@@ -301,7 +300,6 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function destroy(Equipo $equipo)
     {
-        dd($this->user->getPermissionNames());
         $response = Gate::inspect('delete', [$equipo, $this->user]);
 
         if (!$response->allowed()) {
