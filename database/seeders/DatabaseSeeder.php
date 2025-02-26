@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        DB::table('permissions')->delete();
+        DB::table('roles')->delete();
+        DB::table('users')->delete();
+        DB::table('centros')->delete();
+        DB::table('pabellones')->delete();
+        DB::table('ongs')->delete();
+        DB::table('familias')->delete();
+        DB::table('ciclos')->delete();
+        DB::table('estudios')->delete();
+        DB::table('retos')->delete();
+        DB::table('equipos')->delete();
+        DB::table('jugadores')->delete();
+        DB::table('partidos')->delete();
+        DB::table('actas')->delete();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(PermissionAndRoleSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(CentroSeeder::class);
+        $this->call(PabellonSeeder::class);
+        $this->call(OngSeeder::class);
+        $this->call(FamiliaSeeder::class);
+        $this->call(CicloSeeder::class);
+        $this->call(EstudioSeeder::class);
+        $this->call(RetoSeeder::class);
+        $this->call(EquipoSeeder::class);
+        $this->call(JugadorSeeder::class);
+        $this->call(PartidosSeeder::class);
+        $this->call(ActasSeeder::class);
+
     }
 }
