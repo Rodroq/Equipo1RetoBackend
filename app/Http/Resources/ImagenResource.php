@@ -16,7 +16,7 @@ class ImagenResource extends JsonResource
     {
         return [
             'url' => $this->getUrl(),
-            'nombre' => $this->file_name,
+            'nombre' => $this->custom_properties['name'],
         ];
     }
 }

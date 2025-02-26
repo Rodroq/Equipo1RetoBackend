@@ -4,46 +4,65 @@ namespace App\Services;
 
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 final class ImageService
 {
-    protected $disk;
+    private string $disk;
+    private string $collection;
 
     public function __construct(string $disk)
     {
         $this->disk = $disk;
+        $this->collection = 'default';
+    }
+
+    protected function selectCollection($model): void
+    {
+        $this->collection = "{$model->getTable()}-{$model->slug}-images";
     }
 
     public function uploadImage($model, UploadedFile $file)
     {
-        $filename = "{$model->getTable()}-{$model->slug}." . $file->getClientOriginalExtension();
-        $collection = "{$model->getTable()}-{$model->slug}-images";
+        $this->selectCollection($model);
+
+        $name_indetifier = now()->format('Y_m_d_His_') . Str::random(8);
+        $name = "{$name_indetifier}-{$model->getTable()}-{$model->slug}";
+        $filename = $name . '.' . $file->getClientOriginalExtension();
 
         $media = $model->addMediaFromRequest('image')
             ->usingFileName($filename)
-            ->toMediaCollection($collection, $this->disk);
+            ->withCustomProperties(['name' => $name])
+            ->toMediaCollection($this->collection, $this->disk);
 
         return $media;
     }
 
-    public function getFirstImage($model, string $collection = 'default')
+    public function getFirstImage($model)
     {
-        return $model->getFirstMedia($collection);
+        $this->selectCollection($model);
+        return $model->getFirstMedia($this->collection);
     }
 
-    public function getImages($model, string $collection = 'default')
+    public function getImages($model, array $properties = [])
     {
-        return $model->getMedia($collection);
+        $this->selectCollection($model);
+        return $model->getMedia($this->collection, $properties);
     }
 
-    public function getImageByName($model, string $filename, string $collection = 'default')
+    public function getImage($model, string $name)
     {
-
-        return $model->getMedia($collection)->firstWhere('file_name', $filename);
+        return $this->getImages($model, ['name' => $name])->first();
     }
 
-    public function delete(Media $media)
+    public function delete(Media $media): bool|null
     {
         return $media->delete();
+    }
+
+    public function deleteAllMedia($model)
+    {
+        $this->selectCollection($model);
+        return $model->clearMediaCollection($this->collection);
     }
 }

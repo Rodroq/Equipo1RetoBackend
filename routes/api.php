@@ -20,6 +20,9 @@ Route::apiResource('partidos', PartidoController::class)->only('index', 'show', 
 
 Route::controller(ImagenController::class)->group(function (){
     Route::get('imagenes/{imageable_type}','index')->name('imagenes.index');
+    Route::get('imagenes/{imageable_type}/{slug}','show')->name('imagenes.show');
     Route::post('imagenes/{imageable_type}/{slug}','store')->name('imagenes.store');
+    Route::put('imagenes/{imageable_type}/{slug}','update')->name('imagenes.update');
+    Route::delete('imagenes/{imageable_type}/{slug}/{file_name}','destroy')->name('imagenes.destroy');
 });
 

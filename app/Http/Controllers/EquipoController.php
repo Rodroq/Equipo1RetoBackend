@@ -70,7 +70,7 @@ class EquipoController extends Controller implements HasMiddleware
         }
 
         if ($equipos->isEmpty()) {
-            return response()->json(['success' => true, 'message' => 'No hay equipos'], 404);
+            return response()->json(['success' => true, 'message' => 'No hay equipos'], 204);
         }
 
         return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);

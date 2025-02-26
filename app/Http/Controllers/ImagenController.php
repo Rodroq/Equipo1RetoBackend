@@ -12,17 +12,17 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
 
-class ImagenController extends Controller  implements HasMiddleware
+class ImagenController extends Controller  /* implements HasMiddleware */
 {
 
-    public static function middleware(): array
+    /* public static function middleware(): array
     {
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('role:administrador|entrenador|periodista', only: ['store', 'update', 'destroy']),
         ];
-    }
+    } */
 
     public function __construct()
     {
@@ -45,7 +45,6 @@ class ImagenController extends Controller  implements HasMiddleware
         $images = $items->map(function ($item) use ($modelo) {
             $image = $this->servicio_imagenes->getFirstImage($item, "{$modelo}-{$item->slug}-images");
             return [
-
                 'slug' => $item->slug,
                 'imagen' => $image ? new ImagenResource($image) : null,
             ];
@@ -81,7 +80,27 @@ class ImagenController extends Controller  implements HasMiddleware
     /**
      * Display the specified resource.
      */
-    public function show(Imagen $imagen) {}
+    public function show(string $modelo, string $slug)
+    {
+        $clase_modelo = Relation::getMorphedModel($modelo);
+
+        if (!$clase_modelo || !$clase_modelo) {
+            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
+        }
+
+        $item = $clase_modelo::where('slug', $slug)->first();
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+        }
+
+        $media = $this->servicio_imagenes->getImages($item);
+
+        if ($media->isEmpty()) {
+            return response()->json(['success' => true, 'message' => 'No hay imagenes'], 204);
+        }
+
+        return response()->json(['success' => true, 'message' => "Imagenes encontradas", 'imagenes' => ImagenResource::collection($media)], 200);
+    }
 
     /**
      * Update the specified resource in storage.
@@ -94,8 +113,23 @@ class ImagenController extends Controller  implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Imagen $imagen)
+    public function destroy(string $modelo, string $slug, string $name)
     {
-        //
+        $clase_modelo = Relation::getMorphedModel($modelo);
+
+        if (!$clase_modelo || !$clase_modelo) {
+            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
+        }
+
+        $item = $clase_modelo::where('slug', $slug)->first();
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+        }
+
+
+        $media = $this->servicio_imagenes->getImage($item, $name);
+        $this->servicio_imagenes->delete($media);
+
+        return response()->json(['success' => true, 'message' => "Imagen eliminada"], 200);
     }
 }
