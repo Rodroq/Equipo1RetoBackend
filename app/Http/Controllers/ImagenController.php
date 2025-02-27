@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CrearImagenRequest;
+use App\Http\Requests\ImagenRequest;
 use App\Http\Resources\ImagenResource;
-use App\Models\Imagen;
 use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -14,7 +13,6 @@ use Illuminate\Support\Facades\Gate;
 
 class ImagenController extends Controller  /* implements HasMiddleware */
 {
-
     /* public static function middleware(): array
     {
         return [
@@ -24,9 +22,15 @@ class ImagenController extends Controller  /* implements HasMiddleware */
         ];
     } */
 
-    public function __construct()
+    private function getModelInstance(string $model, ?string $slug = null)
     {
-        $this->servicio_imagenes = new ImageService('images_tournament');
+        $className = Relation::getMorphedModel($model);
+
+        if (!class_exists($className)) {
+            return null;
+        }
+
+        return $slug ? $className::where('slug', $slug)->first() : new $className;
     }
 
     /**
@@ -34,21 +38,18 @@ class ImagenController extends Controller  /* implements HasMiddleware */
      */
     public function index($modelo)
     {
-        $clase_modelo = Relation::getMorphedModel($modelo);
+        $modelo = $this->getModelInstance($modelo);
 
-        if (!class_exists($clase_modelo) || !$clase_modelo) {
-            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 400);
+        if (!$modelo) {
+            return response()->json(['success' => false, 'message' => 'Recurso no disponibles'], 400);
         }
 
-        $items = $clase_modelo::all();
+        $items = $modelo::all();
 
-        $images = $items->map(function ($item) use ($modelo) {
-            $image = $this->servicio_imagenes->getFirstImage($item, "{$modelo}-{$item->slug}-images");
-            return [
-                'slug' => $item->slug,
-                'imagen' => $image ? new ImagenResource($image) : null,
-            ];
-        });
+        $images = $items->map(fn($item) => [
+            'slug' => $item->slug,
+            'imagen' => optional($this->servicio_imagenes->getFirstImage($item))->getUrl() ?? null,
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Imagenes encontradas', 'imagenes' => $images], 200);
     }
@@ -56,23 +57,21 @@ class ImagenController extends Controller  /* implements HasMiddleware */
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CrearImagenRequest $request, string $modelo, string $slug)
+    public function store(ImagenRequest $request, string $modelo, string $slug)
     {
-        $clase_modelo = Relation::getMorphedModel($modelo);
-
-        if (!$clase_modelo || !$clase_modelo) {
-            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
-        }
-
-        $item = $clase_modelo::where('slug', $slug)->first();
+        $item = $this->getModelInstance($modelo, $slug);
 
         if (!$item) {
-            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+            return response()->json(['success' => false, 'message' => 'Recurso no encontrado'], 404);
         }
 
-        $imagen = $request->file('image');
+        $imagen = $request->file('imagen');
 
         $media = $this->servicio_imagenes->uploadImage($item, $imagen);
+
+        if (!$media) {
+            return response()->json(['success' => false, 'message' => 'Error al subir la imagen'], 500);
+        }
 
         return response()->json(['success' => true, 'message' => 'Imagen guardada exitosamente', 'imagen' => new ImagenResource($media)], 201);
     }
@@ -82,13 +81,8 @@ class ImagenController extends Controller  /* implements HasMiddleware */
      */
     public function show(string $modelo, string $slug)
     {
-        $clase_modelo = Relation::getMorphedModel($modelo);
+        $item = $this->getModelInstance($modelo, $slug);
 
-        if (!$clase_modelo || !$clase_modelo) {
-            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
-        }
-
-        $item = $clase_modelo::where('slug', $slug)->first();
         if (!$item) {
             return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
         }
@@ -96,18 +90,40 @@ class ImagenController extends Controller  /* implements HasMiddleware */
         $media = $this->servicio_imagenes->getImages($item);
 
         if ($media->isEmpty()) {
-            return response()->json(['success' => true, 'message' => 'No hay imagenes'], 204);
+            return response()->json(['success' => true, 'message' => 'No hay imágenes'], 204);
         }
 
-        return response()->json(['success' => true, 'message' => "Imagenes encontradas", 'imagenes' => ImagenResource::collection($media)], 200);
+        return response()->json(['success' => true, 'message' => 'Imágenes encontradas', 'imagenes' => ImagenResource::collection($media)], 200);
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Imagen $imagen)
+    public function update(ImagenRequest $request, string $modelo, string $slug, string $name)
     {
-        //
+        $item = $this->getModelInstance($modelo, $slug);
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
+        }
+
+        $media = $this->servicio_imagenes->getSpecificImage($item, $name);
+
+        if (!$media) {
+            return response()->json(['success' => false, 'message' => 'La imagen no existe'], 404);
+        }
+
+        if ($media) {
+            $this->servicio_imagenes->delete($media);
+        }
+
+        $newMedia = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'));
+
+        if (!$newMedia) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar la imagen'], 500);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Imagen actualizada', 'imagen' => new ImagenResource($newMedia)], 200);
     }
 
     /**
@@ -115,21 +131,20 @@ class ImagenController extends Controller  /* implements HasMiddleware */
      */
     public function destroy(string $modelo, string $slug, string $name)
     {
-        $clase_modelo = Relation::getMorphedModel($modelo);
+        $item = $this->getModelInstance($modelo, $slug);
 
-        if (!$clase_modelo || !$clase_modelo) {
-            return response()->json(['success' => false, 'message' => 'Imagenes no disponibles'], 404);
-        }
-
-        $item = $clase_modelo::where('slug', $slug)->first();
         if (!$item) {
             return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
         }
 
+        $media = $this->servicio_imagenes->getSpecificImage($item, $name);
 
-        $media = $this->servicio_imagenes->getImage($item, $name);
+        if (!$media) {
+            return response()->json(['success' => false, 'message' => 'Imagen no encontrada'], 404);
+        }
+
         $this->servicio_imagenes->delete($media);
 
-        return response()->json(['success' => true, 'message' => "Imagen eliminada"], 200);
+        return response()->json(['success' => true, 'message' => 'Imagen eliminada'], 200);
     }
 }

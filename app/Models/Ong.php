@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Pabellon extends Model
+class Ong extends Model implements HasMedia
 {
-    use HasSlug;
-
-    protected $table = 'pabellones';
+    use HasSlug, InteractsWithMedia;
+    protected $table = 'ongs';
 
     /**
      * Get the options for generating the slug.
@@ -18,7 +19,7 @@ class Pabellon extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom('nombre')
+            ->generateSlugsFrom(['nombre'])
             ->saveSlugsTo('slug');
     }
 
@@ -34,13 +35,8 @@ class Pabellon extends Model
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('pabellon_imagenes')
-            ->useDisk('images_tournament')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
-    }
-
-    public function partido()
-    {
-        return $this->hasMany(Partido::class);
+        $this->addMediaCollection('ong_imagenes')
+        ->useDisk('images_tournament')
+        ->acceptsMimeTypes(['image/jpeg','image/png','image/jpg']);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\DataBase\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CustomPolymorphicTypeResolver extends ServiceProvider
 {

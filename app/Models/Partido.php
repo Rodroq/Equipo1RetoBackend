@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -19,9 +21,9 @@ use Spatie\Sluggable\SlugOptions;
  * @OA\Property(property="equipoVis", type="integer", example=2),
  * )
  */
-class Partido extends Model
+class Partido extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'partidos';
 
@@ -58,6 +60,13 @@ class Partido extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('partido_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
     public function actas()

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -18,9 +20,9 @@ use Spatie\Sluggable\SlugOptions;
  *     @OA\Property(property="estudio", type="object", ref="#/components/schemas/Estudio"),
  * )
  */
-class Reto extends Model
+class Reto extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'retos';
 
@@ -42,6 +44,13 @@ class Reto extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('reto_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
     public function publicaciones()

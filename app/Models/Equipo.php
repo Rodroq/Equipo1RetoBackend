@@ -25,8 +25,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Equipo extends Model implements HasMedia
 {
-    use HasSlug;
-    use InteractsWithMedia;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'equipos';
 
@@ -58,6 +57,13 @@ class Equipo extends Model implements HasMedia
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('equipo_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
     /* protected static function boot()

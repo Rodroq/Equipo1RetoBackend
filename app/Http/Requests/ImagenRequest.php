@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CrearImagenRequest extends FormRequest
+class ImagenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,16 @@ class CrearImagenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048'
+            'imagen' => 'required|mimes:png,jpg,jpeg|max:2048'
         ];
     }
 
     public function messages(): array
     {
         return [
-            'image.required' => 'La imagen del equipo es requerido.',
-            'image.mimes' => 'Los tipos de imagen permitidos son [png,jpg,jpeg,gif]',
-            'image.max' => 'El tamaño maximo de la imagen debe rondar los 2 MB.',
+            'imagen.required' => 'La imagen es requerida.',
+            'imagen.mimes' => 'Los tipos de imagen permitidos son [png,jpg,jpeg]',
+            'imagen.max' => 'El tamaño maximo de la imagen debe rondar los 2 MB.',
         ];
     }
 
@@ -41,7 +41,7 @@ class CrearImagenRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la creacion de la imagen',
+            'message'   => 'Errores en la imagen',
             'errors'      => $validator->errors()
         ]));
     }

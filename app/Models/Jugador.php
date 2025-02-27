@@ -33,8 +33,7 @@ use Spatie\Sluggable\SlugOptions;
  */
 class Jugador extends Model implements HasMedia
 {
-    use HasSlug;
-    use InteractsWithMedia;
+    use HasSlug, InteractsWithMedia;
     protected $table = 'jugadores';
 
     protected $fillable = [
@@ -71,6 +70,13 @@ class Jugador extends Model implements HasMedia
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('jugador_imagenes')
+        ->useDisk('images_tournament')
+        ->acceptsMimeTypes(['image/jpeg','image/png','image/jpg']);
     }
 
     /* protected static function boot()

@@ -8,51 +8,30 @@ use Illuminate\Support\Str;
 
 final class ImageService
 {
-    private string $disk;
-    private string $collection;
-
-    public function __construct(string $disk)
+    public function uploadImage($item_model, UploadedFile $file)
     {
-        $this->disk = $disk;
-        $this->collection = 'default';
-    }
+        $name = uniqid() . '-' . Str::random(8) . "-{$item_model->getTable()}-{$item_model->slug}";
+        $filename = "{$name}.{$file->getClientOriginalExtension()}";
 
-    protected function selectCollection($model): void
-    {
-        $this->collection = "{$model->getTable()}-{$model->slug}-images";
-    }
-
-    public function uploadImage($model, UploadedFile $file)
-    {
-        $this->selectCollection($model);
-
-        $name_indetifier = now()->format('Y_m_d_His_') . Str::random(8);
-        $name = "{$name_indetifier}-{$model->getTable()}-{$model->slug}";
-        $filename = $name . '.' . $file->getClientOriginalExtension();
-
-        $media = $model->addMediaFromRequest('image')
+        return $item_model->addMedia($file)
             ->usingFileName($filename)
             ->withCustomProperties(['name' => $name])
-            ->toMediaCollection($this->collection, $this->disk);
-
-        return $media;
+            ->toMediaCollection();
     }
 
-    public function getFirstImage($model)
+    public function getFirstImage($item_model)
     {
-        $this->selectCollection($model);
-        return $model->getFirstMedia($this->collection);
+        return $item_model->getFirstMedia();
     }
 
-    public function getImages($model, array $properties = [])
+    public function getImages($item_model, array $filters = [])
     {
-        $this->selectCollection($model);
-        return $model->getMedia($this->collection, $properties);
+        return $item_model->getMedia(filters: $filters);
     }
 
-    public function getImage($model, string $name)
+    public function getSpecificImage($item_model, string $name)
     {
-        return $this->getImages($model, ['name' => $name])->first();
+        return $this->getImages($item_model, ['name' => $name])->first();
     }
 
     public function delete(Media $media): bool|null
@@ -60,9 +39,8 @@ final class ImageService
         return $media->delete();
     }
 
-    public function deleteAllMedia($model)
+    public function deleteAllMedia($item_model)
     {
-        $this->selectCollection($model);
-        return $model->clearMediaCollection($this->collection);
+        return $item_model->clearMediaCollection();
     }
 }

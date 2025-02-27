@@ -28,9 +28,10 @@ abstract class Controller
     protected ImageService $servicio_imagenes;
     protected ?User $user;
 
-    public function __construct(AuthService $servicio_autenticacion)
+    public function __construct(AuthService $servicio_autenticacion, ImageService $servicio_imagenes)
     {
-        $this->user = Auth::user();
         $this->servicio_autenticacion = $servicio_autenticacion;
+        $this->servicio_imagenes = $servicio_imagenes;
+        $this->user = Auth::user();
     }
 }
