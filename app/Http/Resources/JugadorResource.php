@@ -21,6 +21,7 @@ class JugadorResource extends JsonResource
             'apellido1' => $this->apellido1,
             'apellido2' => $this->apellido2,
             'tipo' => $this->tipo,
+            'imagen' => new ImagenResource($this->getFirstMedia())
         ];
     }
 }

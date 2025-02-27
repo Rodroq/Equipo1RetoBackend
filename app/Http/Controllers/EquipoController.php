@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
+use App\Http\Resources\EquipoDetalleResource;
 use App\Http\Resources\EquipoResource;
 use App\Models\{Centro, Equipo};
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -38,12 +39,26 @@ class EquipoController extends Controller implements HasMiddleware
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
-     *      description="Equipo disponibles",
+     *      description="Equipo encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
-     *          @OA\Property(property="equipos", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
+     *          @OA\Property(
+     *              property="equipos",
+     *              type="array",
+     *              @OA\Items(
+     *                  @OA\Property(property="nombre", type="string", example="Nombre"),
+     *                  @OA\Property(property="slug", type="string", example="nombre-1"),
+     *                  @OA\Property(property="centro", type="object",
+     *                      @OA\Property(property="nombre", type="string", example="nombre")
+     *                  ),
+     *                  @OA\Property(property="imagen", type="object",
+     *                      @OA\Property(property="url", type="string"),
+     *                      @OA\Property(property="nombre", type="string", example="1-nombre")
+     *                  ),
+     *              )
+     *          ),
      *      ),
      *  ),
      *  @OA\Response(
@@ -59,7 +74,8 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
+        $equipos = Equipo::with('jugadores', 'centro')->get();
+        /* $esAdmin = $this->user && $this->servicio_autenticacion->userHasRole($this->user, 'administrador');
 
         if ($esAdmin) {
             $equipos = Equipo::with('jugadores', 'centro')->get();
@@ -71,7 +87,7 @@ class EquipoController extends Controller implements HasMiddleware
 
         if ($equipos->isEmpty()) {
             return response()->json(['success' => true, 'message' => 'No hay equipos'], 204);
-        }
+        } */
 
         return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);
     }
@@ -95,12 +111,12 @@ class EquipoController extends Controller implements HasMiddleware
      *  ),
      *  @OA\Response(
      *      response=200,
-     *      description="Equipo encontrado",
+     *      description="Equipo disponibles",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
-     *          @OA\Property(property="equipo", type="object", ref="#/components/schemas/Equipo"),
+     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
+     *          @OA\Property(property="equipo", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
      *      ),
      *  ),
      *  @OA\Response(
@@ -116,7 +132,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function show(Equipo $equipo)
     {
-        return response()->json(['success' => true, 'message' => 'Equipo encontrado', 'equipo' => new EquipoResource($equipo)], 200);
+        return response()->json(['success' => true, 'message' => 'Equipo encontrado', 'equipo' => new EquipoDetalleResource($equipo)], 200);
     }
 
     /**

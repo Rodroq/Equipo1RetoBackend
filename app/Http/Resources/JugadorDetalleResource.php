@@ -29,7 +29,8 @@ class JugadorDetalleResource extends JsonResource
                 'lesiones' => intval($estadisticas->lesiones ),
             ],
             'estudio' => new EstudioResource($this->estudio),
-            'equipos' => $this->equipo->nombre
+            'equipo' => $this->equipo->nombre,
+            'imagenes' => ImagenResource::collection($this->getMedia())
         ];
     }
 }

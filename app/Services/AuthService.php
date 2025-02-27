@@ -36,7 +36,7 @@ final class AuthService
             if (!$equipo) {
                 $user->syncPermissions(['crear_equipo']);
             } else {
-                $user->syncPermissions(['editar_equipo', 'borrar_equipo', 'editar_imagen_equipo', 'borrar_imagen_equipo', 'editar_jugador', 'borrar_jugador', 'editar_imagen_jugador', 'borrar_imagen_jugador']);
+                $user->syncPermissions(['editar_equipo', 'borrar_equipo', 'editar_jugador', 'borrar_jugador', 'crear_imagen', 'editar_imagen', 'borrar_imagen']);
 
                 if ($equipo->jugadores()->count() < 12) {
                     $user->givePermissionTo('crear_jugador');
@@ -46,10 +46,12 @@ final class AuthService
                 $abilities = [
                     "editar_equipo_{$id_equipo}",
                     "borrar_equipo_{$id_equipo}",
+                    "crear_imagen_equipo_{$id_equipo}",
                     "editar_imagen_equipo_{$id_equipo}",
                     "borrar_imagen_equipo_{$id_equipo}",
                     "editar_jugador_equipo_{$id_equipo}",
                     "borrar_jugador_equipo_{$id_equipo}",
+                    "crear_imagen_jugador_equipo_{$id_equipo}",
                     "editar_imagen_jugador_equipo_{$id_equipo}",
                     "borrar_imagen_jugador_equipo_{$id_equipo}"
                 ];

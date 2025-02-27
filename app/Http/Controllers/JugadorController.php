@@ -6,10 +6,7 @@ use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorDetalleResource;
 use App\Http\Resources\JugadorResource;
-use App\Models\Ciclo;
-use App\Models\Estudio;
-use App\Models\Equipo;
-use App\Models\Jugador;
+use App\Models\{Ciclo, Estudio, Equipo, Jugador};
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
@@ -49,6 +46,10 @@ class JugadorController extends Controller implements HasMiddleware
      *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
      *              @OA\Property(property="apellido2", type="string", example="Apellido 2"),
      *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+     *              @OA\Property(property="imagen", type="object",
+     *                  @OA\Property(property="url", type="string"),
+     *                  @OA\Property(property="nombre", type="string", example="1-nombre")
+     *              ),
      *          ),
      *      ),
      *  ),

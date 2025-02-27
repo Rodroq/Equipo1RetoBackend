@@ -23,15 +23,11 @@ class PermissionAndRoleSeeder extends Seeder
         $crear_equipo_permiso = Permission::firstOrCreate(['name' => 'crear_equipo']);
         $editar_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_equipo']);
         $borrar_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_equipo']);
-        $editar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_equipo']);
-        $borrar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_equipo']);
 
         // jugadores C - U D
         $crear_jugador_permiso = Permission::firstOrCreate(['name' => 'crear_jugador']);
         $editar_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_jugador']);
         $borrar_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_jugador']);
-        $editar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_jugador']);
-        $borrar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_jugador']);
 
         // patrocinadores C - U D
         $crear_patrocinador_permiso = Permission::firstOrCreate(['name' => 'crear_patrocinador']);
@@ -61,6 +57,9 @@ class PermissionAndRoleSeeder extends Seeder
         $leer_inscripcion_permiso = Permission::firstOrCreate(['name' => 'leer_inscripcion']);
         $editar_inscripcion_permiso = Permission::firstOrCreate(['name' => 'editar_inscripcion']);
 
+        $crear_imagen = Permission::firstOrCreate(['name' => 'crear_imagen']);
+        $editar_imagen = Permission::firstOrCreate(['name' => 'editar_imagen']);
+        $borrar_imagen = Permission::firstOrCreate(['name' => 'borrar_imagen']);
 
 
         Role::create(['name' => 'entrenador']);
@@ -83,10 +82,9 @@ class PermissionAndRoleSeeder extends Seeder
             $leer_actas_permiso,
             $editar_actas_permiso,
             $borrar_actas_permiso,
-            $editar_imagen_equipo_permiso,
-            $borrar_imagen_equipo_permiso,
-            $editar_imagen_jugador_permiso,
-            $borrar_imagen_jugador_permiso,
+            $crear_imagen,
+            $editar_imagen,
+            $borrar_imagen,
             $leer_inscripcion_permiso,
             $editar_inscripcion_permiso
         );

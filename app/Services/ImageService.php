@@ -8,9 +8,9 @@ use Illuminate\Support\Str;
 
 final class ImageService
 {
-    public function uploadImage($item_model, UploadedFile $file)
+    public function uploadImage($item_model, UploadedFile $file, ?string $custom_name = null)
     {
-        $name = uniqid() . '-' . Str::random(8) . "-{$item_model->getTable()}-{$item_model->slug}";
+        $name = $custom_name ? $custom_name : count($item_model->getMedia()) + 1 . "-{$item_model->getTable()}-{$item_model->slug}";
         $filename = "{$name}.{$file->getClientOriginalExtension()}";
 
         return $item_model->addMedia($file)
@@ -32,11 +32,6 @@ final class ImageService
     public function getSpecificImage($item_model, string $name)
     {
         return $this->getImages($item_model, ['name' => $name])->first();
-    }
-
-    public function delete(Media $media): bool|null
-    {
-        return $media->delete();
     }
 
     public function deleteAllMedia($item_model)

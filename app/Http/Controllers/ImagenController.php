@@ -4,23 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ImagenRequest;
 use App\Http\Resources\ImagenResource;
-use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class ImagenController extends Controller  /* implements HasMiddleware */
+class ImagenController extends Controller  implements HasMiddleware
 {
-    /* public static function middleware(): array
+    public static function middleware(): array
     {
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('role:administrador|entrenador|periodista', only: ['store', 'update', 'destroy']),
         ];
-    } */
+    }
 
     private function getModelInstance(string $model, ?string $slug = null)
     {
@@ -31,27 +30,6 @@ class ImagenController extends Controller  /* implements HasMiddleware */
         }
 
         return $slug ? $className::where('slug', $slug)->first() : new $className;
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index($modelo)
-    {
-        $modelo = $this->getModelInstance($modelo);
-
-        if (!$modelo) {
-            return response()->json(['success' => false, 'message' => 'Recurso no disponibles'], 400);
-        }
-
-        $items = $modelo::all();
-
-        $images = $items->map(fn($item) => [
-            'slug' => $item->slug,
-            'imagen' => optional($this->servicio_imagenes->getFirstImage($item))->getUrl() ?? null,
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Imagenes encontradas', 'imagenes' => $images], 200);
     }
 
     /**
@@ -69,59 +47,42 @@ class ImagenController extends Controller  /* implements HasMiddleware */
 
         $media = $this->servicio_imagenes->uploadImage($item, $imagen);
 
-        if (!$media) {
-            return response()->json(['success' => false, 'message' => 'Error al subir la imagen'], 500);
+        $response = Gate::inspect('create', [$media, $this->user]);
+
+        if (!$response->allowed()) {
+            $media->delete();
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
         return response()->json(['success' => true, 'message' => 'Imagen guardada exitosamente', 'imagen' => new ImagenResource($media)], 201);
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $modelo, string $slug)
-    {
-        $item = $this->getModelInstance($modelo, $slug);
-
-        if (!$item) {
-            return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
-        }
-
-        $media = $this->servicio_imagenes->getImages($item);
-
-        if ($media->isEmpty()) {
-            return response()->json(['success' => true, 'message' => 'No hay imágenes'], 204);
-        }
-
-        return response()->json(['success' => true, 'message' => 'Imágenes encontradas', 'imagenes' => ImagenResource::collection($media)], 200);
-    }
-
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(ImagenRequest $request, string $modelo, string $slug, string $name)
+    public function update(ImagenRequest $request, string $modelo, string $slug, string $custom_name)
     {
         $item = $this->getModelInstance($modelo, $slug);
+
         if (!$item) {
             return response()->json(['success' => false, 'message' => 'Elemento no encontrado'], 404);
         }
 
-        $media = $this->servicio_imagenes->getSpecificImage($item, $name);
+        $media = $this->servicio_imagenes->getSpecificImage($item, $custom_name);
 
         if (!$media) {
             return response()->json(['success' => false, 'message' => 'La imagen no existe'], 404);
         }
 
-        if ($media) {
-            $this->servicio_imagenes->delete($media);
+        $response = Gate::inspect('update', [$media, $this->user]);
+
+        if (!$response->allowed()) {
+            return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        $newMedia = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'));
+        $media->delete();
 
-        if (!$newMedia) {
-            return response()->json(['success' => false, 'message' => 'Error al actualizar la imagen'], 500);
-        }
+        $newMedia = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'), $custom_name);
 
         return response()->json(['success' => true, 'message' => 'Imagen actualizada', 'imagen' => new ImagenResource($newMedia)], 200);
     }
@@ -143,7 +104,7 @@ class ImagenController extends Controller  /* implements HasMiddleware */
             return response()->json(['success' => false, 'message' => 'Imagen no encontrada'], 404);
         }
 
-        $this->servicio_imagenes->delete($media);
+        $media->delete();
 
         return response()->json(['success' => true, 'message' => 'Imagen eliminada'], 200);
     }
