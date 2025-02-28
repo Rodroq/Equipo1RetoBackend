@@ -27,29 +27,10 @@ return new class extends Migration
             $table->string('rutavideo', 45)->nullable();
             $table->string('rutaaudio', 45)->nullable();
 
-            //clave foranea para los equipos
-            $table->foreignIdFor(Equipo::class)->nullable()->constrained()->cascadeOnDelete();
 
-            //clave foranea para los partido
-            $table->foreignIdFor(Partido::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los patrociandores
-
-            $table->foreignIdFor(Patrocinador::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los jugadores
-            $table->foreignIdFor(Jugador::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los reto
-            $table->foreignIdFor(Reto::class)->nullable()->constrained()->cascadeOnDelete();
-
-            //clave foranea para los ong
-            $table->unsignedBigInteger('ong_id')->nullable();
-            $table->foreign('ong_id')->references('id')->on('ongs')->cascadeOnDelete();
-
-            //clave foranea para los pabellon
-            $table->unsignedBigInteger('pabellon_id')->nullable();
-            $table->foreign('pabellon_id')->references('id')->on('pabellones')->cascadeOnDelete();
+            //relacion de tablas a raíz de clave polimorfica 1:M
+            $table->integer('publicacionable_id');
+            $table->string('publicacionable_type');
 
             $table->unsignedBigInteger('usuarioIdCreacion');
             $table->timestamp('fechaCreacion')->useCurrent();

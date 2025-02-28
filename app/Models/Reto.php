@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -57,9 +58,9 @@ class Reto extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
-    public function publicaciones()
+    public function publicaciones(): MorphMany
     {
-        return $this->hasMany(Publicacion::class);
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('reto');
     }
 
     public function estudio()

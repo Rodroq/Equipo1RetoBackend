@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -21,13 +22,6 @@ class Publicacion extends Model implements HasMedia
         'portada',
         'rutavideo',
         'rutaaudio',
-        'equipo_id',
-        'partido_id',
-        'patrocinador_id',
-        'jugador_id',
-        'reto_id',
-        'ong_id',
-        'pabellon_id',
         'usuarioIdCreacion',
         'fechaCreacion',
         'usuarioIdActualizacion',
@@ -76,28 +70,7 @@ class Publicacion extends Model implements HasMedia
         });
     }
 
-    public function retos()
-    {
-        return $this->belongsTo(Reto::class);
-    }
-
-    public function patrocinadores()
-    {
-        return $this->belongsTo(Patrocinador::class);
-    }
-
-    public function equipos()
-    {
-        return $this->belongsTo(Equipo::class);
-    }
-
-    public function jugadores()
-    {
-        return $this->belongsTo(Jugador::class);
-    }
-
-    public function partidos()
-    {
-        return $this->belongsTo(Partido::class);
+    public function publicacionable(): MorphTo {
+        return $this->morphTo(__FUNCTION__,'publicacionable_type','publicacionable_id');
     }
 }

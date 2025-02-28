@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -42,5 +43,10 @@ class Pabellon extends Model
     public function partido()
     {
         return $this->hasMany(Partido::class);
+    }
+
+    public function publicaciones(): MorphMany
+    {
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('pabellon');
     }
 }
