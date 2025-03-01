@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\{Equipo,Jugador};
-use App\Policies\{EquipoPolicy,JugadorPolicy, MediaPolicy};
+use App\Models\{Equipo, Jugador, Publicacion};
+use App\Policies\{EquipoPolicy, JugadorPolicy, MediaPolicy, PublicacionPolicy};
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
                 Equipo::class => EquipoPolicy::class,
                 Jugador::class => JugadorPolicy::class,
                 Media::class => MediaPolicy::class,
+                Publicacion::class => PublicacionPolicy::class,
             };
         });
     }

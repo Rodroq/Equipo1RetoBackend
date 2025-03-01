@@ -30,7 +30,7 @@ class JugadorDetalleResource extends JsonResource
             ],
             'estudio' => new EstudioResource($this->estudio),
             'equipo' => $this->equipo->nombre,
-            'imagenes' => ImagenResource::collection($this->getMedia())
+            'imagenes' => MediaResource::collection($this->getMedia())
         ];
     }
 }

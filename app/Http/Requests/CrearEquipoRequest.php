@@ -51,7 +51,7 @@ class CrearEquipoRequest extends FormRequest
             'nombre.string' => 'El nombre del equipo ha de ser texto.',
             'nombre.max' => 'El nombre solo tiene maximo 45 caracteres.',
             'nombre.unique' => 'El nombre del equipo ya existe.',
-            'grupo.in' => 'Los grupos permitidos son [A,B]',
+            'grupo.in' => 'Los grupos permitidos son [A | B]',
             'centro.string' => 'El nombre centro ha de ser texto.',
             'centro.exists' => 'El centro seleccionado no existe.',
             'jugadores.required' => 'Los jugadores del equipo son requerido.',

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EquipoDetalleResource extends JsonResource
+class PublicacionDetalleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,13 +15,12 @@ class EquipoDetalleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'slug' => $this->slug,
-            'nombre' => $this->nombre,
-            'grupo' => $this->grupo,
-            'centro' => [
-                'nombre' => $this->centro->nombre
-            ],
-            'jugadores' => JugadorResource::collection($this->jugadores),
+            'titulo' => $this->titulo,
+            'texto' => $this->texto,
+            'tipo' => $this->publicacionable_type,
+            'portada' => $this->portada,
+            'rutaaudio' => $this->rutaaudio,
+            'rutavideo' => $this->rutavideo,
             'imagenes' => MediaResource::collection($this->getMedia())
         ];
     }

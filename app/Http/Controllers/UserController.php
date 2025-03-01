@@ -70,6 +70,59 @@ class UserController extends Controller implements HasMiddleware
     }
 
     /**
+     * Display the specified resource.
+     */
+    /**
+     * @OA\Get(
+     *  path="/api/usuarios/{slug}",
+     *  summary="Obtener un usuario específico",
+     *  description="Devuelve los detalles de un usuario por Slug",
+     *  operationId="showUsuario",
+     *  tags={"usuarios"},
+     *  security={{"bearerAuth": {}}},
+     *  @OA\Parameter(
+     *      name="slug",
+     *      in="path",
+     *      description="Slug del usuario",
+     *      required=true,
+     *      @OA\Schema(type="string"),
+     *  ),
+     *  @OA\Response(
+     *      response=200,
+     *      description="Detalles del usuario",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Usuario encontrado"),
+     *          @OA\Property(property="usuario", type="object", ref="#/components/schemas/Usuario"),
+     *      ),
+     *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="No autorizado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para ver este usuario"),
+     *      ),
+     *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="Recurso no encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
+     *      )
+     *  )
+     * )
+     */
+    public function show(User $usuario)
+    {
+        return response()->json(['success' => true, 'message' => 'Usuario encontrado', 'usuario' => new UserResource($usuario),], 200);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     /**
@@ -128,59 +181,6 @@ class UserController extends Controller implements HasMiddleware
         ]);
 
         return response()->json(['success' => true, 'message' => 'Usuario creado correctamente', 'usuarios' => new UserResource($usuario),], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    /**
-     * @OA\Get(
-     *  path="/api/usuarios/{slug}",
-     *  summary="Obtener un usuario específico",
-     *  description="Devuelve los detalles de un usuario por Slug",
-     *  operationId="showUsuario",
-     *  tags={"usuarios"},
-     *  security={{"bearerAuth": {}}},
-     *  @OA\Parameter(
-     *      name="slug",
-     *      in="path",
-     *      description="Slug del usuario",
-     *      required=true,
-     *      @OA\Schema(type="string"),
-     *  ),
-     *  @OA\Response(
-     *      response=200,
-     *      description="Detalles del usuario",
-     *      @OA\JsonContent(
-     *          type="object",
-     *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Usuario encontrado"),
-     *          @OA\Property(property="usuario", type="object", ref="#/components/schemas/Usuario"),
-     *      ),
-     *  ),
-     *  @OA\Response(
-     *      response=404,
-     *      description="Usuario no encontrado",
-     *      @OA\JsonContent(
-     *          type="object",
-     *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="Usuario no encontrado"),
-     *      ),
-     *  ),
-     *  @OA\Response(
-     *      response=403,
-     *      description="No autorizado",
-     *      @OA\JsonContent(
-     *          type="object",
-     *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para ver este usuario"),
-     *      ),
-     *  ),
-     * )
-     */
-    public function show(User $usuario)
-    {
-        return response()->json(['success' => true, 'message' => 'Usuario encontrado', 'usuario' => new UserResource($usuario),], 200);
     }
 
     /**

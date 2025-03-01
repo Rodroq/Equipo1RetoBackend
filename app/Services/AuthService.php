@@ -5,6 +5,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Hash;
 use App\Models\Equipo;
+use App\Models\Publicacion;
 use App\Models\User;
 
 final class AuthService
@@ -26,11 +27,11 @@ final class AuthService
         $user->tokens()->delete();
         $abilities = [];
 
-        if ($user->hasRole('administrador')) {
+        if ($this->userHasRole($user, 'administrador')) {
             $abilities = ['*'];
         }
 
-        if ($user->hasRole('entrenador')) {
+        if ($this->userHasRole($user, 'entrenador')) {
             $equipo = Equipo::where('usuarioIdCreacion', $user->id)->first();
 
             if (!$equipo) {
@@ -57,6 +58,23 @@ final class AuthService
                 ];
             }
         }
+
+        if ($this->userHasRole($user, 'periodista')) {
+            $user->syncPermissions(['crear_publicacion', 'editar_publicacion', 'borrar_publicacion', 'crear_imagen', 'editar_imagen', 'borrar_imagen']);
+
+            $publicaciones_periodista = Publicacion::where('usuarioIdCreacion', $user->id)->get();
+            foreach ($publicaciones_periodista as $publicacion) {
+                array_push(
+                    $abilities,
+                    "editar_publicacion_{$publicacion->id}",
+                    "borrar_publicacion_{$publicacion->id}",
+                    "crear_imagen_publicacion_{$publicacion->id}",
+                    "editar_imagen_publicacion_{$publicacion->id}",
+                    "borrar_imagen_publicacion_{$publicacion->id}"
+                );
+            }
+        }
+
         return $user->createToken('token_usuario', $abilities)->plainTextToken;
     }
 

@@ -20,7 +20,7 @@ class EquipoResource extends JsonResource
             'centro' => [
                 'nombre' => $this->centro->nombre
             ],
-            'imagen' => new ImagenResource($this->getFirstMedia())
+            'imagen' => new MediaResource($this->getFirstMedia())
         ];
     }
 }

@@ -18,7 +18,7 @@ class RetoDetalleResource extends JsonResource
             'titulo' => $this->titulo,
             'texto' => $this->texto,
             'estudio' => new EstudioResource($this->estudio),
-            'imagenes' => ImagenResource::collection($this->getMedia()),
+            'imagenes' => MediaResource::collection($this->getMedia()),
         ];
     }
 }

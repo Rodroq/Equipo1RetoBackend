@@ -10,6 +10,23 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
+/**
+ * @OA\Schema(
+ *  schema="Publicacion",
+ *  type="object",
+ *  title="Publicacion",
+ *  @OA\Property(property="titulo", type="string", example="Titulo"),
+ *  @OA\Property(property="slug", type="string", example="titulo"),
+ *  @OA\Property(property="texto", type="string"),
+ *  @OA\Property(property="portada", type="boolean"),
+ *  @OA\Property(property="rutaaudio", type="string"),
+ *  @OA\Property(property="rutavideo", type="string"),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
+ */
 class Publicacion extends Model implements HasMedia
 {
     use HasSlug, InteractsWithMedia;
@@ -22,6 +39,8 @@ class Publicacion extends Model implements HasMedia
         'portada',
         'rutavideo',
         'rutaaudio',
+        'publicacionable_type',
+        'publicacionable_id',
         'usuarioIdCreacion',
         'fechaCreacion',
         'usuarioIdActualizacion',
@@ -70,7 +89,8 @@ class Publicacion extends Model implements HasMedia
         });
     }
 
-    public function publicacionable(): MorphTo {
-        return $this->morphTo(__FUNCTION__,'publicacionable_type','publicacionable_id');
+    public function publicacionable(): MorphTo
+    {
+        return $this->morphTo(__FUNCTION__, 'publicacionable_type', 'publicacionable_id');
     }
 }

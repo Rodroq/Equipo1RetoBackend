@@ -40,7 +40,7 @@ class JugadorPolicy
     public function update(User $user, Jugador $jugador): Response
     {
         $equipo = $jugador->equipo;
-        if (!$user->hasPermissionTo('editar_jugador')) return Response::denyWithStatus(403, 'No tienes permisos para editar ningún jugador', 'JUGADOR_EDIT_FORBIDDEN');
+        if (!$user->hasPermissionTo('editar_jugador')) return Response::denyWithStatus(403, "No tienes permisos para editar ningún jugador de {$equipo->nombre}", 'JUGADOR_EDIT_FORBIDDEN');
         if ($user->tokenCant("editar_jugador_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes editar el jugador {$jugador->nombre} del equipo {$equipo->nombre}", 'JUGADOR_EDIT_FORBIDDEN');
 
         return Response::allow();

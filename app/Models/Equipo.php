@@ -27,19 +27,18 @@ use Spatie\Sluggable\SlugOptions;
  *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
  *              @OA\Property(property="apellido2", type="string", example="apellido 2"),
  *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
- *          @OA\Property(property="imagen", type="object",
+ *              @OA\Property(property="imagen", type="object",
  *              @OA\Property(property="url", type="string"),
  *              @OA\Property(property="nombre", type="string", example="1-nombre")
  *          ),
  *      )
  *  ),
- *  @OA\Property(property="imagen", type="object",
+ *  @OA\Property(property="imagenes", type="object",
  *      @OA\Property(property="url", type="string"),
  *      @OA\Property(property="nombre", type="string", example="1-nombre")
  *  ),
  * )
  */
-
 class Equipo extends Model implements HasMedia
 {
     use HasSlug, InteractsWithMedia;

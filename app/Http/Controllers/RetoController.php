@@ -74,11 +74,11 @@ class RetoController extends Controller
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Reto no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No hay equipos")
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado")
      *      )
      *  )
      * )
