@@ -16,6 +16,7 @@ class PublicacionDetalleResource extends JsonResource
     {
         return [
             'titulo' => $this->titulo,
+            'slug' => $this->slug,
             'texto' => $this->texto,
             'tipo' => $this->publicacionable_type,
             'portada' => $this->portada,

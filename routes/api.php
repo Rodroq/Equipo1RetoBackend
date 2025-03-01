@@ -15,9 +15,9 @@ Route::apiResource('usuarios', UserController::class);
 Route::controller(PublicacionController::class)->group(function () {
     Route::get('publicaciones', 'index')->name('imagenes.index');
     Route::get('publicaciones/{publicacion}', 'show')->name('imagenes.show');
-    Route::post('publicaciones/{morphed_model}/{slug}', 'store')->name('imagenes.store');
-    Route::post('publicaciones/{morphed_model}/{publicacion}', 'update')->name('imagenes.update');
-    Route::delete('publicaciones/{moprhed_model}/{publicacion}', 'destroy')->name('imagenes.destroy');
+    Route::post('publicaciones', 'store')->name('imagenes.store');
+    Route::put('publicaciones/{publicacion}', 'update')->name('imagenes.update');
+    Route::delete('publicaciones/{publicacion}', 'destroy')->name('imagenes.destroy');
 });
 
 Route::controller(MediaController::class)->group(function () {

@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('slug', 45);
             $table->longText('texto')->nullable();
             $table->tinyInteger('portada')->nullable();
-            $table->string('rutavideo', 45)->nullable();
-            $table->string('rutaaudio', 45)->nullable();
+            $table->string('rutavideo', 255)->nullable();
+            $table->string('rutaaudio', 255)->nullable();
 
 
             //relacion de tablas a raíz de clave polimorfica 1:M

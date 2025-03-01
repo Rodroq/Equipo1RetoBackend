@@ -86,6 +86,15 @@ class MediaController extends Controller  implements HasMiddleware
      *          @OA\Property(property="message", type="string", example="No tienes permisos para realizar esta accion")
      *      )
      *  ),
+     *  @OA\Response(
+     *      response=404,
+     *      description="No encontrado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="El recurso solicitado no fue encontrado.")
+     *      )
+     *  ),
      *)
      */
     public function store(ImagenRequest $request, string $imageable_type, string $slug)

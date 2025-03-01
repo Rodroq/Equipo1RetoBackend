@@ -94,7 +94,7 @@ class JugadorController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
-     *          @OA\Property(property="jugador", type="jugador", ref="#/components/schemas/Jugador"),
+     *          @OA\Property(property="jugador", type="object", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(

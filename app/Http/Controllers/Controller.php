@@ -25,7 +25,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 abstract class Controller
 {
-
     protected AuthService $servicio_autenticacion;
     protected ImageService $servicio_imagenes;
     protected ?User $user;
