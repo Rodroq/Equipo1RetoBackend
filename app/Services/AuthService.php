@@ -62,28 +62,7 @@ final class AuthService
         }
 
         if ($this->userHasRole($user, 'director')) {
-            $user->syncPermissions([/* 'crear_partido','borrar_partido', */'crear_acta', 'leer_acta', 'editar_acta', 'borrar_acta']);
-
-            $actas_director = Acta::where('usuarioIdCreacion', $user->id)->get();
-            foreach ($actas_director as $acta) {
-                array_push(
-                    $abilities,
-                    "editar_acta_{$acta->id}",
-                    "borrar_acta_{$acta->id}"
-                );
-            }
-
-            /* $partidos_director = Partido::where('usuarioIdCreacion', $user->id)->get();
-            foreach ($partidos_director as $partido) {
-                array_push(
-                    $abilities,
-                    "editar_partido_{$partido->id}",
-                    "borrar_partido_{$partido->id}",
-                    "crear_imagen_partido_{$partido->id}",
-                    "editar_imagen_partido_{$partido->id}",
-                    "borrar_imagen_partido_{$partido->id}"
-                );
-            } */
+            $user->syncPermissions('crear_acta');
         }
 
         if ($this->userHasRole($user, 'periodista')) {

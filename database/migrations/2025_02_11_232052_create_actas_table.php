@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('actas', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->enum('incidencia', ['goles', 'asistencias', 'tarjetas_amarillas','tarjetas_rojas', 'lesiones'])->nullable();
             $table->time('hora')->nullable();
             $table->longText('comentario')->nullable();

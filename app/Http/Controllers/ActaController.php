@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActualizarActaRequest;
 use App\Http\Requests\CrearActaRequest;
 use App\Http\Resources\ActaResource;
 use App\Models\{Acta, Jugador, Partido};
@@ -10,12 +11,11 @@ use Illuminate\Support\Facades\Gate;
 
 class ActaController extends Controller implements HasMiddleware
 {
-
     public static function middleware()
     {
         return [
             new Middleware('auth:sanctum'),
-            new Middleware('role:administrador|director', only: ['update', 'destroy']),
+            new Middleware('role:administrador', only: ['update', 'destroy']),
             new Middleware('role:director', only: ['store']),
         ];
     }
@@ -25,45 +25,35 @@ class ActaController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Get(
-     *  path="/api/equipos",
-     *  summary="Obtener todos las acas de la web",
+     *  path="/api/actas",
+     *  summary="Obtener todas las actas de la web",
      *  description="Obtener todas las actas en la llamada a la API",
      *  operationId="indexActas",
      *  security={{"bearerAuth": {}}},
-     *  tags={"equipos"},
+     *  tags={"actas"},
      *  @OA\Response(
      *      response=200,
-     *      description="Equipos encontrados",
+     *      description="Actas disponibles",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipos encontrados"),
+     *          @OA\Property(property="message", type="string", example="Actas disponibles"),
      *          @OA\Property(
-     *              property="equipos",
+     *              property="actas",
      *              type="array",
-     *              @OA\Items(
-     *                  @OA\Property(property="nombre", type="string", example="Nombre"),
-     *                  @OA\Property(property="slug", type="string", example="nombre-1"),
-     *                  @OA\Property(property="centro", type="object",
-     *                      @OA\Property(property="nombre", type="string", example="nombre")
-     *                  ),
-     *                  @OA\Property(property="imagen", type="object",
-     *                      @OA\Property(property="url", type="string"),
-     *                      @OA\Property(property="nombre", type="string", example="1-nombre")
-     *                  ),
-     *              )
+     *              @OA\Items(ref="#/components/schemas/Acta"))
      *          ),
      *      ),
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="No hay equipos"
+     *      description="No hay actas"
      *  )
      *)
      */
     public function index()
     {
-        $this->user->hasRole('director') ? $actas = Acta::where('usuarioIdCreacion', $this->user->id)->get() : Acta::all();
+        $actas = $this->user->hasRole('director') ? Acta::where('usuarioIdCreacion', $this->user->id)->get() : Acta::all();
 
         if ($actas->isEmpty()) {
             return response()->json(status: 204);
@@ -83,8 +73,8 @@ class ActaController extends Controller implements HasMiddleware
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        $partido = Partido::where('slug', $request->partido)->first();
-        $jugador = Jugador::where('slug', $request->jugador)->first();
+        $partido = Partido::where('slug', $request->partido)->firstOrFail();
+        $jugador = Jugador::where('slug', $request->jugador)->firstOrFail();
 
         if ($partido->equipoLoc->id !== $jugador->equipo_id && $partido->equipoVis->id !== $jugador->equipo_id) {
             return response()->json(['success' => false, 'message' => "El jugador {$jugador->nombre} no esta participando en este partido"], 409);
@@ -108,35 +98,35 @@ class ActaController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Put(
-     *  path="/api/equipos/{slug}",
-     *  summary="Actualizar un equipo",
-     *  description="Actualizar un equipo por su Slug",
-     *  operationId="updateEquipo",
+     *  path="/api/actas/{slug}",
+     *  summary="Actualizar una acta",
+     *  description="Actualizar una acta por su Slug",
+     *  operationId="updateActa",
      *  security={{"bearerAuth": {}}},
-     *  tags={"equipos"},
+     *  tags={"actas"},
      *  @OA\Parameter(
      *      name="slug",
      *      in="path",
-     *      description="Slug del equipo",
+     *      description="Slug de la acta",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="slug")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
-     *      description="Datos del equipo",
+     *      description="Datos de la acta",
      *      @OA\JsonContent(
-     *          @OA\Property(property="nombre", type="string", example="Equipo 1"),
-     *          @OA\Property(property="grupo", type="integer", example="A"),
+     *          @OA\Property(property="incidencia", type="string", example="goles"),
+     *          @OA\Property(property="comentario", type="integer"),
      *      ),
      *  ),
      *  @OA\Response(
      *     response=201,
-     *     description="Equipo actualizado correctamente",
+     *     description="Acta actualizada correctamente",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipo actualizado correctamente"),
-     *          @OA\Property(property="equipo", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *          @OA\Property(property="message", type="string", example="Acta actualizado correctamente"),
+     *          @OA\Property(property="acta", type="array", @OA\Items(ref="#/components/schemas/Acta")),
      *     ),
      *  ),
      *  @OA\Response(
@@ -154,7 +144,7 @@ class ActaController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para editar ningún equipo | No puedes editar el equipo Desguace FC"),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para editar ninguna acta | No puedes editar la acta"),
      *          @OA\Property(property="code", type="string", example="EQUIPO_EDIT_FORBIDDEN"),
      *      )
      *  ),
@@ -169,17 +159,16 @@ class ActaController extends Controller implements HasMiddleware
      *  )
      *)
      */
-    public function update(ActualizarEquipoRequest $request, Equipo $equipo)
+    public function update(ActualizarActaRequest $request, Acta $acta)
     {
-        $response = Gate::inspect('update', [$equipo, $this->user]);
-
+        $response = Gate::inspect('update', [$acta, $this->user]);
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        $equipo->update($request->all());
+        $acta->update($request->all());
 
-        return response()->json(['success' => true, 'message' => 'Equipo actualizado correctamente', 'equipo' => new EquipoResource($equipo)], 200);
+        return response()->json(['success' => true, 'message' => 'Acta actualizada correctamente', 'equipo' => new ActaResource($acta)], 200);
     }
 
     /**
@@ -187,26 +176,26 @@ class ActaController extends Controller implements HasMiddleware
      */
     /**
      * @OA\Delete(
-     *  path="/api/equipos/{slug}",
-     *  summary="Eliminar un equipo",
-     *  description="Eliminar un equipo por su Slug",
-     *  operationId="deleteEquipo",
+     *  path="/api/actas/{slug}",
+     *  summary="Eliminar una acta",
+     *  description="Eliminar una acta por su Slug",
+     *  operationId="deleteActa",
      *  security={{"bearerAuth": {}}},
-     *  tags={"equipos"},
+     *  tags={"actas"},
      *  @OA\Parameter(
      *      name="slug",
      *      in="path",
-     *      description="Slug del equipo",
+     *      description="Slug de la acta",
      *   required=true,
-     *   @OA\Schema(type="string",example="desguace-fc")
+     *   @OA\Schema(type="string")
      *  ),
      *  @OA\Response(
      *      response=200,
-     *      description="Equipo eliminado correctamente",
+     *      description="Acta eliminada correctamente",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipo eliminado correctamente")
+     *          @OA\Property(property="message", type="string", example="Acta eliminada correctamente")
      *      )
      *  ),
      *  @OA\Response(
@@ -224,8 +213,8 @@ class ActaController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para borrar ningún equipo | No puedes borrar el equipo Desguace FC"),
-     *          @OA\Property(property="code", type="string", example="EQUIPO_DELETE_FORBIDDEN")
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para borrar ninguna acta | No puedes borrar la acta"),
+     *          @OA\Property(property="code", type="string", example="ACTA_DELETE_FORBIDDEN")
      *      )
      *  ),
      *  @OA\Response(
@@ -239,19 +228,16 @@ class ActaController extends Controller implements HasMiddleware
      *  )
      * )
      */
-    public function destroy(Equipo $equipo)
+    public function destroy(Acta $acta)
     {
-        $response = Gate::inspect('delete', [$equipo, $this->user]);
+        $response = Gate::inspect('delete', [$acta, $this->user]);
 
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        $equipo->delete();
+        $acta->delete();
 
-        $this->user->syncPermissions(['crear_equipo']);
-        $nuevo_token = $this->servicio_autenticacion->generateUserToken($this->user);
-
-        return response()->json(['success' => true, 'message' => 'Equipo eliminado correctamente', 'token' => $nuevo_token], 200);
+        return response()->json(['success' => true, 'message' => 'Acta eliminada correctamente'], 200);
     }
 }
