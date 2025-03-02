@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Acta extends Model
 {
@@ -19,26 +20,29 @@ class Acta extends Model
         'jugador_id',
         'fechaActualizacion'
     ];
-    //Descomentar una vez se quieran hacer pruebas con las inserciones de grupos de usuarios autenticados
-    // protected static function boot(){
-    //     parent::boot();
 
-    //     static::creating(function($model){
-    //         $model->usuarioIdCreacion = auth()->id();
-    //         $model->fechaCreacion = now();
-    //     });
-        
-    //     static::updating(function($model){
-    //         $model->usuarioIdActualizacion = auth()->id();
-    //         $model->fechaActualizacion = now();
-    //     });
-    // }
+    protected static function boot()
+    {
+        parent::boot();
 
-    public function jugadores(){
+        static::creating(function ($model) {
+            $model->usuarioIdCreacion = Auth::user()->id;
+            $model->fechaCreacion = now();
+        });
+
+        static::updating(function ($model) {
+            $model->usuarioIdActualizacion = Auth::user()->id;
+            $model->fechaActualizacion = now();
+        });
+    }
+
+    public function jugadores()
+    {
         return $this->belongsTo(Jugador::class);
     }
 
-    public function partidos(){
+    public function partidos()
+    {
         return $this->belongsTo(Partido::class);
     }
 }

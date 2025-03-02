@@ -20,23 +20,23 @@ class PermissionAndRoleSeeder extends Seeder
         /* permisos para los roles de usuario (profesor) y administrador */
 
         // equipos C - U D
-        $crear_equipo_permiso = Permission::firstOrCreate(['name' => 'crear_equipo']);
+        Permission::firstOrCreate(['name' => 'crear_equipo']);
         $editar_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_equipo']);
         $borrar_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_equipo']);
 
         // jugadores C - U D
-        $crear_jugador_permiso = Permission::firstOrCreate(['name' => 'crear_jugador']);
+        Permission::firstOrCreate(['name' => 'crear_jugador']);
         $editar_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_jugador']);
         $borrar_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_jugador']);
 
         // patrocinadores C - U D
-        $crear_patrocinador_permiso = Permission::firstOrCreate(['name' => 'crear_patrocinador']);
+        Permission::firstOrCreate(['name' => 'crear_patrocinador']);
         $editar_patrocinador_permiso = Permission::firstOrCreate(['name' => 'editar_patrocinador']);
         $borrar_patrocinador_permiso = Permission::firstOrCreate(['name' => 'borrar_patrocinador']);
 
 
         /* permisos para los roles de periodista y administrador */
-        $crear_publicaciones_permiso = Permission::firstOrCreate(['name' => 'crear_publicacion']);
+        Permission::firstOrCreate(['name' => 'crear_publicacion']);
         $editar_publicaciones_permiso = Permission::firstOrCreate(['name' => 'editar_publicacion']);
         $borrar_publicaciones_permiso = Permission::firstOrCreate(['name' => 'borrar_publicacion']);
 
@@ -44,11 +44,11 @@ class PermissionAndRoleSeeder extends Seeder
         /* permisos para los directores del torneo y administradores */
 
         //partidos C - - D
-        $crear_partidos_permiso = Permission::firstOrCreate(['name' => 'crear_partido']);
+        Permission::firstOrCreate(['name' => 'crear_partido']);
         $borrar_partidos_permiso = Permission::firstOrCreate(['name' => 'borrar_partido']);
 
         //actas C R U D
-        $crear_actas_permiso = Permission::firstOrCreate(['name' => 'crear_acta']);
+        Permission::firstOrCreate(['name' => 'crear_acta']);
         $leer_actas_permiso = Permission::firstOrCreate(['name' => 'leer_acta']);
         $editar_actas_permiso = Permission::firstOrCreate(['name' => 'editar_acta']);                        //posiblemente innecesario
         $borrar_actas_permiso = Permission::firstOrCreate(['name' => 'borrar_acta']);                        //posiblemente innecesario

@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\{Equipo, Jugador, Publicacion};
-use App\Policies\{EquipoPolicy, JugadorPolicy, MediaPolicy, PublicacionPolicy};
+use App\Models\{Acta, Equipo, Jugador, Publicacion};
+use App\Policies\{ActaPolicy, EquipoPolicy, JugadorPolicy, MediaPolicy, PublicacionPolicy};
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::guessPolicyNamesUsing(function (string $modelClass) {
             return match ($modelClass) {
+                Acta::class => ActaPolicy::class,
                 Equipo::class => EquipoPolicy::class,
                 Jugador::class => JugadorPolicy::class,
                 Media::class => MediaPolicy::class,
