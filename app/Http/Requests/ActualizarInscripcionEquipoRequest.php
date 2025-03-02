@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ActualizarEquipoRequest extends FormRequest
+class ActualizarInscripcionEquipoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class ActualizarEquipoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'string|max:45|unique:equipos,nombre',
-            'grupo' => 'in:A,B',
+            'comentario' => 'string',
+            'estado' => 'in:pendiente,aprobada,rechazada',
             /* ¿Permitir actualizar tambien el centro? */
         ];
     }
@@ -33,10 +33,8 @@ class ActualizarEquipoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nombre.string' => 'El nombre del equipo ha de ser texto.',
-            'nombre.max' => 'El nombre solo tiene maximo 45 caracteres.',
-            'nombre.unique' => 'El nombre del equipo ya esta escogido.',
-            'grupo.in' => 'El grupo solo puede ser [A | B]',
+            'comentario.string' => 'El comentario de la inscripcion del equipo ha de ser texto.',
+            'grupo.in' => 'El comentario de la inscripcion del equipo solo puede ser [pendiente | aprobada | rechazada].',
         ];
     }
 
@@ -45,7 +43,7 @@ class ActualizarEquipoRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la actualizacion del equipo',
+            'message'   => 'Errores en la actualizacion de la inscripcion del equipo',
             'errors'      => $validator->errors()
         ]));
     }

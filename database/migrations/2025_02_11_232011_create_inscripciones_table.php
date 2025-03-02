@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('inscripciones', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->longText('comentarios');
             $table->enum('estado',['pendiente','aprobada','rechazada'])->nullable();
             $table->unsignedBigInteger('usuarioIdCreacion');
