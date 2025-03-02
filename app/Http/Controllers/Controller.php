@@ -44,6 +44,6 @@ abstract class Controller
             throw new NotFoundHttpException();
         }
 
-        return $slug ? $className::where('slug', $slug)->first() : new $className;
+        return $slug ? $className::where('slug', $slug)->firstOrFail() : new $className;
     }
 }

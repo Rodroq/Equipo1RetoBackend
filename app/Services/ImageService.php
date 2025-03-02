@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 
 final class ImageService
 {
@@ -31,11 +29,6 @@ final class ImageService
 
     public function getSpecificImage($item_model, string $name)
     {
-        return $this->getImages($item_model, ['name' => $name])->first();
-    }
-
-    public function deleteAllMedia($item_model)
-    {
-        return $item_model->clearMediaCollection();
+        return $this->getImages($item_model, ['name' => $name])->firstOrFail();
     }
 }

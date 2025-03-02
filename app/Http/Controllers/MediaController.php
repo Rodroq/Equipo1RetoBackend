@@ -101,7 +101,7 @@ class MediaController extends Controller  implements HasMiddleware
     {
         $item = $this->getModelInstance($imageable_type, $slug);
 
-        $response = Gate::inspect('create', [Media::class, $this->user]);
+        $response = Gate::inspect('create', [Media::class, $item->id]);
 
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
@@ -202,11 +202,7 @@ class MediaController extends Controller  implements HasMiddleware
 
         $media = $this->servicio_imagenes->getSpecificImage($item, $file_name);
 
-        if (!$media) {
-            return response()->json(['success' => false, 'message' => 'Imagen no encontrada'], 404);
-        }
-
-        $response = Gate::inspect('update', [$media, $this->user]);
+        $response = Gate::inspect('update', [$media]);
 
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
@@ -289,9 +285,7 @@ class MediaController extends Controller  implements HasMiddleware
 
         $media = $this->servicio_imagenes->getSpecificImage($item, $name);
 
-        if (!$media) {
-            return response()->json(['success' => false, 'message' => 'Imagen no encontrada'], 404);
-        }
+        Gate::inspect('delete', [$media]);
 
         $media->delete();
 
