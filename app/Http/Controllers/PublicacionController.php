@@ -80,6 +80,13 @@ class PublicacionController extends Controller implements HasMiddleware
      *  description="Obtener una publicacion de la web",
      *  operationId="showPublicaciones",
      *  tags={"publicaciones"},
+     *  @OA\Parameter(
+     *      name="slug",
+     *      in="path",
+     *      description="Slug de la publicacion",
+     *      required=true,
+     *      @OA\Schema(type="string",example="desguace-fc")
+     *  ),
      *  @OA\Response(
      *      response=200,
      *      description="Publicaciones encontradas",
@@ -107,7 +114,7 @@ class PublicacionController extends Controller implements HasMiddleware
      */
     public function show(Publicacion $publicacion)
     {
-        return response()->json(['success' => true, 'message' => 'Publicacion encontrada', 'equipo' => new PublicacionDetalleResource($publicacion)], 200);
+        return response()->json(['success' => true, 'message' => 'Publicacion encontrada', 'punlicacion' => new PublicacionDetalleResource($publicacion)], 200);
     }
 
     /**
@@ -195,8 +202,8 @@ class PublicacionController extends Controller implements HasMiddleware
      *      name="slug",
      *      in="path",
      *      description="Slug de la publicacion",
-     *   required=true,
-     *   @OA\Schema(type="string")
+     *      required=true,
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Response(
      *      response=200,
