@@ -10,6 +10,21 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
+/**
+ * @OA\Schema(
+ *  schema="Patrocinador",
+ *  type="object",
+ *  title="Patrocinador",
+ *  required={"nombre","slug", "equipo"},
+ *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
+ *  @OA\Property(property="slug", type="string"),
+ *  @OA\Property(property="equipo", type="string", example="desguace-fc"),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
+ */
 class Patrocinador extends Model implements HasMedia
 {
     use HasSlug, InteractsWithMedia;

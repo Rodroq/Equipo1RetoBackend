@@ -14,6 +14,11 @@ class PatrocinadorDetalleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'slug' => $this->slug,
+            'nombre' => $this->nombre,
+            'equipo' => $this->equipos()->first()->slug,
+            'imagenes' => MediaResource::collection($this->getMedia())
+        ];
     }
 }
