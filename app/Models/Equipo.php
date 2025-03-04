@@ -82,7 +82,7 @@ class Equipo extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
-    /* protected static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -95,7 +95,7 @@ class Equipo extends Model implements HasMedia
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    } */
+    }
 
     /**
      * Crea múltiples jugadores relacionados con el equipo.

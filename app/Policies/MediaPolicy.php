@@ -16,7 +16,7 @@ class MediaPolicy
         if (!$user->hasPermissionTo('crear_imagen')) return Response::denyWithStatus(403, 'No tienes permisos para crear ninguna imagen', 'IMAGEN_CREATE_FORBIDDEN');
 
         if ($user->hasRole('entrenador')) {
-            if ($user->tokenCant("crear_imagen_equipo_{$item_id}") || $user->tokenCant("crear_imagen_jugador_equipo_{$item_id}")) {
+            if ($user->tokenCant("crear_imagen_equipo_{$item_id}") || $user->tokenCant("crear_imagen_jugador_equipo_{$item_id}") || $user->tokenCant("crear_imagen_patrocinador_equipo_{$item_id}")) {
                 return Response::denyWithStatus(403, 'No puedes crear ninguna imagen en este recurso', 'IMAGEN_CREATE_FORBIDDEN');
             }
         }
@@ -39,7 +39,7 @@ class MediaPolicy
 
         if ($user->hasRole('entrenador')) {
             $equipo = $media->model()->first();
-            if ($user->tokenCant("editar_imagen_equipo_{$equipo->id}") || $user->tokenCant("editar_imagen_jugador_equipo_{$equipo->id}")) {
+            if ($user->tokenCant("editar_imagen_equipo_{$equipo->id}") || $user->tokenCant("editar_imagen_jugador_equipo_{$equipo->id}" || $user->tokenCant("editar_imagen_patrocinador_equipo_{$equipo->id}"))) {
                 return Response::denyWithStatus(403, 'No puedes actualizar ninguna imagen de este recurso', 'IMAGEN_CREATE_FORBIDDEN');
             }
         }
@@ -63,7 +63,7 @@ class MediaPolicy
 
         if ($user->hasRole('entrenador')) {
             $equipo = $media->model()->first();
-            if ($user->tokenCant("borrar_imagen_equipo_{$equipo->id}") || $user->tokenCant("borrar_imagen_jugador_equipo_{$equipo->id}")) {
+            if ($user->tokenCant("borrar_imagen_equipo_{$equipo->id}") || $user->tokenCant("borrar_imagen_jugador_equipo_{$equipo->id}" || $user->tokenCant("borrar_imagen_patrocinador_equipo_{$equipo->id}"))) {
                 return Response::denyWithStatus(403, "No puedes borrar ninguna imagen de este recurso", 'IMAGEN_DELETE_FORBIDDEN');
             }
         }

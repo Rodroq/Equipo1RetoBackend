@@ -56,8 +56,8 @@ class LoginController extends Controller
     {
         $resultado_autenticacion = $this->servicio_autenticacion->authenticateUser($request->all());
 
-        if(!$resultado_autenticacion['success']){
-            return response()->json(['success'=>false,'message'=>$resultado_autenticacion['message']],$resultado_autenticacion['status']);
+        if (!$resultado_autenticacion['success']) {
+            return response()->json(['success' => false, 'message' => $resultado_autenticacion['message']], $resultado_autenticacion['status']);
         }
 
         return response()->json([

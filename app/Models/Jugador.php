@@ -86,7 +86,7 @@ class Jugador extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
     }
 
-    /* protected static function boot()
+    protected static function boot()
     {
         parent::boot();
 
@@ -99,7 +99,7 @@ class Jugador extends Model implements HasMedia
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    } */
+    }
 
     public function equipo()
     {
