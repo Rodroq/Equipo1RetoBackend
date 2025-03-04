@@ -15,10 +15,81 @@ class MediaController extends Controller  implements HasMiddleware
     {
         return [
             //seguridad para la autenticación del ususario
-            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware('auth:sanctum'),
             new Middleware('role:administrador|entrenador|periodista', only: ['update', 'destroy']),
             new Middleware('role:entrenador|periodista', only: ['store']),
         ];
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    /**
+     * @OA\Get(
+     *  path="/api/imagenes/{imageable_type}/{slug}",
+     *  summary="Obtener todas las imagenes pertenecientes a un usuario",
+     *  description="Obtener todas las imagenes pertenecientes a un usuario a través del servicio de imagenes de la API",
+     *  operationId="indexImagen",
+     *  security={{"bearerAuth": {}}},
+     *  tags={"imagenes"},
+     *  @OA\RequestBody(
+     *      required=true,
+     *      description="Archivo de la imagen",
+     *      @OA\MediaType(
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *              type="object",
+     *              @OA\Property(
+     *                  property="imagen",
+     *                  type="string",
+     *                  description="nueva imagen para el recurso",
+     *                  format="binary",
+     *              )
+     *          ),
+     *      ),
+     *  ),
+     *  @OA\Response(
+     *      response=200,
+     *      description="Imagenes encontradas",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=true),
+     *          @OA\Property(property="message", type="string", example="Imagenes encontradas"),
+     *          @OA\Property(property="imagen", type="object",
+     *              @OA\Property(property="nombre",type="string"),
+     *              @OA\Property(property="url",type="string")
+     *          ),
+     *      ),
+     *  ),
+     *  @OA\Response(
+     *      response=401,
+     *      description="No autorizado",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="Debes iniciar sesión para acceder a este recurso")
+     *      )
+     *  ),
+     *  @OA\Response(
+     *      response=403,
+     *      description="Prohibido",
+     *      @OA\JsonContent(
+     *          type="object",
+     *          @OA\Property(property="success", type="boolean", example=false),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para realizar esta accion")
+     *      )
+     *  ),
+     *)
+     */
+    public function index()
+    {
+        $media = $this->servicio_imagenes->getImagesUser($this->user->id);
+
+        if ($media->isEmpty()) {
+            return response()->json(status: 204);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Imagenes encontradas', 'imagenes' => MediaResource::collection($media)], 200);
     }
 
     /**
@@ -26,7 +97,7 @@ class MediaController extends Controller  implements HasMiddleware
      */
     /**
      * @OA\Post(
-     *  path="/api/imagenes/{imageable_type}",
+     *  path="/api/imagenes/{imageable_type}/{slug}",
      *  summary="Crear la imagen de un recurso",
      *  description="Crear una imagen de un recurso a través del servicio de imagenes de la API",
      *  operationId="storeImagen",
@@ -38,6 +109,13 @@ class MediaController extends Controller  implements HasMiddleware
      *      description="imageable_type de referencia para la imagen",
      *      required=true,
      *      @OA\Schema(type="imageable_type",example="equipos")
+     *  ),
+     *  @OA\Parameter(
+     *      name="slug",
+     *      in="path",
+     *      description="slug de referencia para el recurso concreto de la imagen",
+     *      required=true,
+     *      @OA\Schema(type="slug",example="desguace-fc")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
@@ -107,7 +185,7 @@ class MediaController extends Controller  implements HasMiddleware
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
         }
 
-        $media = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'));
+        $media = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'), $this->user->id);
 
 
         return response()->json(['success' => true, 'message' => 'Imagen creada correctamente', 'imagen' => new MediaResource($media)], 201);
@@ -118,7 +196,7 @@ class MediaController extends Controller  implements HasMiddleware
      */
     /**
      * @OA\Post(
-     *  path="/api/imagenes/{imageable_type}/{slug}",
+     *  path="/api/imagenes/{imageable_type}/{slug}/{file_name}",
      *  summary="Modificar la imagen de un recurso",
      *  description="Modificar la imagen de un recurso a través del servicio de imagenes de la API",
      *  operationId="updateImagen",
@@ -135,6 +213,13 @@ class MediaController extends Controller  implements HasMiddleware
      *      name="slug",
      *      in="path",
      *      description="slug de referencia para el recurso concreto de la imagen",
+     *      required=true,
+     *      @OA\Schema(type="slug",example="desguace-fc")
+     *  ),
+     *  @OA\Parameter(
+     *      name="file_name",
+     *      in="path",
+     *      description="nombre de referencia del archivo a modificar para el recurso concreto de la imagen",
      *      required=true,
      *      @OA\Schema(type="slug",example="desguace-fc")
      *  ),
@@ -220,7 +305,7 @@ class MediaController extends Controller  implements HasMiddleware
      */
     /**
      * @OA\Delete(
-     *  path="/api/imagenes/{imageable_type}/{slug}",
+     *  path="/api/imagenes/{imageable_type}/{slug}/{file_name}",
      *  summary="Eliminar la imagen de un recurso",
      *  description="Elimina la imagen de un recurso a través del servicio de imagenes de la API",
      *  operationId="destroyImagen",
@@ -237,6 +322,13 @@ class MediaController extends Controller  implements HasMiddleware
      *      name="slug",
      *      in="path",
      *      description="slug de referencia para el recurso concreto de la imagen",
+     *      required=true,
+     *      @OA\Schema(type="slug",example="desguace-fc")
+     *  ),
+     *  @OA\Parameter(
+     *      name="file_name",
+     *      in="path",
+     *      description="nombre de referencia del archivo a modificar para el recurso concreto de la imagen",
      *      required=true,
      *      @OA\Schema(type="slug",example="desguace-fc")
      *  ),

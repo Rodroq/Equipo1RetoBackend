@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\{Equipo, Publicacion, User};
+use App\Models\{User};
 use Illuminate\Auth\Access\Response;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -11,7 +11,7 @@ class MediaPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user ,int $item_id): Response
+    public function create(User $user, int $item_id): Response
     {
         if (!$user->hasPermissionTo('crear_imagen')) return Response::denyWithStatus(403, 'No tienes permisos para crear ninguna imagen', 'IMAGEN_CREATE_FORBIDDEN');
 
@@ -45,7 +45,7 @@ class MediaPolicy
         }
 
         if ($user->hasRole('periodista')) {
-            $publicacion = Publicacion::where('usuarioIdCreacion', $user->id)->first();
+            $publicacion = $media->model()->first();
             if ($user->tokenCant("editar_imagen_publicacion_{$publicacion->id}")) {
                 return Response::denyWithStatus(403, 'No puedes crear ninguna imagen en este recurso', 'IMAGEN_CREATE_FORBIDDEN');
             }
@@ -62,14 +62,14 @@ class MediaPolicy
         if (!$user->hasPermissionTo('borrar_imagen')) return Response::denyWithStatus(403, 'No tienes permisos para borrar ninguna imagen', 'IMAGEN_DELETE_FORBIDDEN');
 
         if ($user->hasRole('entrenador')) {
-            $equipo = $media->model();
+            $equipo = $media->model()->first();
             if ($user->tokenCant("borrar_imagen_equipo_{$equipo->id}") || $user->tokenCant("borrar_imagen_jugador_equipo_{$equipo->id}")) {
                 return Response::denyWithStatus(403, "No puedes borrar ninguna imagen de este recurso", 'IMAGEN_DELETE_FORBIDDEN');
             }
         }
 
         if ($user->hasRole('periodista')) {
-            $publicacion = Publicacion::where('usuarioIdCreacion', $user->id)->first();
+            $publicacion = $media->model()->first();
             if ($user->tokenCant("borrar_imagen_publicacion_{$publicacion->id}")) {
                 Response::denyWithStatus(403, 'No puedes crear ninguna imagen en este recurso', 'IMAGEN_CREATE_FORBIDDEN');
             }

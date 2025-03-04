@@ -17,6 +17,7 @@ Route::apiResource('inscripciones', InscripcionController::class)->only('index',
 
 
 Route::controller(MediaController::class)->group(function () {
+    Route::get('imagenes', 'index')->name('imagenes.index');
     Route::post('imagenes/{imageable_type}/{slug}', 'store')->name('imagenes.store');
     Route::post('imagenes/{imageable_type}/{slug}/{file_name}', 'update')->name('imagenes.update');
     Route::delete('imagenes/{imageable_type}/{slug}/{file_name}', 'destroy')->name('imagenes.destroy');

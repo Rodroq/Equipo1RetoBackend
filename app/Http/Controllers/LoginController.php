@@ -4,20 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserController;
 use App\Http\Resources\UserResource;
-use App\Models\Equipo;
-use App\Models\User;
-use App\Services\AuthService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    protected AuthService $servicio_autenticacion;
-
-    public function __construct(AuthService $servicio_autenticacion)
-    {
-        $this->servicio_autenticacion = $servicio_autenticacion;
-    }
     /**
      * Login a specific user to use the API
      */
