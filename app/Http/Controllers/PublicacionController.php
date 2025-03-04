@@ -114,7 +114,7 @@ class PublicacionController extends Controller implements HasMiddleware
      */
     public function show(Publicacion $publicacion)
     {
-        return response()->json(['success' => true, 'message' => 'Publicacion encontrada', 'punlicacion' => new PublicacionDetalleResource($publicacion)], 200);
+        return response()->json(['success' => true, 'message' => 'Publicacion encontrada', 'publicacion' => new PublicacionDetalleResource($publicacion)], 200);
     }
 
     /**
