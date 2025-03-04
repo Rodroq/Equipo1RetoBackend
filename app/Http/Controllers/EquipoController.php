@@ -7,7 +7,7 @@ use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
 use App\Http\Resources\EquipoDetalleResource;
 use App\Http\Resources\EquipoResource;
-use App\Models\{Centro, Equipo};
+use App\Models\{Centro, Equipo, Inscripcion};
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
@@ -192,6 +192,13 @@ class EquipoController extends Controller implements HasMiddleware
         $centro_id = $request->centro ? Centro::where('nombre', $request->centro)->first()->id : null;
 
         $equipo = Equipo::create(['nombre' => $request->nombre, 'grupo' => $request->grupo, 'centro_id' => $centro_id,]);
+
+        Inscripcion::create([
+            'equipo_id' => $equipo->id,
+            'estado' => 'pendiente',
+            'comentario' => 'Esperando la aceptacion al torneo',
+        ]);
+
         $equipo->crearJugadores($request->jugadores);
 
         $this->user->syncPermissions(['editar_equipo', 'borrar_equipo', 'borrar_jugador', 'editar_jugador']);
