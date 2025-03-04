@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{ActaController, EquipoController, InscripcionController, MediaController, JugadorController, LoginController, PartidoController, PublicacionController, RetoController, UserController};
+use App\Http\Controllers\{ActaController, DonacionesController, EquipoController, InscripcionController, MediaController, JugadorController, LoginController, PartidoController, PublicacionController, RetoController, UserController};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +14,7 @@ Route::apiResource('publicaciones', PublicacionController::class)->parameters(['
 Route::apiResource('retos', RetoController::class)->only('index', 'show');
 Route::apiResource('usuarios', UserController::class);
 Route::apiResource('inscripciones', InscripcionController::class)->only('index', 'update')->parameters(['inscripciones' => 'inscripcion']);
-
+Route::apiResource('donaciones',DonacionesController::class);
 
 Route::controller(MediaController::class)->group(function () {
     Route::get('imagenes', 'index')->name('imagenes.index');
