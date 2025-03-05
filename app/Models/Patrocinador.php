@@ -90,6 +90,6 @@ class Patrocinador extends Model implements HasMedia
 
     public function equipos()
     {
-        return $this->belongsToMany(Equipo::class);
+        return $this->belongsToMany(Equipo::class,'patrocinadores_equipos');
     }
 }

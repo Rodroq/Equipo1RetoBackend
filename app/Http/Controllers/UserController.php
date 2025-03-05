@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CrearUsuarioRequest;
 use App\Http\Requests\ActualizarUsuarioRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\RegistroUsuario;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -177,8 +179,16 @@ class UserController extends Controller implements HasMiddleware
             'name' => $request->nombre,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol' => $request->rol,
         ]);
+
+        $usuario->syncRoles($request->rol);
+
+        $mensaje = "
+        Ha sido usted logueado satisfacoriamente en el torneo de la liga solidaria de la Cruz Roja <br/>
+        Su contraseña de acceso es {$request->password}
+        Su rol actual es {$request->rol}
+        ";
+        Mail::to($usuario->email)->send(new RegistroUsuario($usuario, $mensaje));
 
         return response()->json(['success' => true, 'message' => 'Usuario creado correctamente', 'usuarios' => new UserResource($usuario),], 201);
     }

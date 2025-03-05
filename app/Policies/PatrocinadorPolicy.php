@@ -13,7 +13,6 @@ class PatrocinadorPolicy
      */
     public function create(User $user, int $equipo_id): Response
     {
-
         if (!$user->hasPermissionTo('borrar_patrocinador')) return Response::denyWithStatus(403, 'No tienes permisos para crear ningún patrocinador', 'PATROCINADOR_CREATE_FORBIDDEN');
         if ($user->tokenCant("borrar_patrocinador_equipo_{$equipo_id}")) return  Response::denyWithStatus(403, "No puedes crear ningún patrocinador en este equipo", 'PATROCINADOR_CREATE_FORBIDDEN');
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActualizarInscripcionEquipoRequest;
 use App\Http\Resources\InscripcionResource;
+use App\Mail\InscripcionTorneo;
 use App\Models\Inscripcion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\{HasMiddleware, Middleware};
+use Illuminate\Support\Facades\Mail;
 
 class InscripcionController extends Controller implements HasMiddleware
 {
@@ -127,6 +130,15 @@ class InscripcionController extends Controller implements HasMiddleware
     public function update(ActualizarInscripcionEquipoRequest $request, Inscripcion $inscripcion)
     {
         $inscripcion->update($request->all());
+        $estado = $inscripcion->estado;
+
+        $mensaje = "
+        Su equipo ha sido {$estado} de nuestro torneo solidario<br/>
+        ";
+
+        $usuario = User::where('id',$inscripcion->usuarioIdCreacion)->first();
+        Mail::to($usuario->email)->send(new InscripcionTorneo($usuario, $mensaje));
+
 
         return response()->json(['success' => true, 'message' => 'Inscripcion actualizada correctamente', 'inscripcion' => new InscripcionResource($inscripcion)], 200);
     }

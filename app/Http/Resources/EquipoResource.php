@@ -18,7 +18,7 @@ class EquipoResource extends JsonResource
             'slug' => $this->slug,
             'nombre' => $this->nombre,
             'centro' => [
-                'nombre' => $this->centro->nombre
+                'nombre' => $this->centro?->nombre
             ],
             'imagen' => new MediaResource($this->getFirstMedia())
         ];

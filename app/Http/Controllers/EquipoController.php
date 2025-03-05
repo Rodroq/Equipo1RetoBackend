@@ -196,7 +196,7 @@ class EquipoController extends Controller implements HasMiddleware
         Inscripcion::create([
             'equipo_id' => $equipo->id,
             'estado' => 'pendiente',
-            'comentario' => 'Esperando la aceptacion al torneo',
+            'comentarios' => 'Esperando la aceptacion al torneo',
         ]);
 
         $equipo->crearJugadores($request->jugadores);

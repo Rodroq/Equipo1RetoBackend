@@ -7,10 +7,19 @@ use App\Http\Resources\{PatrocinadorDetalleResource, PatrocinadorResource};
 use App\Models\Equipo;
 use App\Models\Patrocinador;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\{HasMiddleware, Middleware};
 use Illuminate\Support\Facades\Gate;
 
-class PatrocinadorController extends Controller
+class PatrocinadorController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:sanctum', except: ['index', 'show']),
+            new Middleware('role:administrador|entrenador', only: ['destroy']),
+            new Middleware('role:entrenador', only: ['store']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
@@ -154,7 +163,8 @@ class PatrocinadorController extends Controller
      */
     public function store(CrearPatrocinadorRequest $request)
     {
-        $response = Gate::inspect('create', [Patrocinador::class, $request->equipo]);
+        $equipo = Equipo::where('slug', $request->equipo)->first();
+        $response = Gate::inspect('create', [Patrocinador::class, $equipo->id]);
 
         if (!$response->allowed()) {
             return response()->json(['success' => false, 'message' => $response->message(), 'code' => $response->code()], $response->status());
@@ -162,7 +172,6 @@ class PatrocinadorController extends Controller
 
         $patrocinador = Patrocinador::create($request->except('equipo'));
 
-        $equipo = Equipo::whereIn('slug', $request->equipo)->pluck('id');
         $patrocinador->equipos()->syncWithoutDetaching($equipo);
 
         return response()->json(['success' => true, 'message' => 'Patrocinador creado correctamente', 'patrocinador' => new PatrocinadorDetalleResource($patrocinador)], 201);

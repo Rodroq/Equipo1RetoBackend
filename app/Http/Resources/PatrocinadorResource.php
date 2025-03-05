@@ -17,7 +17,7 @@ class PatrocinadorResource extends JsonResource
         return [
             'slug' => $this->slug,
             'nombre' => $this->nombre,
-            'equipo' => $this->equipos()->first()->slug,
+            'equipo_slug' => $this->equipos()->first()->slug,
             'imagen' => new MediaResource($this->getFirstMedia())
         ];
     }

@@ -17,6 +17,7 @@ class JugadorDetalleResource extends JsonResource
     {
         $estadisticas = EstadisticasJugador::where('jugador_id', $this->id)->first();
         return [
+            'slug' => $this->slug,
             'nombre' => $this->nombre,
             'apellido1' => $this->apellido1,
             'apellido2' => $this->apellido2,
