@@ -3,13 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Publicacion extends Model
+/**
+ * @OA\Schema(
+ *  schema="Publicacion",
+ *  type="object",
+ *  title="Publicacion",
+ *  @OA\Property(property="titulo", type="string", example="Titulo"),
+ *  @OA\Property(property="slug", type="string", example="titulo"),
+ *  @OA\Property(property="texto", type="string"),
+ *  @OA\Property(property="portada", type="boolean"),
+ *  @OA\Property(property="rutaaudio", type="string"),
+ *  @OA\Property(property="rutavideo", type="string"),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
+ */
+class Publicacion extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'publicaciones';
 
@@ -19,13 +39,8 @@ class Publicacion extends Model
         'portada',
         'rutavideo',
         'rutaaudio',
-        'equipo_id',
-        'partido_id',
-        'patrocinador_id',
-        'jugador_id',
-        'reto_id',
-        'ong_id',
-        'pabellon_id',
+        'publicacionable_type',
+        'publicacionable_id',
         'usuarioIdCreacion',
         'fechaCreacion',
         'usuarioIdActualizacion',
@@ -52,6 +67,13 @@ class Publicacion extends Model
         return 'slug';
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('publicacion_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -67,28 +89,8 @@ class Publicacion extends Model
         });
     }
 
-    public function retos()
+    public function publicacionable(): MorphTo
     {
-        return $this->belongsTo(Reto::class);
-    }
-
-    public function patrocinadores()
-    {
-        return $this->belongsTo(Patrocinador::class);
-    }
-
-    public function equipos()
-    {
-        return $this->belongsTo(Equipo::class);
-    }
-
-    public function jugadores()
-    {
-        return $this->belongsTo(Jugador::class);
-    }
-
-    public function partidos()
-    {
-        return $this->belongsTo(Partido::class);
+        return $this->morphTo(__FUNCTION__, 'publicacionable_type', 'publicacionable_id');
     }
 }

@@ -24,7 +24,7 @@ class EquipoPolicy
     public function update(User $user, Equipo $equipo): Response
     {
         if (!$user->hasPermissionTo('editar_equipo')) return Response::denyWithStatus(403, 'No tienes permisos para editar ningún equipo', 'EQUIPO_EDIT_FORBIDDEN');
-        if (!$user->tokenCan("editar_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes editar el equipo {$equipo->nombre}.", 'EQUIPO_EDIT_FORBIDDEN');
+        if ($user->tokenCant("editar_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes editar el equipo {$equipo->nombre}.", 'EQUIPO_EDIT_FORBIDDEN');
 
         return Response::allow();
     }
@@ -35,7 +35,7 @@ class EquipoPolicy
     public function delete(User $user, Equipo $equipo): Response
     {
         if (!$user->hasPermissionTo('borrar_equipo')) return Response::denyWithStatus(403, 'No tienes permisos para borrar ningún equipo', 'EQUIPO_DELETE_FORBIDDEN');
-        if (!$user->tokenCan("borrar_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes borrar el equipo {$equipo->nombre}", 'EQUIPO_DELETE_FORBIDDEN');
+        if ($user->tokenCant("borrar_equipo_{$equipo->id}")) return  Response::denyWithStatus(403, "No puedes borrar el equipo {$equipo->nombre}", 'EQUIPO_DELETE_FORBIDDEN');
 
         return Response::allow();
     }

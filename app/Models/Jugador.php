@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -18,23 +19,28 @@ use Spatie\Sluggable\SlugOptions;
  *  @OA\Property(property="nombre", type="string", example="Álvaro"),
  *  @OA\Property(property="apellido1", type="string", example="Ruiz"),
  *  @OA\Property(property="apellido2", type="string", example="Gutierrez"),
- * * @OA\Property(property="slug", type="string", example="alvaro-ruiz-gutierrez"),
+ *  @OA\Property(property="slug", type="string", example="alvaro-ruiz-gutierrez"),
  *  @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
  *  @OA\Property(property="dni", type="string", example="12345678A"),
  *  @OA\Property(property="email", type="string", example="example@exa.com"),
  *  @OA\Property(property="telefono", type="string", example="+34 666 666 666"),
- *  @OA\Property(property="goles", type="intenger", example=1),
- *  @OA\Property(property="asistencias", type="integer", example=1),
- *  @OA\Property(property="tarjetas_amarillas", type="integer", example=1),
- *  @OA\Property(property="tarjetas_rojas", type="integer", example=1),
- *  @OA\Property(property="lesiones", type="integer", example=1),
- *  @OA\Property(property="estudios", type="object", ref="#/components/schemas/Estudio")
- *  )
+ *  @OA\Property(property="estadisticas", type="object",
+ *      @OA\Property(property="goles", type="integer", example=1),
+ *      @OA\Property(property="asistencias", type="integer", example=1),
+ *      @OA\Property(property="tarjetas_amarillas", type="integer", example=1),
+ *      @OA\Property(property="tarjetas_rojas", type="integer", example=1),
+ *      @OA\Property(property="lesiones", type="integer", example=1),
+ *  ),
+ *  @OA\Property(property="estudios", type="object", ref="#/components/schemas/Estudio"),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
  */
 class Jugador extends Model implements HasMedia
 {
-    use HasSlug;
-    use InteractsWithMedia;
+    use HasSlug, InteractsWithMedia;
     protected $table = 'jugadores';
 
     protected $fillable = [
@@ -45,12 +51,12 @@ class Jugador extends Model implements HasMedia
         'dni',
         'email',
         'telefono',
+        'equipo_id',
+        'estudio_id',
         'usuarioIdCreacion',
         'fechaCreacion',
         'usuarioIdActualizacion',
         'fechaActualizacion',
-        'equipo_id',
-        'estudio_id'
     ];
 
     /**
@@ -73,7 +79,14 @@ class Jugador extends Model implements HasMedia
         return 'slug';
     }
 
-    /* protected static function boot()
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('jugador_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
+    protected static function boot()
     {
         parent::boot();
 
@@ -86,7 +99,7 @@ class Jugador extends Model implements HasMedia
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    } */
+    }
 
     public function equipo()
     {
@@ -103,8 +116,8 @@ class Jugador extends Model implements HasMedia
         return $this->hasMany(Acta::class);
     }
 
-    public function publicaciones()
+    public function publicaciones(): MorphMany
     {
-        return $this->hasMany(Publicacion::class);
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('jugador');
     }
 }

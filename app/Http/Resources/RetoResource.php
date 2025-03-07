@@ -18,8 +18,7 @@ class RetoResource extends JsonResource
         return [
             'slug' => $this->slug,
             'titulo' => $this->titulo,
-            'texto' => $this->texto,
-            'estudio' => new EstudioResource($this->estudio),
+            'imagen' => new MediaResource($this->getFirstMedia()),
         ];
     }
 }

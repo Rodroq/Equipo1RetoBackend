@@ -3,13 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Patrocinador extends Model
+/**
+ * @OA\Schema(
+ *  schema="Patrocinador",
+ *  type="object",
+ *  title="Patrocinador",
+ *  required={"nombre","slug", "equipo"},
+ *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
+ *  @OA\Property(property="slug", type="string"),
+ *  @OA\Property(property="equipo", type="string", example="desguace-fc"),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
+ */
+class Patrocinador extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'patrocinadores';
 
@@ -42,6 +60,14 @@ class Patrocinador extends Model
         return 'slug';
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('patrocinador_imagenes')
+            ->useDisk('images_tournament')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -57,13 +83,13 @@ class Patrocinador extends Model
         });
     }
 
-    public function publicaciones()
+    public function publicaciones(): MorphMany
     {
-        return $this->hasMany(Publicacion::class);
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('patrocinador');
     }
 
     public function equipos()
     {
-        return $this->belongsToMany(Equipo::class);
+        return $this->belongsToMany(Equipo::class,'patrocinadores_equipos');
     }
 }

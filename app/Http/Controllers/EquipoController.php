@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Middleware\CanRecoverToken;
 use App\Http\Requests\ActualizarEquipoRequest;
 use App\Http\Requests\CrearEquipoRequest;
+use App\Http\Resources\EquipoDetalleResource;
 use App\Http\Resources\EquipoResource;
-use App\Models\{Centro, Equipo};
+use App\Models\{Centro, Equipo, Inscripcion};
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
@@ -16,12 +17,9 @@ class EquipoController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware(CanRecoverToken::class, only: ['index']),
-            //seguridad para las rutas de update y destroy SI YA TIENE CREADO UN EQUIPO
             new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
-            //seguridad para la ruta store a traves de rol y permisos SOLO SI NO SE TIENE CREADO YA UN EQUIPO
             new Middleware('role:entrenador', only: ['store']),
         ];
     }
@@ -38,22 +36,31 @@ class EquipoController extends Controller implements HasMiddleware
      *  tags={"equipos"},
      *  @OA\Response(
      *      response=200,
-     *      description="Equipo disponibles",
+     *      description="Equipos encontrados",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
-     *          @OA\Property(property="equipos", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
+     *          @OA\Property(property="message", type="string", example="Equipos encontrados"),
+     *          @OA\Property(
+     *              property="equipos",
+     *              type="array",
+     *              @OA\Items(
+     *                  @OA\Property(property="nombre", type="string", example="Nombre"),
+     *                  @OA\Property(property="slug", type="string", example="nombre-1"),
+     *                  @OA\Property(property="centro", type="object",
+     *                      @OA\Property(property="nombre", type="string", example="nombre")
+     *                  ),
+     *                  @OA\Property(property="imagen", type="object",
+     *                      @OA\Property(property="url", type="string"),
+     *                      @OA\Property(property="nombre", type="string", example="1-nombre")
+     *                  ),
+     *              )
+     *          ),
      *      ),
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="No hay equipos",
-     *      @OA\JsonContent(
-     *          type="object",
-     *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No hay equipos")
-     *      )
+     *      description="No hay equipos"
      *  )
      *)
      */
@@ -70,7 +77,7 @@ class EquipoController extends Controller implements HasMiddleware
         }
 
         if ($equipos->isEmpty()) {
-            return response()->json(['success' => true, 'message' => 'No hay equipos'], 404);
+            return response()->json(status: 204);
         }
 
         return response()->json(['success' => true, 'message' => 'Equipos disponibles', 'equipos' => EquipoResource::collection($equipos)], 200);
@@ -95,17 +102,17 @@ class EquipoController extends Controller implements HasMiddleware
      *  ),
      *  @OA\Response(
      *      response=200,
-     *      description="Equipo encontrado",
+     *      description="Equipo disponibles",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
-     *          @OA\Property(property="message", type="string", example="Equipo encontrado"),
-     *          @OA\Property(property="equipo", type="object", ref="#/components/schemas/Equipo"),
+     *          @OA\Property(property="message", type="string", example="Equipos disponibles"),
+     *          @OA\Property(property="equipo", type="array", @OA\Items(ref="#/components/schemas/Equipo")),
      *      ),
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -116,7 +123,7 @@ class EquipoController extends Controller implements HasMiddleware
      */
     public function show(Equipo $equipo)
     {
-        return response()->json(['success' => true, 'message' => 'Equipo encontrado', 'equipo' => new EquipoResource($equipo)], 200);
+        return response()->json(['success' => true, 'message' => 'Equipo encontrado', 'equipo' => new EquipoDetalleResource($equipo)], 200);
     }
 
     /**
@@ -169,7 +176,7 @@ class EquipoController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No puedes crear ningún equipo")
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para realizar esta accion")
      *      )
      *  ),
      *)
@@ -185,6 +192,13 @@ class EquipoController extends Controller implements HasMiddleware
         $centro_id = $request->centro ? Centro::where('nombre', $request->centro)->first()->id : null;
 
         $equipo = Equipo::create(['nombre' => $request->nombre, 'grupo' => $request->grupo, 'centro_id' => $centro_id,]);
+
+        Inscripcion::create([
+            'equipo_id' => $equipo->id,
+            'estado' => 'pendiente',
+            'comentarios' => 'Esperando la aceptacion al torneo',
+        ]);
+
         $equipo->crearJugadores($request->jugadores);
 
         $this->user->syncPermissions(['editar_equipo', 'borrar_equipo', 'borrar_jugador', 'editar_jugador']);
@@ -255,7 +269,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -324,7 +338,7 @@ class EquipoController extends Controller implements HasMiddleware
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),

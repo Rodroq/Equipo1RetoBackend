@@ -6,10 +6,7 @@ use App\Http\Requests\ActualizarJugadorRequest;
 use App\Http\Requests\CrearJugadorRequest;
 use App\Http\Resources\JugadorDetalleResource;
 use App\Http\Resources\JugadorResource;
-use App\Models\Ciclo;
-use App\Models\Estudio;
-use App\Models\Equipo;
-use App\Models\Jugador;
+use App\Models\{Ciclo, Estudio, Equipo, Jugador};
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
@@ -49,17 +46,16 @@ class JugadorController extends Controller implements HasMiddleware
      *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
      *              @OA\Property(property="apellido2", type="string", example="Apellido 2"),
      *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+     *              @OA\Property(property="imagen", type="object",
+     *                  @OA\Property(property="url", type="string"),
+     *                  @OA\Property(property="nombre", type="string", example="1-nombre")
+     *              ),
      *          ),
      *      ),
      *  ),
      *  @OA\Response(
      *      response=204,
-     *      description="No hay jugadores",
-     *      @OA\JsonContent(
-     *          type="object",
-     *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No hay jugadores")
-     *       ),
+     *      description="No hay jugadores"
      *  ),
      * )
      */
@@ -68,7 +64,7 @@ class JugadorController extends Controller implements HasMiddleware
         $jugadores = Jugador::with('estudio')->get();
 
         if ($jugadores->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No hay jugadores'], 204);
+            return response()->json(status: 204);
         }
 
         return response()->json(['success' => true, 'message' => 'Jugadores disponibles', 'jugadores' => JugadorResource::collection($jugadores),], 200);
@@ -98,12 +94,12 @@ class JugadorController extends Controller implements HasMiddleware
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=true),
      *          @OA\Property(property="message", type="string", example="Jugador encontrado"),
-     *          @OA\Property(property="jugador", type="jugador", ref="#/components/schemas/Jugador"),
+     *          @OA\Property(property="jugador", type="object", ref="#/components/schemas/Jugador"),
      *      ),
      * ),
      *  @OA\Response(
      *      response=404,
-     *      description="Jugador no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -161,7 +157,7 @@ class JugadorController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No puedes crear ningún equipo")
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para realizar esta accion")
      *      )
      *  ),
      * )
@@ -250,13 +246,13 @@ class JugadorController extends Controller implements HasMiddleware
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
-     *          @OA\Property(property="message", type="string", example="No tienes permisos para editar ningún jugador | No puedes editar el jugador samuel-tamayo-muniz del equipo Desguace FC"),
+     *          @OA\Property(property="message", type="string", example="No tienes permisos para realizar esta accion | No tienes permisos para editar ningún jugador de {equipo} | No puedes editar el jugador samuel-tamayo-muniz del equipo Desguace FC"),
      *          @OA\Property(property="code", type="string", example="JUGADOR_EDIT_FORBIDDEN")
      *      )
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),
@@ -341,7 +337,7 @@ class JugadorController extends Controller implements HasMiddleware
      *  ),
      *  @OA\Response(
      *      response=404,
-     *      description="Equipo no encontrado",
+     *      description="Recurso no encontrado",
      *      @OA\JsonContent(
      *          type="object",
      *          @OA\Property(property="success", type="boolean", example=false),

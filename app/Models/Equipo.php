@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -10,23 +11,37 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
 /**
- *@OA\Schema(
+ * @OA\Schema(
  *  schema="Equipo",
  *  type="object",
  *  title="Equipo",
  *  required={"nombre", "jugadores"},
  *  @OA\Property(property="nombre", type="string", example="Desguace FC"),
- * * @OA\Property(property="slug", type="string", example="desguace-fc"),
+ *  @OA\Property(property="slug", type="string", example="desguace-fc"),
  *  @OA\Property(property="grupo", type="string", example="A"),
  *  @OA\Property(property="centro", type="object", ref="#/components/schemas/Centro"),
- *  @OA\Property(property="jugadores", type="array", @OA\Items(ref="#/components/schemas/Jugador")),
- *)
+ *  @OA\Property(property="jugadores", type="array",
+ *      @OA\Items(
+ *              @OA\Property(property="slug", type="string"),
+ *              @OA\Property(property="nombre", type="string", example="Nombre"),
+ *              @OA\Property(property="apellido1", type="string", example="Apellido 1"),
+ *              @OA\Property(property="apellido2", type="string", example="apellido 2"),
+ *              @OA\Property(property="tipo", type="string", example="[jugador|capitan|entrenador]"),
+ *              @OA\Property(property="imagen", type="object",
+ *              @OA\Property(property="url", type="string"),
+ *              @OA\Property(property="nombre", type="string", example="1-nombre")
+ *          ),
+ *      )
+ *  ),
+ *  @OA\Property(property="imagenes", type="object",
+ *      @OA\Property(property="url", type="string"),
+ *      @OA\Property(property="nombre", type="string", example="1-nombre")
+ *  ),
+ * )
  */
-
 class Equipo extends Model implements HasMedia
 {
-    use HasSlug;
-    use InteractsWithMedia;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'equipos';
 
@@ -60,7 +75,14 @@ class Equipo extends Model implements HasMedia
         return 'slug';
     }
 
-    /* protected static function boot()
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('equipo_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
+    protected static function boot()
     {
         parent::boot();
 
@@ -73,7 +95,7 @@ class Equipo extends Model implements HasMedia
             $model->usuarioIdActualizacion = Auth::user()->id;
             $model->fechaActualizacion = now();
         });
-    } */
+    }
 
     /**
      * Crea múltiples jugadores relacionados con el equipo.
@@ -114,14 +136,14 @@ class Equipo extends Model implements HasMedia
         return $this->hasMany(Jugador::class);
     }
 
-    public function publicaciones()
+    public function publicaciones(): MorphMany
     {
-        return $this->hasMany(Publicacion::class);
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('equipo');
     }
 
     public function patrocinadores()
     {
-        return $this->belongsToMany(Patrocinador::class);
+        return $this->belongsToMany(Patrocinador::class,'patrocinadores_equipos');
     }
 
     public function centro()

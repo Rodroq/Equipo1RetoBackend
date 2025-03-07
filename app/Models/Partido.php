@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -19,9 +22,9 @@ use Spatie\Sluggable\SlugOptions;
  * @OA\Property(property="equipoVis", type="integer", example=2),
  * )
  */
-class Partido extends Model
+class Partido extends Model implements HasMedia
 {
-    use HasSlug;
+    use HasSlug, InteractsWithMedia;
 
     protected $table = 'partidos';
 
@@ -60,6 +63,13 @@ class Partido extends Model
         return 'slug';
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('partido_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
     public function actas()
     {
         return $this->hasMany(Acta::class);
@@ -75,9 +85,9 @@ class Partido extends Model
         return $this->belongsTo(Equipo::class, 'equipoV');
     }
 
-    public function publicaciones()
+    public function publicaciones(): MorphMany
     {
-        return $this->hasMany(Publicacion::class);
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('partido');
     }
 
     public function pabellon()

@@ -2,48 +2,39 @@
 
 namespace App\Services;
 
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Http\UploadedFile;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 final class ImageService
 {
-    protected $disk;
-
-    public function __construct(string $disk)
+    public function uploadImage($item_model, UploadedFile $file, int $usuario_id, ?string $custom_name = null)
     {
-        $this->disk = $disk;
-    }
+        $name = $custom_name ? $custom_name : count($item_model->getMedia()) + 1 . "-{$item_model->getTable()}-{$item_model->slug}";
+        $filename = "{$name}.{$file->getClientOriginalExtension()}";
 
-    public function uploadImage($model, UploadedFile $file)
-    {
-        $filename = "{$model->getTable()}-{$model->slug}." . $file->getClientOriginalExtension();
-        $collection = "{$model->getTable()}-{$model->slug}-images";
-
-        $media = $model->addMediaFromRequest('image')
+        return $item_model->addMedia($file)
             ->usingFileName($filename)
-            ->toMediaCollection($collection, $this->disk);
-
-        return $media;
+            ->withCustomProperties(['name' => $name, 'usuario_id' => $usuario_id])
+            ->toMediaCollection();
     }
 
-    public function getFirstImage($model, string $collection = 'default')
+    public function getFirstImage($item_model)
     {
-        return $model->getFirstMedia($collection);
+        return $item_model->getFirstMedia();
     }
 
-    public function getImages($model, string $collection = 'default')
+    public function getImages($item_model, array $filters = [])
     {
-        return $model->getMedia($collection);
+        return $item_model->getMedia(filters: $filters);
     }
 
-    public function getImageByName($model, string $filename, string $collection = 'default')
+    public function getImagesUser(int $user_id)
     {
-
-        return $model->getMedia($collection)->firstWhere('file_name', $filename);
+        return Media::where('custom_properties->usuario_id', $user_id)->get();
     }
 
-    public function delete(Media $media)
+    public function getSpecificImage($item_model, string $name)
     {
-        return $media->delete();
+        return $this->getImages($item_model, ['name' => $name])->firstOrFail();
     }
 }

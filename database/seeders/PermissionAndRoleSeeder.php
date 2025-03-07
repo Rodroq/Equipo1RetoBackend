@@ -20,27 +20,23 @@ class PermissionAndRoleSeeder extends Seeder
         /* permisos para los roles de usuario (profesor) y administrador */
 
         // equipos C - U D
-        $crear_equipo_permiso = Permission::firstOrCreate(['name' => 'crear_equipo']);
+        Permission::firstOrCreate(['name' => 'crear_equipo']);
         $editar_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_equipo']);
         $borrar_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_equipo']);
-        $editar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_equipo']);
-        $borrar_imagen_equipo_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_equipo']);
 
         // jugadores C - U D
-        $crear_jugador_permiso = Permission::firstOrCreate(['name' => 'crear_jugador']);
+        Permission::firstOrCreate(['name' => 'crear_jugador']);
         $editar_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_jugador']);
         $borrar_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_jugador']);
-        $editar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'editar_imagen_jugador']);
-        $borrar_imagen_jugador_permiso = Permission::firstOrCreate(['name' => 'borrar_imagen_jugador']);
 
         // patrocinadores C - U D
-        $crear_patrocinador_permiso = Permission::firstOrCreate(['name' => 'crear_patrocinador']);
+        Permission::firstOrCreate(['name' => 'crear_patrocinador']);
         $editar_patrocinador_permiso = Permission::firstOrCreate(['name' => 'editar_patrocinador']);
         $borrar_patrocinador_permiso = Permission::firstOrCreate(['name' => 'borrar_patrocinador']);
 
 
         /* permisos para los roles de periodista y administrador */
-        $crear_publicaciones_permiso = Permission::firstOrCreate(['name' => 'crear_publicacion']);
+        Permission::firstOrCreate(['name' => 'crear_publicacion']);
         $editar_publicaciones_permiso = Permission::firstOrCreate(['name' => 'editar_publicacion']);
         $borrar_publicaciones_permiso = Permission::firstOrCreate(['name' => 'borrar_publicacion']);
 
@@ -48,11 +44,11 @@ class PermissionAndRoleSeeder extends Seeder
         /* permisos para los directores del torneo y administradores */
 
         //partidos C - - D
-        $crear_partidos_permiso = Permission::firstOrCreate(['name' => 'crear_partido']);
+        Permission::firstOrCreate(['name' => 'crear_partido']);
         $borrar_partidos_permiso = Permission::firstOrCreate(['name' => 'borrar_partido']);
 
         //actas C R U D
-        $crear_actas_permiso = Permission::firstOrCreate(['name' => 'crear_acta']);
+        Permission::firstOrCreate(['name' => 'crear_acta']);
         $leer_actas_permiso = Permission::firstOrCreate(['name' => 'leer_acta']);
         $editar_actas_permiso = Permission::firstOrCreate(['name' => 'editar_acta']);                        //posiblemente innecesario
         $borrar_actas_permiso = Permission::firstOrCreate(['name' => 'borrar_acta']);                        //posiblemente innecesario
@@ -61,6 +57,9 @@ class PermissionAndRoleSeeder extends Seeder
         $leer_inscripcion_permiso = Permission::firstOrCreate(['name' => 'leer_inscripcion']);
         $editar_inscripcion_permiso = Permission::firstOrCreate(['name' => 'editar_inscripcion']);
 
+        $crear_imagen = Permission::firstOrCreate(['name' => 'crear_imagen']);
+        $editar_imagen = Permission::firstOrCreate(['name' => 'editar_imagen']);
+        $borrar_imagen = Permission::firstOrCreate(['name' => 'borrar_imagen']);
 
 
         Role::create(['name' => 'entrenador']);
@@ -83,10 +82,9 @@ class PermissionAndRoleSeeder extends Seeder
             $leer_actas_permiso,
             $editar_actas_permiso,
             $borrar_actas_permiso,
-            $editar_imagen_equipo_permiso,
-            $borrar_imagen_equipo_permiso,
-            $editar_imagen_jugador_permiso,
-            $borrar_imagen_jugador_permiso,
+            $crear_imagen,
+            $editar_imagen,
+            $borrar_imagen,
             $leer_inscripcion_permiso,
             $editar_inscripcion_permiso
         );

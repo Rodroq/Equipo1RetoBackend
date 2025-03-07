@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -32,8 +33,20 @@ class Pabellon extends Model
         return 'slug';
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('pabellon_imagenes')
+            ->useDisk('images_tournament')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/jpg']);
+    }
+
     public function partido()
     {
         return $this->hasMany(Partido::class);
+    }
+
+    public function publicaciones(): MorphMany
+    {
+        return $this->morphMany(Publicacion::class, 'publicacionable')->chaperone('pabellon');
     }
 }

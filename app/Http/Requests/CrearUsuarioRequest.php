@@ -29,7 +29,7 @@ class CrearUsuarioRequest extends FormRequest
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'rol' => 'required|string|in:administrador,entrenador,periodista',
+            'rol' => 'required|string|in:administrador,entrenador,periodista,director',
         ];
     }
 

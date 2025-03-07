@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\DataBase\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CustomPolymorphicTypeResolver extends ServiceProvider
 {
@@ -24,6 +24,7 @@ class CustomPolymorphicTypeResolver extends ServiceProvider
             'usuarios' => 'App\Models\User',
             'equipos' => 'App\Models\Equipo',
             'jugadores' => 'App\Models\Jugador',
+            'ongs' => 'App\Models\Ong',
             'pabellones' => 'App\Models\Pabellon',
             'partidos' => 'App\Models\Partido',
             'patrocinadores' => 'App\Models\Patrocinador',

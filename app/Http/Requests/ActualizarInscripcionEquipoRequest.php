@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CrearImagenRequest extends FormRequest
+class ActualizarInscripcionEquipoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,24 +24,26 @@ class CrearImagenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048'
+            'comentario' => 'string',
+            'estado' => 'in:pendiente,aprobada,rechazada',
+            /* ¿Permitir actualizar tambien el centro? */
         ];
     }
 
     public function messages(): array
     {
         return [
-            'image.required' => 'La imagen del equipo es requerido.',
-            'image.mimes' => 'Los tipos de imagen permitidos son [png,jpg,jpeg,gif]',
-            'image.max' => 'El tamaño maximo de la imagen debe rondar los 2 MB.',
+            'comentario.string' => 'El comentario de la inscripcion del equipo ha de ser texto.',
+            'grupo.in' => 'El comentario de la inscripcion del equipo solo puede ser [pendiente | aprobada | rechazada].',
         ];
     }
 
+    /* Agregar para devolver los mensajes de error a traves de la API */
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'   => 'Errores en la creacion de la imagen',
+            'message'   => 'Errores en la actualizacion de la inscripcion del equipo',
             'errors'      => $validator->errors()
         ]));
     }

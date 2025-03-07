@@ -17,11 +17,10 @@ class EquipoResource extends JsonResource
         return [
             'slug' => $this->slug,
             'nombre' => $this->nombre,
-            'grupo' => $this->grupo,
             'centro' => [
-                'nombre' => $this->centro->nombre
+                'nombre' => $this->centro?->nombre
             ],
-            'jugadores' => JugadorResource::collection($this->jugadores),
+            'imagen' => new MediaResource($this->getFirstMedia())
         ];
     }
 }
