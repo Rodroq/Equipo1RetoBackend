@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\ItemNotFoundException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -41,6 +42,14 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No existe el recurso solicitado.'
+                ], 404);
+            }
+        });
+        $exceptions->render(function (ItemNotFoundException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'status' => false,
