@@ -108,14 +108,14 @@ class MediaController extends Controller  implements HasMiddleware
      *      in="path",
      *      description="imageable_type de referencia para la imagen",
      *      required=true,
-     *      @OA\Schema(type="imageable_type",example="equipos")
+     *      @OA\Schema(type="string",example="equipos")
      *  ),
      *  @OA\Parameter(
      *      name="slug",
      *      in="path",
      *      description="slug de referencia para el recurso concreto de la imagen",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
@@ -207,21 +207,21 @@ class MediaController extends Controller  implements HasMiddleware
      *      in="path",
      *      description="imageable_type de referencia para la imagen",
      *      required=true,
-     *      @OA\Schema(type="imageable_type",example="equipos")
+     *      @OA\Schema(type="string",example="equipos")
      *  ),
      *  @OA\Parameter(
      *      name="slug",
      *      in="path",
      *      description="slug de referencia para el recurso concreto de la imagen",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Parameter(
      *      name="file_name",
      *      in="path",
      *      description="nombre de referencia del archivo a modificar para el recurso concreto de la imagen",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\RequestBody(
      *      required=true,
@@ -295,7 +295,7 @@ class MediaController extends Controller  implements HasMiddleware
 
         $media->delete();
 
-        $newMedia = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'), $file_name);
+        $newMedia = $this->servicio_imagenes->uploadImage($item, $request->file('imagen'), $this->user->id, $file_name);
 
         return response()->json(['success' => true, 'message' => 'Imagen actualizada correctamente', 'imagen' => new MediaResource($newMedia)], 200);
     }
@@ -316,21 +316,21 @@ class MediaController extends Controller  implements HasMiddleware
      *      in="path",
      *      description="imageable_type de referencia para la imagen",
      *      required=true,
-     *      @OA\Schema(type="imageable_type",example="equipos")
+     *      @OA\Schema(type="string",example="equipos")
      *  ),
      *  @OA\Parameter(
      *      name="slug",
      *      in="path",
      *      description="slug de referencia para el recurso concreto de la imagen",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Parameter(
      *      name="file_name",
      *      in="path",
      *      description="nombre de referencia del archivo a modificar para el recurso concreto de la imagen",
      *      required=true,
-     *      @OA\Schema(type="slug",example="desguace-fc")
+     *      @OA\Schema(type="string",example="desguace-fc")
      *  ),
      *  @OA\Response(
      *      response=201,

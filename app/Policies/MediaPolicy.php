@@ -39,7 +39,7 @@ class MediaPolicy
 
         if ($user->hasRole('entrenador')) {
             $equipo = $media->model()->first();
-            if ($user->tokenCant("editar_imagen_equipo_{$equipo->id}") || $user->tokenCant("editar_imagen_jugador_equipo_{$equipo->id}" || $user->tokenCant("editar_imagen_patrocinador_equipo_{$equipo->id}"))) {
+            if ($user->tokenCant("editar_imagen_equipo_{$equipo->id}") || $user->tokenCant("editar_imagen_jugador_equipo_{$equipo->id}") || $user->tokenCant("editar_imagen_patrocinador_equipo_{$equipo->id}")) {
                 return Response::denyWithStatus(403, 'No puedes actualizar ninguna imagen de este recurso', 'IMAGEN_CREATE_FORBIDDEN');
             }
         }
