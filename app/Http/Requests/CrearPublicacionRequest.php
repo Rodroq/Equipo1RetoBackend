@@ -26,7 +26,7 @@ class CrearPublicacionRequest extends FormRequest
         return [
             'titulo' => 'required|string|max:45',
             'slug' => 'required|string',
-            'tipo' => 'required|in:equipo,jugador,ongs,pabellon,partido,patrocinadores,retos',
+            'tipo' => 'required|in:equipos,jugadores,ongs,pabellones,partidos,patrocinadores,retos',
             'texto' => 'required|string',
             'portada' => 'boolean',
             'rutaaudio' => 'string',
@@ -42,7 +42,7 @@ class CrearPublicacionRequest extends FormRequest
             'slug.required' => 'El slug de la publicacion es requerido.',
             'slug.string' => 'El slug de la publicacion ha de ser texto.',
             'tipo.required' => 'El tipo de la publicacion es requerido.',
-            'tipo.in' => 'Los valores del tipo de publicacion son [jugador | capitan | entrenador]',
+            'tipo.in' => 'Los valores del tipo de publicacion son [equipos | jugadores | ongs | pabellones | partidos | patrocinadores | retos]',
             'titulo.max' => 'El titulo solo tiene maximo 45 caracteres.',
             'texto.required' => 'El texto de la publicacion es requerido.',
             'texto.string' => 'El texto de la publicacion ha de ser texto.',

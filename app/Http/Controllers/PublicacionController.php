@@ -19,8 +19,7 @@ class PublicacionController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware('role:administrador|periodista', only: ['update', 'destroy']),
-            new Middleware('role:periodista', only: ['store']),
+            new Middleware('role:administrador|periodista', only: ['store', 'update', 'destroy']),
         ];
     }
 
@@ -132,8 +131,10 @@ class PublicacionController extends Controller implements HasMiddleware
      *      required=true,
      *      description="Datos de la publicacion",
      *      @OA\JsonContent(
-     *          required={"titulo","texto"},
+     *          required={"titulo","slug","tipo","texto"},
      *          @OA\Property(property="titulo", type="string", example="Campeones de la liga"),
+     *          @OA\Property(property="slug", type="string"),
+     *          @OA\Property(property="tipo", type="string", example="[equipos | jugadores | ongs | pabellones | partidos | patrocinadores | retos]"),
      *          @OA\Property(property="texto", type="string", example="El equipo Desguace FC ha sido el campeon de la liga"),
      *          @OA\Property(property="portada", type="boolean"),
      *          @OA\Property(property="rutaaudio", type="integer"),
