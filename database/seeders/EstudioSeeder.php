@@ -16,9 +16,9 @@ class EstudioSeeder extends Seeder
     {
 
         $centros = Centro::get();
-        $centro_first_id = $centros->first()->id;
-        $centro_second_id = $centros->get(1)->id;
-        $centro_last_id = $centros->last()->id;
+        $centro_first_id = $centros->first()->id;//besaya
+        $centro_second_id = $centros->get(1)->id;//zapatón
+        $centro_last_id = $centros->get(2)->id;//miguel herrero
 
 
         $estudios = [

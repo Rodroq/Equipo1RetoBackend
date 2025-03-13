@@ -11,11 +11,31 @@ use Illuminate\Support\Facades\DB;
 class PartidosSeeder extends Seeder
 {
     private $partidos = [
-        ['fecha' => '2025-02-19', 'hora' => '16:34:00', 'golesL' => 1, 'golesV' => 3, 'usuarioIdCreacion' => 1, 'equipoL' => 8, 'equipoV' => 7 ],
-        ['fecha' => '2025-02-12', 'hora' => '18:54:00', 'golesL' => 4, 'golesV' => 1, 'usuarioIdCreacion' => 1, 'equipoL' => 4, 'equipoV' => 7 ],
-        ['fecha' => '2025-02-24', 'hora' => '13:03:00', 'golesL' => 5, 'golesV' => 1, 'usuarioIdCreacion' => 1, 'equipoL' => 4, 'equipoV' => 2 ],
-        ['fecha' => '2025-02-25', 'hora' => '13:10:00', 'golesL' => 2, 'golesV' => 5, 'usuarioIdCreacion' => 1, 'equipoL' => 3, 'equipoV' => 5 ],
-        ['fecha' => '2025-02-14', 'hora' => '12:26:00', 'golesL' => 2, 'golesV' => 2, 'usuarioIdCreacion' => 1, 'equipoL' => 8, 'equipoV' => 7 ]
+        
+        ['fecha' => '2025-03-13', 'hora' => '10:00:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 1, 'equipoV' =>3 ],
+        ['fecha' => '2025-03-13', 'hora' => '10:15:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 2, 'equipoV' =>8 ],
+        ['fecha' => '2025-03-13', 'hora' => '10:30:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 7, 'equipoV' =>4 ],
+        ['fecha' => '2025-03-13', 'hora' => '10:45:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 9, 'equipoV' =>5 ],
+        ['fecha' => '2025-03-13', 'hora' => '11:00:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 6, 'equipoV' =>1 ],
+        ['fecha' => '2025-03-13', 'hora' => '11:15:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 10, 'equipoV' =>2 ],
+        ['fecha' => '2025-03-13', 'hora' => '11:30:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 3, 'equipoV' =>7 ],
+        ['fecha' => '2025-03-13', 'hora' => '11:45:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 8, 'equipoV' =>9 ],
+        
+        ['fecha' => '2025-03-13', 'hora' => '12:45:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 4, 'equipoV' =>6 ],
+        ['fecha' => '2025-03-13', 'hora' => '13:00:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 5, 'equipoV' =>10 ],
+        ['fecha' => '2025-03-13', 'hora' => '13:15:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 1, 'equipoV' =>7 ],
+        ['fecha' => '2025-03-13', 'hora' => '13:30:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 2, 'equipoV' =>9 ],
+        ['fecha' => '2025-03-13', 'hora' => '13:45:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 3, 'equipoV' =>4 ],
+             
+        ['fecha' => '2025-03-14', 'hora' => '10:00:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 8, 'equipoV' =>5 ],
+        ['fecha' => '2025-03-14', 'hora' => '10:15:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 6, 'equipoV' =>3 ],
+        ['fecha' => '2025-03-14', 'hora' => '10:30:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 10, 'equipoV' =>5 ],
+        ['fecha' => '2025-03-14', 'hora' => '10:45:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' =>7, 'equipoV' =>6 ],
+        ['fecha' => '2025-03-14', 'hora' => '11:00:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 9, 'equipoV' =>10 ],
+        ['fecha' => '2025-03-14', 'hora' => '11:15:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 4, 'equipoV' =>1 ],
+        ['fecha' => '2025-03-14', 'hora' => '11:30:00', 'golesL' => 0, 'golesV' => 0, 'usuarioIdCreacion' => 1, 'equipoL' => 5, 'equipoV' =>2 ],
+        
+        
     ];
     /**
      * Run the database seeds.

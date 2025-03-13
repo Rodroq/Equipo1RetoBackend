@@ -19,8 +19,7 @@ class EquipoController extends Controller implements HasMiddleware
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware(CanRecoverToken::class, only: ['index']),
-            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
-            new Middleware('role:entrenador', only: ['store']),
+            new Middleware('role:administrador|entrenador', only: ['store','update', 'destroy']),
         ];
     }
     /**
