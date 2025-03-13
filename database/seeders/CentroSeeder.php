@@ -11,7 +11,8 @@ class CentroSeeder extends Seeder
     private $centros = [
         ['nombre' => 'IES Besaya'],
         ['nombre' => 'IES Zapatón'],
-        ['nombre' => 'IES Miguel Herrero']
+        ['nombre' => 'IES Miguel Herrero'],
+        ['nombre'=>'De los tres centros']
     ];
 
     /**

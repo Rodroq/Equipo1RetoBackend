@@ -12,10 +12,20 @@ final class ImageService
         $name = $custom_name ? $custom_name : count($item_model->getMedia()) + 1 . "-{$item_model->getTable()}-{$item_model->slug}";
         $filename = "{$name}.{$file->getClientOriginalExtension()}";
 
+        if ($item_model instanceof \App\Models\Reto) {
+            $collection = 'reto_imagenes';
+        } elseif ($item_model instanceof \App\Models\Publicacion) {
+            $collection = 'publicacion_imagenes';
+        } elseif ($item_model instanceof \App\Models\Equipo) {
+            $collection = 'equipo_imagenes';
+        } else {
+            $collection = 'default'; // Colección por defecto para otros modelos
+        }
+
         return $item_model->addMedia($file)
             ->usingFileName($filename)
             ->withCustomProperties(['name' => $name, 'usuario_id' => $usuario_id])
-            ->toMediaCollection();
+            ->toMediaCollection($collection);
     }
 
     public function getFirstImage($item_model)

@@ -18,7 +18,7 @@ class PublicacionResource extends JsonResource
             'titulo' => $this->titulo,
             'slug' => $this->slug,
             'tipo' => $this->publicacionable_type,
-            'imagen' => new MediaResource($this->getFirstMedia()),
+            'imagen' => new MediaResource($this->getFirstMedia('publicacion_imagenes')),
         ];
     }
 }

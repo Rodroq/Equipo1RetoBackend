@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         DB::table('jugadores')->delete();
         DB::table('partidos')->delete();
         DB::table('actas')->delete();
+        DB::table('inscripciones')->delete();
 
         $this->call(PermissionAndRoleSeeder::class);
         $this->call(UserSeeder::class);
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $this->call(JugadorSeeder::class);
         $this->call(PartidosSeeder::class);
         $this->call(ActasSeeder::class);
+        $this->call(InscripcionesSeeder::class);
 
     }
 }
