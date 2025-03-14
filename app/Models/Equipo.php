@@ -83,19 +83,19 @@ class Equipo extends Model implements HasMedia
     }
 
     protected static function boot()
-    {
-        parent::boot();
+     {
+         parent::boot();
 
-        static::creating(function ($model) {
-            $model->usuarioIdCreacion = Auth::user()->id;
-            $model->fechaCreacion = now();
-        });
+         static::creating(function ($model) {
+             $model->usuarioIdCreacion = Auth::user()->id;
+             $model->fechaCreacion = now();
+         });
 
-        static::updating(function ($model) {
-            $model->usuarioIdActualizacion = Auth::user()->id;
-            $model->fechaActualizacion = now();
-        });
-    }
+         static::updating(function ($model) {
+             $model->usuarioIdActualizacion = Auth::user()->id;
+             $model->fechaActualizacion = now();
+         });
+     }
 
     /**
      * Crea múltiples jugadores relacionados con el equipo.

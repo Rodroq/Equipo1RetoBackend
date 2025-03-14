@@ -16,8 +16,7 @@ class PatrocinadorController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware('role:administrador|entrenador', only: ['destroy']),
-            new Middleware('role:entrenador', only: ['store']),
+            new middleware('role:administrador|entrenador', only: ['store','destroy']),
         ];
     }
     /**

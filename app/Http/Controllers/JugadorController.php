@@ -18,8 +18,7 @@ class JugadorController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware('role:administrador|entrenador', only: ['update', 'destroy']),
-            new Middleware('role:entrenador', only: ['store']),
+            new middleware('role:administrador|entrenador', only: ['store','update','destroy']),
         ];
     }
     /**

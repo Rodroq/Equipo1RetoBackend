@@ -16,8 +16,7 @@ class MediaController extends Controller  implements HasMiddleware
         return [
             //seguridad para la autenticación del ususario
             new Middleware('auth:sanctum'),
-            new Middleware('role:administrador|entrenador|periodista', only: ['update', 'destroy']),
-            new Middleware('role:entrenador|periodista', only: ['store']),
+            new middleware('role:administrador|entrenador|periodista', only: ['store','update','destroy']),
         ];
     }
 

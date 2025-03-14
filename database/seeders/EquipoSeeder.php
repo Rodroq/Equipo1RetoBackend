@@ -15,22 +15,27 @@ class EquipoSeeder extends Seeder
      */
     public function run(): void
     {
-        $id_usuario = User::first()->id;
+        $id_usuario = User::find(5)->id;
 
-        $centros = Centro::get();
+       // $centros = Centro::get();
 
-        $centro_first = $centros->first();
-        $centro_second = $centros->get(1);
-        $centro_last = $centros->last();
+        $centro_besaya = Centro::find(1);
+        $centro_zapa = Centro::find(2);
+        $centro_miguel = Centro::find(3);
+        $centro_todo=Centro::find(4);
         $equipos = [
-            ['id' => 1, 'nombre' => 'Desguace FC', 'grupo' => 'A', 'centro_id' => $centro_first->id],
-            ['id' => 2, 'nombre' => 'Yayo Vallecano', 'grupo' => 'A', 'centro_id' => $centro_first->id],
-            ['id' => 3, 'nombre' => 'Mag-nificos', 'grupo' => 'A', 'centro_id' => $centro_first->id],
-            ['id' => 4, 'nombre' => 'Imperio ASIR', 'grupo' => 'A', 'centro_id' => $centro_second->id],
-            ['id' => 5, 'nombre' => 'Volt Damm 01', 'grupo' => 'B', 'centro_id' => $centro_second->id],
-            ['id' => 6, 'nombre' => 'Niños de papi 02', 'grupo' => 'B', 'centro_id' => $centro_second->id],
-            ['id' => 7, 'nombre' => 'Chatgepeteros', 'grupo' => 'B', 'centro_id' => $centro_last->id],
-            ['id' => 8, 'nombre' => 'Chatarreros FC', 'grupo' => 'B', 'centro_id' => $centro_last->id],
+            ['id' => 1, 'nombre' => 'Los Galácticos de Montepinar', 'grupo' => 'A', 'centro_id' => $centro_miguel->id],
+            ['id' => 2, 'nombre' => 'Oxido Cero', 'grupo' => 'B', 'centro_id' => $centro_miguel->id],
+            ['id' => 3, 'nombre' => 'Leones de Carrocería F.C.', 'grupo' => 'A', 'centro_id' => $centro_miguel->id],
+            ['id' => 4, 'nombre' => 'Los Zapa-autómatas F.C.', 'grupo' => 'A', 'centro_id' => $centro_zapa->id],
+            ['id' => 5, 'nombre' => 'GRAFCET F.C', 'grupo' => 'B', 'centro_id' => $centro_zapa->id],
+            ['id' => 6, 'nombre' => 'Los Acoples FC', 'grupo' => 'A', 'centro_id' => $centro_zapa->id],
+            ['id' => 7, 'nombre' => 'Los Leones del Besaya', 'grupo' => 'A', 'centro_id' => $centro_besaya->id],
+            ['id' => 8, 'nombre' => 'Xabineta', 'grupo' => 'B', 'centro_id' => $centro_besaya->id], 
+            ['id' => 9, 'nombre' => 'Te Miro y Te Integro', 'grupo' => 'B', 'centro_id' => $centro_besaya->id],
+            ['id' => 10, 'nombre' => 'Equipo Olimpico', 'grupo' => 'A', 'centro_id' => $centro_todo->id],
+            
+            
         ];
         foreach ($equipos as $equipo) {
             Equipo::create([
