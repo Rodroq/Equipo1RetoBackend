@@ -83,7 +83,6 @@ class JugadorController extends Controller implements HasMiddleware
      *      name="slug",
      *      in="path",
      *      description="Slug del jugador",
-     *      required=true,
      *      @OA\Schema(type="slug",example="samuel-tamayo-muniz")
      *  ),
      *  @OA\Response(
